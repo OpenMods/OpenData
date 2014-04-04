@@ -52,7 +52,7 @@ class ApiController {
             }
 
             if ($response != null) {
-                $responses[] = $response;
+                $responses = array_merge($responses, $response);
             }
         }
 
@@ -94,39 +94,46 @@ class ApiController {
             $modsSignaturesFound[] = $modData['_id'];
 
             $modNode = array(
-                'signature' => $modData['_id'],
                 'modId' => $modData['modId']
             );
 
-            $commands = array();
-
             if (!isset($modData['packages'])) {
-                $commands['list_packages'] = array();
+                $responses[] = array_merge($modNode, array(
+                    'type' => 'list_packages'
+                ));
             }
 
             if ($this->shouldRequestFiles($modData)) {
-                $commands['list_files'] = array();
+                $responses[] = array_merge($modNode, array(
+                    'type' => 'mod_files'
+                ));
             }
 
             if ($this->shouldUploadFile($modData)) {
-                $commands['upload_file'] = array();
+                $responses[] = array_merge($modNode, array(
+                    'type' => 'upload_file'
+                ));
             }
 
-            if (isset($modData['security_warning']) && $modData['security_warning']) {
-                $commands['security_warning'] = $modData['security_warning'];
+            if (isset($modData['security_warning']) && is_string($modData['security_warning'])) {
+                $responses[] = array_merge($modNode, array(
+                    'type' => 'security_warning',
+                    'message' => $modData['security_warning']
+                ));
             }
 
-            if (isset($modData['update_critical']) && $modData['update_critical']) {
-                $commands['update_critical'] = $modData['update_critical'];
+            if (isset($modData['update_critical']) && is_string($modData['update_critical'])) {
+                $responses[] = array_merge($modNode, array(
+                    'type' => 'update_critical',
+                    'message' => $modData['update_critical']
+                ));
             }
 
             if (isset($modData['update_normal']) && $modData['update_normal']) {
-                $commands['update_normal'] = $modData['update_normal'];
-            }
-
-            if (count($commands) > 0) {
-                $modNode['commands'] = $commands;
-                $responses[] = $modNode;
+                $responses[] = array_merge($modNode, array(
+                    'type' => 'update_normal',
+                    'message' => $modData['update_normal']
+                ));
             }
         }
 
@@ -136,19 +143,14 @@ class ApiController {
             if (!in_array($mod['signature'], $modsSignaturesFound)) {
                 $this->serviceMods->add($mod);
                 $responses[] = array(
-                    'signature' => $mod['signature'],
-                    'modId' => $mod['modId'],
-                    'commands' => array(
-                        'list_packages' => array()
-                    )
+                    'type' => 'list_packages',
+                    'modId' => $mod['modId']
                 );
             }
         }
 
 
-        if (count($responses) > 0) {
-            return $responses;
-        }
+        return $responses;
     }
 
     private function shouldRequestFiles($modData) {
