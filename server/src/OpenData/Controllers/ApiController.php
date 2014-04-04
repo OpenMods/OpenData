@@ -122,18 +122,15 @@ class ApiController {
                 ));
             }
 
-            if (isset($modData['update_critical']) && is_string($modData['update_critical'])) {
-                $responses[] = array_merge($modNode, array(
-                    'type' => 'update_critical',
-                    'message' => $modData['update_critical']
-                ));
-            }
-
-            if (isset($modData['update_normal']) && $modData['update_normal']) {
-                $responses[] = array_merge($modNode, array(
-                    'type' => 'update_normal',
-                    'message' => $modData['update_normal']
-                ));
+            if (isset($modData['notes']) && is_array($modData['notes'])) {
+                foreach ($modData['notes'] as $note) {
+                    $responses[] = array_merge($modNode, array(
+                        'type' => 'note',
+                        'note_type' => $note['type'],
+                        'priority' => $note['priority'],
+                        'message' => $note['message']
+                    ));
+                }
             }
         }
 
