@@ -65,66 +65,66 @@ class ApiController {
 
     private function analytics($packet) {
 
-        if (!isset($packet['mods']) || !is_array($packet['mods'])) {
-            throw new \Exception('Expected a mods array in analytics packet');
+        if (!isset($packet['files']) || !is_array($packet['files'])) {
+            throw new \Exception('Expected a files array in analytics packet');
         }
 
         $this->serviceAnalytics->add($packet);
 
         $signatures = array();
 
-        foreach ($packet['mods'] as $mod) {
-            if (!is_array($mod) || !is_string($mod['signature'])) {
-                throw new \Exception('Expected a signature for each mod in analytics packet');
+        foreach ($packet['files'] as $file) {
+            if (!is_array($file) || !is_string($file['signature'])) {
+                throw new \Exception('Expected a signature for each file in analytics packet');
             }
-            $signatures[] = $mod['signature'];
+            $signatures[] = $file['signature'];
         }
 
         // find all the mods we already have in the database
-        $modsData = $this->serviceMods->findIn($signatures);
+        $filesData = $this->serviceMods->findIn($signatures);
 
         $responses = array();
 
-        $modsSignaturesFound = array();
+        $fileSignaturesFound = array();
 
         // loop through them all and check for any additional data needed
         // for example, packages, classes, file, or security/update warnings
-        foreach ($modsData as $modData) {
+        foreach ($filesData as $fileData) {
 
-            $modsSignaturesFound[] = $modData['_id'];
+            $fileSignaturesFound[] = $fileData['_id'];
 
-            $modNode = array(
-                'modId' => $modData['modId']
+            $fileNode = array(
+                'signature' => $fileData['_id']
             );
 
-            if (!isset($modData['packages'])) {
-                $responses[] = array_merge($modNode, array(
+            if (!isset($fileData['packages'])) {
+                $responses[] = array_merge($fileNode, array(
                     'type' => 'list_packages'
                 ));
             }
 
-            if ($this->shouldRequestFiles($modData)) {
-                $responses[] = array_merge($modNode, array(
-                    'type' => 'mod_files'
+            if ($this->shouldRequestFiles($fileData)) {
+                $responses[] = array_merge($fileNode, array(
+                    'type' => 'list_files'
                 ));
             }
 
-            if ($this->shouldUploadFile($modData)) {
-                $responses[] = array_merge($modNode, array(
+            if ($this->shouldUploadFile($fileData)) {
+                $responses[] = array_merge($fileNode, array(
                     'type' => 'upload_file'
                 ));
             }
 
-            if (isset($modData['security_warning']) && is_string($modData['security_warning'])) {
-                $responses[] = array_merge($modNode, array(
+            if (isset($fileData['security_warning']) && is_string($fileData['security_warning'])) {
+                $responses[] = array_merge($fileNode, array(
                     'type' => 'security_warning',
-                    'message' => $modData['security_warning']
+                    'message' => $fileData['security_warning']
                 ));
             }
 
-            if (isset($modData['notes']) && is_array($modData['notes'])) {
-                foreach ($modData['notes'] as $note) {
-                    $responses[] = array_merge($modNode, array(
+            if (isset($fileData['notes']) && is_array($fileData['notes'])) {
+                foreach ($fileData['notes'] as $note) {
+                    $responses[] = array_merge($fileNode, array(
                         'type' => 'note',
                         'note_type' => $note['type'],
                         'priority' => $note['priority'],
@@ -136,12 +136,12 @@ class ApiController {
 
         // loop through any mods we didn't find in the database,
         // add them in, then tell the client we need the rest of the packages
-        foreach ($packet['mods'] as $mod) {
-            if (!in_array($mod['signature'], $modsSignaturesFound)) {
-                $this->serviceMods->add($mod);
+        foreach ($packet['files'] as $file) {
+            if (!in_array($file['signature'], $fileSignaturesFound)) {
+                $this->serviceMods->add($file);
                 $responses[] = array(
                     'type' => 'list_packages',
-                    'modId' => $mod['modId']
+                    'signature' => $file['signature']
                 );
             }
         }
@@ -150,16 +150,16 @@ class ApiController {
         return $responses;
     }
 
-    private function shouldRequestFiles($modData) {
-        return isset($modData['list_files']) &&
-                $modData['list_files'] &&
-                !isset($modData['files']);
+    private function shouldRequestFiles($fileData) {
+        return isset($fileData['list_files']) &&
+                $fileData['list_files'] &&
+                !isset($fileData['files']);
     }
 
-    private function shouldUploadFile($modData) {
-        return isset($modData['upload_file']) &&
-                $modData['upload_file'] &&
-                !isset($modData['file_id']);
+    private function shouldUploadFile($fileData) {
+        return isset($fileData['upload_file']) &&
+                $fileData['upload_file'] &&
+                !isset($fileData['file_id']);
     }
 
 }

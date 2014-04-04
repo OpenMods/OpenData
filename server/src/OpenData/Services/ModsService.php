@@ -10,13 +10,12 @@ class ModsService extends BaseService {
         );
     }
 
-    public function add($mod) {
+    public function add($file) {
 
         $document = array(
-            '_id' => $mod['signature'],
-            'modId' => $mod['modId'],
-            'version' => $mod['version'],
-            'filesize' => $mod['filesize']
+            '_id' => $file['signature'],
+            'mods' => $file['mods'],
+            'filesize' => $file['filesize']
         );
 
         $this->db->mods->insert($document);
