@@ -1,16 +1,5 @@
 {
-	"name": "vesparny/silex-simple-rest",
-	"type": "library",
-	"description": "A simple silex skeleton for rest api",
-	"keywords": [
-		"framework", "silex", "rest", "api"
-	],
-	"homepage": "http://github.com/vesparny/silex-simple-rest",
 	"license": "MIT",
-	"authors": [{
-		"name": "Alessandro Arnodo",
-		"email": "alessandro@arnodo.net"
-	}],
 	"require": {
 		"php": ">=5.3.0"
 	},
@@ -28,7 +17,7 @@
 	},
 	"autoload": {
 		"psr-0": {
-			"App": "src/"
+			"OpenData": "src/"
 		}
 	}
 }

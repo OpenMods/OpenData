@@ -2,15 +2,12 @@
 
 use Silex\Application;
 use Silex\Provider\HttpCacheServiceProvider;
-use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\MonologServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
 use Mongo\Silex\Provider\MongoServiceProvider;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use OpenData\ServicesLoader;
-use OpenData\RoutesLoader;
 use Carbon\Carbon;
 
 date_default_timezone_set('Europe/London');
@@ -62,11 +59,11 @@ $app->register(new MonologServiceProvider(), array(
 ));
 
 //load services
-$servicesLoader = new App\ServicesLoader($app);
+$servicesLoader = new OpenData\ServicesLoader($app);
 $servicesLoader->bindServicesIntoContainer();
 
 //load routes
-$routesLoader = new App\RoutesLoader($app);
+$routesLoader = new OpenData\RoutesLoader($app);
 $routesLoader->bindRoutesToControllers();
 
 $app->error(function (\Exception $e, $code) use ($app) {

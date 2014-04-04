@@ -17,8 +17,10 @@ class RoutesLoader {
     private function instantiateControllers() {
 
         $loader = $this;
-        $this->app['crashes.controller'] = $this->app->share(function () use ($loader) {
-            return new Controllers\CrashesController($loader->app['crashes.service']);
+        $this->app['api.controller'] = $this->app->share(function () use ($loader) {
+            return new Controllers\ApiController(
+                    $loader->app['crashes.service'], $loader->app['analytics.service'], $loader->app['mods.service']
+            );
         });
     }
 
@@ -26,8 +28,7 @@ class RoutesLoader {
 
         $api = $this->app["controllers_factory"];
 
-        $api->get('/crashes', "crashes.controller:listAll");
-        $api->post('/crashes', "crashes.controller:save");
+        $api->post('/data', "api.controller:main");
 
         $this->app->mount($this->app["api.endpoint"] . '/' . $this->app["api.version"], $api);
     }
