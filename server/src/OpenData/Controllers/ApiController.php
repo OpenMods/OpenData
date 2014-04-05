@@ -78,6 +78,8 @@ class ApiController {
     }
 
     private function crashlog($packet) {
+        // allow this to throw       
+        $packet['date'] = new \DateTime($packet['date']);
         $this->serviceCrashes->add($packet);
     }
 

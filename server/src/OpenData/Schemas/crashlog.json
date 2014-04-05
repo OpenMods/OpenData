@@ -1,0 +1,103 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "required": true,
+    "properties": {
+        "type": {
+            "type": "string",
+            "required": true
+        },
+        "date": {
+            "type": "string",
+            "required": true
+        },
+        "exception_cause": {
+            "type": "string",
+            "required": true
+        },
+        "exception_type": {
+            "type": "string",
+            "required": true
+        },
+        "timezone": {
+            "type": "string",
+            "required": true
+        },
+        "branding": {
+            "type": "string",
+            "required": true
+        },
+        "forge": {
+            "type": "string",
+            "required": true
+        },
+        "language": {
+            "type": "string",
+            "required": true
+        },
+        "locale": {
+            "type": "string",
+            "required": true
+        },
+        "minecraft": {
+            "type": "string",
+            "required": true
+        },
+        "stacktrace": {
+            "type": "array",
+            "required": true,
+            "items": {
+                "type": "object",
+                "required": false,
+                "properties": {
+                    "class": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "file": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "line": {
+                        "type": "integer",
+                        "required": true
+                    },
+                    "package": {
+                        "type": "string",
+                        "required": true
+                    }
+                }
+            }
+        },
+        "mod_states": {
+            "type": "array",
+            "required": true,
+            "items": {
+                "type": "object",
+                "required": false,
+                "properties": {
+                    "filename": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "modId": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "signature": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "state": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "version": {
+                        "type": "string",
+                        "required": true
+                    }
+                }
+            }
+        }
+    }
+}
