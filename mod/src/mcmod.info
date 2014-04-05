@@ -1,0 +1,17 @@
+[
+{
+  "modid" : "GreenHam",
+  "name" : "GreenHam",
+  "version" : "@VERSION@",
+  "url" : "http://openmods.info",
+  "credits" : "",
+  "authors": [
+  	"boq"
+  ],
+  "description": "Dyeable beacon beams",
+  "logoFile" : "",
+  "updateUrl" : "",
+  "parent" : "",
+  "screenshots": [
+  ]
+}]
