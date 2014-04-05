@@ -59,8 +59,6 @@ class ApiController {
             }
 
             $type = $packet['type'];
-            
-            unset($packet['type']);
 
             $response = null;
 
@@ -69,6 +67,8 @@ class ApiController {
             }
 
             $errors = $this->getErrors($packet);
+            
+            unset($packet['type']);
 
             if ($errors != null) {
                 throw new \Exception(implode("\n", $errors));
