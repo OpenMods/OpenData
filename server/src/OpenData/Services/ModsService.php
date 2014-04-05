@@ -15,7 +15,8 @@ class ModsService extends BaseService {
         $document = array(
             '_id' => $file['signature'],
             'mods' => $file['mods'],
-            'filesize' => $file['filesize']
+            'filesize' => $file['filesize'],
+            'filename' => $file['filename']
         );
 
         $this->db->mods->insert($document);
