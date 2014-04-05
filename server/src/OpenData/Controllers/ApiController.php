@@ -79,7 +79,9 @@ class ApiController {
 
     private function crashlog($packet) {
         // allow this to throw
-        $packet['date'] = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));
+        $date = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));;
+        $date->setTimezone(new \DateTimeZone('Europe/London'));
+        $packet['date'] = $date;
         unset($packet['timezone']);
         $this->serviceCrashes->add($packet);
     }
@@ -87,9 +89,8 @@ class ApiController {
     private function analytics($packet) {
 
         unset($packet['type']);
-        $packet['created_at'] = new \DateTime();
-        $packet['created_at']->setTimezone(new \DateTimeZone($packet['timezone']));
-        unset($packet['timezone']);
+        
+        $packet['created_at'] = new \MongoDate();
         
         $this->serviceAnalytics->add($packet);
 
