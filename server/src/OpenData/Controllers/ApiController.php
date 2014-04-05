@@ -20,10 +20,10 @@ class ApiController {
         $this->serviceMods = $mods;
         $this->schemas = array();
 
-        foreach(array('analytics') as $schema) {
-			$retriever = new UriRetriever();
-			$this->schemas[$schema] = $retriever->retrieve(__DIR__.'/../Schemas/analytics.json');
-		}
+        foreach (array('analytics') as $schema) {
+            $retriever = new UriRetriever();
+            $this->schemas[$schema] = $retriever->retrieve(__DIR__ . '/../Schemas/analytics.json');
+        }
     }
 
     public function main(Request $request) {
@@ -42,42 +42,42 @@ class ApiController {
                 throw new \Exception('Packet type not defined');
             }
 
-			$errors = null;
+            $errors = null;
 
-			// handle the packet
+            // handle the packet
             switch ($packet['type']) {
 
                 case 'analytics':
-					$errors = $this->validatePacket($packet, 'analytics');
-					if (count($errors) == 0) {
-                    	$response = $this->analytics($packet);
-					}
+                    $errors = $this->validatePacket($packet, 'analytics');
+                    if (count($errors) == 0) {
+                        $response = $this->analytics($packet);
+                    }
                     break;
                 case 'crashlog':
-					$errors = $this->validatePacket($packet, 'crashlog');
-					if (count($errors) == 0) {
-                    	$response = $this->crashlog($packet);
-					}
+                    $errors = $this->validatePacket($packet, 'crashlog');
+                    if (count($errors) == 0) {
+                        $response = $this->crashlog($packet);
+                    }
                     break;
                 case 'mod_packages':
-					$errors = $this->validatePacket($packet, 'mod_packages');
-					if (count($errors) == 0) {
-                	    $response = $this->packages($packet);
-					}
+                    $errors = $this->validatePacket($packet, 'mod_packages');
+                    if (count($errors) == 0) {
+                        $response = $this->packages($packet);
+                    }
                     break;
                 case 'mod_files':
-					$errors = $this->validatePacket($packet, 'mod_files');
-					if (count($errors) == 0) {
-                    	$response = $this->files($packet);
-					}
+                    $errors = $this->validatePacket($packet, 'mod_files');
+                    if (count($errors) == 0) {
+                        $response = $this->files($packet);
+                    }
                     break;
                 default:
                     throw new \Exception('Unknown packet type ' . $packet['type']);
             }
 
             if (is_array($errors) && count($errors) > 0) {
-				throw new \Exception(implode("\n", $errors));
-			}
+                throw new \Exception(implode("\n", $errors));
+            }
 
             if ($response != null) {
                 $responses = array_merge($responses, $response);
@@ -183,29 +183,29 @@ class ApiController {
                 !isset($fileData['file_id']);
     }
 
+    private function validatePacket($packet, $schemaType) {
 
-	private function validatePacket($packet, $schemaType) {
-
-		$errors = array();
-
-
-		// real nasty, but the json validator requires we pass in as an stdClass.
-		// so we'll recode it as a class.
-		$packet = json_decode(json_encode($packet), false);
-
-		if (!isset($this->schemas[$schemaType])) {
-			$errors[] =	'Invalid action type';
-		} else {
-			$validator = new Validator();
-			$validator->check($packet, $this->schemas[$schemaType]);
-			if (!$validator->isValid()) {
-			    foreach ($validator->getErrors() as $error) {
-					$errors[] = sprintf("[%s] %s\n", $error['property'], $error['message']);
-				}
-			}
-		}
+        $errors = array();
 
 
-		return $errors;
-	}
+        // real nasty, but the json validator requires we pass in as an stdClass.
+        // so we'll recode it as a class.
+        $packet = json_decode(json_encode($packet), false);
+
+        if (!isset($this->schemas[$schemaType])) {
+            $errors[] = 'Invalid action type';
+        } else {
+            $validator = new Validator();
+            $validator->check($packet, $this->schemas[$schemaType]);
+            if (!$validator->isValid()) {
+                foreach ($validator->getErrors() as $error) {
+                    $errors[] = sprintf("[%s] %s\n", $error['property'], $error['message']);
+                }
+            }
+        }
+
+
+        return $errors;
+    }
+
 }
