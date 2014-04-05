@@ -4,17 +4,26 @@ namespace OpenData\Controllers;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use JsonSchema\Uri\UriRetriever;
+use JsonSchema\Validator;
 
 class ApiController {
 
     protected $serviceCrashes;
     protected $serviceAnalytics;
     protected $serviceMods;
+    protected $schemas;
 
     public function __construct($crashes, $analytics, $mods) {
         $this->serviceCrashes = $crashes;
         $this->serviceAnalytics = $analytics;
         $this->serviceMods = $mods;
+        $this->schemas = array();
+
+        foreach(array('analytics') as $schema) {
+			$retriever = new UriRetriever();
+			$this->schemas[$schema] = $retriever->retrieve(__DIR__.'/../Schemas/analytics.json');
+		}
     }
 
     public function main(Request $request) {
@@ -33,23 +42,42 @@ class ApiController {
                 throw new \Exception('Packet type not defined');
             }
 
+			$errors = null;
+
+			// handle the packet
             switch ($packet['type']) {
 
                 case 'analytics':
-                    $response = $this->analytics($packet);
+					$errors = $this->validatePacket($packet, 'analytics');
+					if (count($errors) == 0) {
+                    	$response = $this->analytics($packet);
+					}
                     break;
                 case 'crashlog':
-                    $response = $this->crashlog($packet);
+					$errors = $this->validatePacket($packet, 'crashlog');
+					if (count($errors) == 0) {
+                    	$response = $this->crashlog($packet);
+					}
                     break;
                 case 'mod_packages':
-                    $response = $this->packages($packet);
+					$errors = $this->validatePacket($packet, 'mod_packages');
+					if (count($errors) == 0) {
+                	    $response = $this->packages($packet);
+					}
                     break;
                 case 'mod_files':
-                    $response = $this->files($packet);
+					$errors = $this->validatePacket($packet, 'mod_files');
+					if (count($errors) == 0) {
+                    	$response = $this->files($packet);
+					}
                     break;
                 default:
                     throw new \Exception('Unknown packet type ' . $packet['type']);
             }
+
+            if (is_array($errors) && count($errors) > 0) {
+				throw new \Exception(implode("\n", $errors));
+			}
 
             if ($response != null) {
                 $responses = array_merge($responses, $response);
@@ -65,18 +93,11 @@ class ApiController {
 
     private function analytics($packet) {
 
-        if (!isset($packet['files']) || !is_array($packet['files'])) {
-            throw new \Exception('Expected a files array in analytics packet');
-        }
-
         $this->serviceAnalytics->add($packet);
 
         $signatures = array();
 
         foreach ($packet['files'] as $file) {
-            if (!is_array($file) || !is_string($file['signature'])) {
-                throw new \Exception('Expected a signature for each file in analytics packet');
-            }
             $signatures[] = $file['signature'];
         }
 
@@ -162,4 +183,29 @@ class ApiController {
                 !isset($fileData['file_id']);
     }
 
+
+	private function validatePacket($packet, $schemaType) {
+
+		$errors = array();
+
+
+		// real nasty, but the json validator requires we pass in as an stdClass.
+		// so we'll recode it as a class.
+		$packet = json_decode(json_encode($packet), false);
+
+		if (!isset($this->schemas[$schemaType])) {
+			$errors[] =	'Invalid action type';
+		} else {
+			$validator = new Validator();
+			$validator->check($packet, $this->schemas[$schemaType]);
+			if (!$validator->isValid()) {
+			    foreach ($validator->getErrors() as $error) {
+					$errors[] = sprintf("[%s] %s\n", $error['property'], $error['message']);
+				}
+			}
+		}
+
+
+		return $errors;
+	}
 }
