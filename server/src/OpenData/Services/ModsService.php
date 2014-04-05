@@ -19,14 +19,24 @@ class ModsService extends BaseService {
         return $file['signature'];
     }
     
-    public function update($file) {
+    public function append($file) {
         
         $signature = $file['signature'];
+        
+        $currentEntry = $this->findOne($signature);
+        if ($currentEntry == null) {
+            foreach ($file as $k => $v) {
+                if (!isset($currentEntry[$k])) {
+                    $currentEntry[$k] = $v;
+                }
+            }
+        }
+        
         unset($file['signature']);
         
         $this->db->mods->update(
             array('_id' => $signature),
-            array('$set' => $file)
+            array('$set' => $currentEntry)
         );
     
     }

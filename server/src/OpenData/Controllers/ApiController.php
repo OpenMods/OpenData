@@ -115,7 +115,7 @@ class ApiController {
     }
     
     private function modinfo($packet) {
-        $this->serviceMods->update($packet);
+        $this->serviceMods->append($packet);
     }
     
     private function crashlog($packet) {
