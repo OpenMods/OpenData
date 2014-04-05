@@ -25,15 +25,22 @@ class RoutesLoader {
                     class_exists('\Memcache') ? $loader->app['memcache'] : null
             );
         });
+        
+        $this->app['site.controller'] = $this->app->share(function () use ($loader) {
+           return new Controllers\SiteController($loader->app['twig'], $loader->app['request']); 
+        });
     }
 
     public function bindRoutesToControllers() {
 
         $api = $this->app["controllers_factory"];
-
         $api->post('/data', "api.controller:main");
+        
+        $site = $this->app["controllers_factory"];
+        $site->get('/', "site.controller:home");
 
         $this->app->mount($this->app["api.endpoint"] . '/' . $this->app["api.version"], $api);
+        $this->app->mount('/', $site);
     }
 
 }

@@ -51,13 +51,17 @@ $app->register(new MongoServiceProvider(), array(
 ));
 
 if (class_exists('\Memcache')) {
-	$app->register(new SilexMemcache\MemcacheExtension(), array(
-		'memcache.library'    => 'memcache',
-		'memcache.server' => array(
-			array('127.0.0.1', 11211)
-		)
-	));
+    $app->register(new SilexMemcache\MemcacheExtension(), array(
+            'memcache.library'    => 'memcache',
+            'memcache.server' => array(
+                    array('127.0.0.1', 11211)
+            )
+    ));
 }
+
+$app->register(new Silex\Provider\TwigServiceProvider(), array(
+    'twig.path' => __DIR__.'/views',
+));
 
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 
@@ -78,7 +82,9 @@ $routesLoader->bindRoutesToControllers();
 $app->error(function (\Exception $e, $code) use ($app) {
     $app['monolog']->addError($e->getMessage());
     $app['monolog']->addError($e->getTraceAsString());
-    return new JsonResponse(array("statusCode" => $code, "message" => $e->getMessage(), "stacktrace" => $e->getTraceAsString()));
+    if (0 === strpos($app['request']->headers->get('Content-Type'), 'application/json')) {
+        return new JsonResponse(array("statusCode" => $code, "message" => $e->getMessage(), "stacktrace" => $e->getTraceAsString()));
+    }
 });
 
 return $app;
