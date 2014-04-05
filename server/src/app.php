@@ -82,9 +82,9 @@ $routesLoader->bindRoutesToControllers();
 $app->error(function (\Exception $e, $code) use ($app) {
     $app['monolog']->addError($e->getMessage());
     $app['monolog']->addError($e->getTraceAsString());
-    if (0 === strpos($app['request']->headers->get('Content-Type'), 'application/json')) {
+    //if (0 === strpos($app['request']->headers->get('Content-Type'), 'application/json')) {
         return new JsonResponse(array("statusCode" => $code, "message" => $e->getMessage(), "stacktrace" => $e->getTraceAsString()));
-    }
+    //}
 });
 
 return $app;

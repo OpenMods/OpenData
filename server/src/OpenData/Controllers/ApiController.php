@@ -13,32 +13,30 @@ class ApiController {
     protected $serviceAnalytics;
     protected $serviceMods;
     protected $memcache;
-    
     protected $schemas;
-    
     private static $packetTypes = array(
         'analytics',
         'crashlog'
     );
 
     public function __construct($crashes, $analytics, $mods, $memcache) {
-        
+
         $this->serviceCrashes = $crashes;
         $this->serviceAnalytics = $analytics;
         $this->serviceMods = $mods;
-        
+
         $this->memcache = $memcache;
-        
+
         $this->schemas = array();
 
         foreach (self::$packetTypes as $schema) {
             $retriever = new UriRetriever();
-            $this->schemas[$schema] = $retriever->retrieve('file://'.__DIR__ . '/../Schemas/' . $schema . '.json');
+            $this->schemas[$schema] = $retriever->retrieve('file://' . __DIR__ . '/../Schemas/' . $schema . '.json');
         }
     }
 
     public function main(Request $request) {
-        
+
         if ($this->isUserFlooding($request)) {
             return new JsonResponse(array());
         }
@@ -89,27 +87,29 @@ class ApiController {
     }
 
     private function isUserFlooding(Request $request) {
-        
-        if ($this->memcache == null) return false;
-        
-        $key = sha1($request->getClientIp().date('Y-m-d-H'));
+
+        if ($this->memcache == null)
+            return false;
+
+        $key = sha1($request->getClientIp() . date('Y-m-d-H'));
         $requestCount = $this->memcache->get($key);
- 
+
         if ($requestCount) {
             if ($requestCount > 5) {
                 return true;
             }
-            $this->memcache->replace($key, $requestCount+1, 0, 3600);
+            $this->memcache->replace($key, $requestCount + 1, 0, 3600);
         } else {
             $this->memcache->set($key, 1, 0, 3600);
         }
-        
-        return false;        
+
+        return false;
     }
-    
+
     private function crashlog($packet) {
         // allow this to throw
-        $date = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));;
+        $date = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));
+        ;
         $date->setTimezone(new \DateTimeZone('Europe/London'));
         $packet['date'] = $date;
         unset($packet['timezone']);
@@ -119,15 +119,18 @@ class ApiController {
     private function analytics($packet) {
 
         unset($packet['type']);
-        
+
         $packet['created_at'] = new \MongoDate();
-        
+
         $this->serviceAnalytics->add($packet);
 
         $signatures = array();
 
+        // create a list of all signatures
         foreach ($packet['files'] as $file) {
-            $signatures[] = $file['signature'];
+            if (count($file['mods']) > 0) {
+                $signatures[] = $file['signature'];
+            }
         }
 
         // find all the mods we already have in the database
@@ -187,7 +190,7 @@ class ApiController {
         // loop through any mods we didn't find in the database,
         // add them in, then tell the client we need the rest of the packages
         foreach ($packet['files'] as $file) {
-            if (!in_array($file['signature'], $fileSignaturesFound)) {
+            if (count($file['mods']) > 0 && !in_array($file['signature'], $fileSignaturesFound)) {
                 $this->serviceMods->add($file);
                 $responses[] = array(
                     'type' => 'list_packages',
