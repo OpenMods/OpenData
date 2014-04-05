@@ -22,7 +22,7 @@ class RoutesLoader {
                     $loader->app['crashes.service'],
                     $loader->app['analytics.service'],
                     $loader->app['mods.service'],
-                    $loader->app['memcache']
+                    class_exists('\Memcache') ? $loader->app['memcache'] : null
             );
         });
     }

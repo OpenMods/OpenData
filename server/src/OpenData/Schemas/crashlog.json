@@ -1,5 +1,6 @@
 {
     "type": "object",
+    "additionalProperties": true,
     "$schema": "http://json-schema.org/draft-03/schema",
     "required": true,
     "properties": {
@@ -49,6 +50,7 @@
             "items": {
                 "type": "object",
                 "required": false,
+                "additionalProperties": true,
                 "properties": {
                     "class": {
                         "type": "string",
@@ -75,6 +77,7 @@
             "items": {
                 "type": "object",
                 "required": false,
+                "additionalProperties": true,
                 "properties": {
                     "filename": {
                         "type": "string",

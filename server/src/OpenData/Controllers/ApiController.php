@@ -90,6 +90,8 @@ class ApiController {
 
     private function isUserFlooding(Request $request) {
         
+        if ($this->memcache == null) return false;
+        
         $key = sha1($request->getClientIp().date('Y-m-d-H'));
         $requestCount = $this->memcache->get($key);
  

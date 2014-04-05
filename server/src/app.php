@@ -50,12 +50,14 @@ $app->register(new MongoServiceProvider(), array(
     ),
 ));
 
-$app->register(new SilexMemcache\MemcacheExtension(), array(
-    'memcache.library'    => 'memcache',
-    'memcache.server' => array(
-        array('127.0.0.1', 11211)
-    )
-));
+if (class_exists('\Memcache')) {
+	$app->register(new SilexMemcache\MemcacheExtension(), array(
+		'memcache.library'    => 'memcache',
+		'memcache.server' => array(
+			array('127.0.0.1', 11211)
+		)
+	));
+}
 
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 

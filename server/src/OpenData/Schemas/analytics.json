@@ -1,5 +1,6 @@
 {
     "type": "object",
+    "additionalProperties": true,
     "$schema": "http://json-schema.org/draft-03/schema",
     "properties": {
         "type": {
@@ -35,6 +36,7 @@
             "items": {
                 "type": "object",
                 "required": true,
+                "additionalProperties": true,
                 "properties": {
                     "signature": {
                         "type": "string",
@@ -53,6 +55,7 @@
                         "required": true,
                         "items": {
                             "type": "object",
+                            "additionalProperties": true,
                             "properties": {
                                 "modId": {
                                     "type": "string",
