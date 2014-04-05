@@ -26,7 +26,7 @@ class ApiController {
 
         foreach (self::$packetTypes as $schema) {
             $retriever = new UriRetriever();
-            $this->schemas[$schema] = $retriever->retrieve(__DIR__ . '/../Schemas/' . $schema . '.json');
+            $this->schemas[$schema] = $retriever->retrieve('file://'.__DIR__ . '/../Schemas/' . $schema . '.json');
         }
     }
 
@@ -78,13 +78,19 @@ class ApiController {
     }
 
     private function crashlog($packet) {
-        // allow this to throw       
-        $packet['date'] = new \DateTime($packet['date']);
+        // allow this to throw
+        $packet['date'] = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));
+        unset($packet['timezone']);
         $this->serviceCrashes->add($packet);
     }
 
     private function analytics($packet) {
 
+        unset($packet['type']);
+        $packet['created_at'] = new \DateTime();
+        $packet['created_at']->setTimezone(new \DateTimeZone($packet['timezone']));
+        unset($packet['timezone']);
+        
         $this->serviceAnalytics->add($packet);
 
         $signatures = array();
