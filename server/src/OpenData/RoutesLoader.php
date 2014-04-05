@@ -19,7 +19,10 @@ class RoutesLoader {
         $loader = $this;
         $this->app['api.controller'] = $this->app->share(function () use ($loader) {
             return new Controllers\ApiController(
-                    $loader->app['crashes.service'], $loader->app['analytics.service'], $loader->app['mods.service']
+                    $loader->app['crashes.service'],
+                    $loader->app['analytics.service'],
+                    $loader->app['mods.service'],
+                    $loader->app['memcache']
             );
         });
     }

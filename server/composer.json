@@ -10,7 +10,8 @@
 		"doctrine/dbal": "~2.4",
 		"nesbot/Carbon": "~1.6",
         	"moriony/silex-mongo-provider": "*",
-        	"justinrainbow/json-schema": "~1.3"
+        	"justinrainbow/json-schema": "~1.3",
+        	"mheap/Silex-Memcache": "*@dev"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~3.7",

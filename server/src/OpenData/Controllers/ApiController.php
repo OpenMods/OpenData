@@ -12,16 +12,23 @@ class ApiController {
     protected $serviceCrashes;
     protected $serviceAnalytics;
     protected $serviceMods;
+    protected $memcache;
+    
     protected $schemas;
+    
     private static $packetTypes = array(
         'analytics',
         'crashlog'
     );
 
-    public function __construct($crashes, $analytics, $mods) {
+    public function __construct($crashes, $analytics, $mods, $memcache) {
+        
         $this->serviceCrashes = $crashes;
         $this->serviceAnalytics = $analytics;
         $this->serviceMods = $mods;
+        
+        $this->memcache = $memcache;
+        
         $this->schemas = array();
 
         foreach (self::$packetTypes as $schema) {
@@ -31,6 +38,10 @@ class ApiController {
     }
 
     public function main(Request $request) {
+        
+        if ($this->isUserFlooding($request)) {
+            return new JsonResponse(array());
+        }
 
         $data = json_decode($request->getContent(), true);
 
@@ -77,6 +88,23 @@ class ApiController {
         return new JsonResponse($responses);
     }
 
+    private function isUserFlooding(Request $request) {
+        
+        $key = sha1($request->getClientIp().date('Y-m-d-H'));
+        $requestCount = $this->memcache->get($key);
+ 
+        if ($requestCount) {
+            if ($requestCount > 5) {
+                return true;
+            }
+            $this->memcache->replace($key, $requestCount+1, 0, 3600);
+        } else {
+            $this->memcache->set($key, 1, 0, 3600);
+        }
+        
+        return false;        
+    }
+    
     private function crashlog($packet) {
         // allow this to throw
         $date = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));;
