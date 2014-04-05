@@ -18,7 +18,8 @@ class ApiController {
     
     private static $packetTypes = array(
         'analytics',
-        'crashlog'
+        'crashlog',
+        'mod_info'
     );
 
     public function __construct($crashes, $analytics, $mods, $memcache) {
@@ -58,6 +59,8 @@ class ApiController {
             }
 
             $type = $packet['type'];
+            
+            unset($packet['type']);
 
             $response = null;
 
@@ -70,6 +73,7 @@ class ApiController {
             if ($errors != null) {
                 throw new \Exception(implode("\n", $errors));
             }
+            
 
             switch ($type) {
                 case 'analytics':
@@ -77,6 +81,9 @@ class ApiController {
                     break;
                 case 'crashlog':
                     $response = $this->crashlog($packet);
+                    break;
+                case 'mod_info':
+                    $response = $this->modinfo($packet);
                     break;
             }
 
@@ -107,6 +114,10 @@ class ApiController {
         return false;        
     }
     
+    private function modinfo($packet) {
+        $this->serviceMods->update($packet);
+    }
+    
     private function crashlog($packet) {
         // allow this to throw
         $date = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));;
@@ -117,22 +128,13 @@ class ApiController {
     }
 
     private function analytics($packet) {
-
-        unset($packet['type']);
         
         $packet['created_at'] = new \MongoDate();
         
         $this->serviceAnalytics->add($packet);
 
-        $signatures = array();
-        
-        // create a list of all signatures
-        foreach ($packet['files'] as $file) {
-            $signatures[] = $file['signature'];
-        }
-
         // find all the mods we already have in the database
-        $filesData = $this->serviceMods->findIn($signatures);
+        $filesData = $this->serviceMods->findIn($packet['files']);
 
         $responses = array();
 
@@ -150,7 +152,7 @@ class ApiController {
 
             if (!isset($fileData['packages'])) {
                 $responses[] = array_merge($fileNode, array(
-                    'type' => 'list_packages'
+                    'type' => 'mod_info'
                 ));
             }
 
@@ -191,7 +193,7 @@ class ApiController {
             if (!in_array($file['signature'], $fileSignaturesFound)) {
                 $this->serviceMods->add($file);
                 $responses[] = array(
-                    'type' => 'list_packages',
+                    'type' => 'mod_info',
                     'signature' => $file['signature']
                 );
             }

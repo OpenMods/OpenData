@@ -11,17 +11,28 @@ class ModsService extends BaseService {
     }
 
     public function add($file) {
+        
+        $this->db->mods->insert(array(
+            '_id' => $file['signature']
+        ));
 
-        $document = array(
-            '_id' => $file['signature'],
-            'mods' => $file['mods'],
-            'filesize' => $file['filesize'],
-            'filename' => $file['filename']
+        return $file['signature'];
+    }
+    
+    public function update($file) {
+        
+        $signature = $file['signature'];
+        unset($file['signature']);
+        
+        $this->db->mods->update(
+            array('_id' => $signature),
+            array('$set' => $file)
         );
-
-        $this->db->mods->insert($document);
-
-        return (string) $document['_id'];
+    
+    }
+    
+    public function findOne($signature) {
+        return $this->db->mods->findOne(array('_id' => $signature));
     }
 
 }

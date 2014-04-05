@@ -32,43 +32,11 @@
             "required": true
         },
         "files": {
-            "type": "array",
+            "type":"array",
+            "required":false,
             "items": {
-                "type": "object",
-                "required": true,
-                "additionalProperties": true,
-                "properties": {
-                    "signature": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "filename": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "filesize": {
-                        "type": "number",
-                        "required": true
-                    },
-                    "mods": {
-                        "type": "array",
-                        "required": true,
-                        "items": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "properties": {
-                                "modId": {
-                                    "type": "string",
-                                    "required": true
-                                },
-                                "version": {
-                                    "type": "string",
-                                    "required": true
-                                }
-                            }
-                        }
-                    }
-                }
+                "type":"string",
+                "required":true
             }
         }
     }
