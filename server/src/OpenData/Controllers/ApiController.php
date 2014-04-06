@@ -169,7 +169,7 @@ class ApiController {
 
             if ($this->shouldRequestFiles($fileData)) {
                 $responses[] = array_merge($fileNode, array(
-                    'type' => 'list_files'
+                    'type' => 'filelist'
                 ));
             }
 
