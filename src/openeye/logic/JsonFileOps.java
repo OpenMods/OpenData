@@ -41,7 +41,7 @@ public class JsonFileOps {
 			final Closer closer = Closer.create();
 			try {
 				OutputStream output = closer.register(new FileOutputStream(dest));
-				Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+				Writer writer = closer.register(new OutputStreamWriter(output, StandardCharsets.UTF_8));
 				JSON_SERIALIZER.format(data, writer);
 			} finally {
 				closer.close();
@@ -56,7 +56,7 @@ public class JsonFileOps {
 			final Closer closer = Closer.create();
 			try {
 				InputStream input = closer.register(new FileInputStream(src));
-				Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
+				Reader reader = closer.register(new InputStreamReader(input, StandardCharsets.UTF_8));
 				return JDOM_PARSER.parse(reader);
 			} finally {
 				closer.close();
