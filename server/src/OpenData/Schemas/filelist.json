@@ -1,0 +1,24 @@
+{
+    "type": "object",
+    "additionalProperties": true,
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "required": false,
+    "properties": {
+        "type": {
+            "type": "string",
+            "required": true
+        },
+        "signature": {
+            "type": "string",
+            "required": true
+        },
+        "files": {
+            "type": "array",
+            "required": true,
+            "items": {
+                "type": "string",
+                "required": false
+            }
+        }
+    }
+}

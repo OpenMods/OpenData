@@ -14,7 +14,8 @@ class ApiController {
     private static $packetTypes = array(
         'analytics',
         'crashlog',
-        'mod_info'
+        'mod_info',
+        'filelist'
     );
     
     protected $serviceCrashes;
@@ -86,6 +87,9 @@ class ApiController {
                 case 'mod_info':
                     $response = $this->modinfo($packet);
                     break;
+                case 'filelist':
+                    $response = $this->filelist($packet);
+                    break;
             }
 
             if ($response != null) {
@@ -116,6 +120,10 @@ class ApiController {
         return false;
     }
 
+    private function filelist($packet) {
+        $this->serviceMods->append($packet);
+    }
+    
     private function modinfo($packet) {
         $this->serviceMods->append($packet);
     }
