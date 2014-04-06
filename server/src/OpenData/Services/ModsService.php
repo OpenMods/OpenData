@@ -10,37 +10,42 @@ class ModsService extends BaseService {
         );
     }
 
-    public function add($file) {
-        
-        $this->db->mods->insert(array(
-            '_id' => $file['signature']
-        ));
-
-        return $file['signature'];
+    public function create($id) {
+        try {
+            $this->db->mods->insert(array(
+                '_id' => $id
+            ));
+        } catch (\MongoCursorException $e) {
+            return false;
+        }
+        return true;
     }
-    
+
     public function append($file) {
-        
+
         $signature = $file['signature'];
-        
+
         $currentEntry = $this->findOne($signature);
+
         if ($currentEntry == null) {
-            foreach ($file as $k => $v) {
-                if (!isset($currentEntry[$k])) {
-                    $currentEntry[$k] = $v;
-                }
+            return false;
+        }
+        foreach ($file as $k => $v) {
+            if (!isset($currentEntry[$k])) {
+                $currentEntry[$k] = $v;
             }
         }
-        
+
         unset($file['signature']);
-        
+        unset($currentEntry['_id']);
+
         $this->db->mods->update(
-            array('_id' => $signature),
-            array('$set' => $currentEntry)
+                array('_id' => $signature), array('$set' => $currentEntry)
         );
-    
+
+        return true;
     }
-    
+
     public function findOne($signature) {
         return $this->db->mods->findOne(array('_id' => $signature));
     }

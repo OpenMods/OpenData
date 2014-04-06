@@ -19,15 +19,12 @@ class RoutesLoader {
         $loader = $this;
         $this->app['api.controller'] = $this->app->share(function () use ($loader) {
             return new Controllers\ApiController(
-                    $loader->app['crashes.service'],
-                    $loader->app['analytics.service'],
-                    $loader->app['mods.service'],
-                    class_exists('\Memcache') ? $loader->app['memcache'] : null
+                    $loader->app['crashes.service'], $loader->app['analytics.service'], $loader->app['mods.service'], class_exists('\Memcache') ? $loader->app['memcache'] : null
             );
         });
-        
+
         $this->app['site.controller'] = $this->app->share(function () use ($loader) {
-           return new Controllers\SiteController($loader->app['twig'], $loader->app['request']); 
+            return new Controllers\SiteController($loader->app['twig'], $loader->app['request']);
         });
     }
 
@@ -35,7 +32,7 @@ class RoutesLoader {
 
         $api = $this->app["controllers_factory"];
         $api->post('/data', "api.controller:main");
-        
+
         $site = $this->app["controllers_factory"];
         $site->get('/', "site.controller:home");
 
