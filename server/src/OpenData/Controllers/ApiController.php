@@ -9,16 +9,19 @@ use JsonSchema\Validator;
 
 class ApiController {
 
-    protected $serviceCrashes;
-    protected $serviceAnalytics;
-    protected $serviceMods;
-    protected $memcache;
-    protected $schemas;
+    private static $FLOOD_LIMIT = 10000; // during dev
+            
     private static $packetTypes = array(
         'analytics',
         'crashlog',
         'mod_info'
     );
+    
+    protected $serviceCrashes;
+    protected $serviceAnalytics;
+    protected $serviceMods;
+    protected $memcache;
+    protected $schemas;
 
     public function __construct($crashes, $analytics, $mods, $memcache) {
 
@@ -102,7 +105,7 @@ class ApiController {
         $requestCount = $this->memcache->get($key);
 
         if ($requestCount) {
-            if ($requestCount > 5) {
+            if ($requestCount > self::$FLOOD_LIMIT) {
                 return true;
             }
             $this->memcache->replace($key, $requestCount + 1, 0, 3600);
@@ -132,7 +135,7 @@ class ApiController {
         $packet['created_at'] = new \MongoDate();
 
         $this->serviceAnalytics->add($packet);
-
+        
         // find all the mods we already have in the database
         $filesData = $this->serviceMods->findIn($packet['files']);
 
