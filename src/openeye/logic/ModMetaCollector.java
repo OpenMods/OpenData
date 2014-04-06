@@ -29,7 +29,9 @@ import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
-public class ModMetaStore {
+public class ModMetaCollector {
+
+	private static final String TYPE_MOD_INFO = "mod_info";
 
 	private static class TweakMeta {
 		private final String pluginName;
@@ -162,9 +164,24 @@ public class ModMetaStore {
 		}
 	}
 
-	private ModMetaStore() {}
+	private final Map<File, FileMeta> files = Maps.newHashMap();
 
-	public static final ModMetaStore instance = new ModMetaStore();
+	private final Map<String, FileMeta> signatures = Maps.newHashMap();
+
+	private final long operationDuration;
+
+	ModMetaCollector(InjectedDataStore store, ASMDataTable table) {
+		long start = System.nanoTime();
+		Collection<ModCandidate> allCandidates = stealCandidates(table);
+		collectFilesFromModCandidates(allCandidates);
+		collectFilesFromClassTransformers(store, table);
+		collectFilesFromTweakers(store, table);
+		collectFilesFromModContainers(table);
+
+		fillSignaturesMap();
+		operationDuration = System.nanoTime() - start;
+		Log.info("Collecting data took %.4f ms", operationDuration / 1000000.0d);
+	}
 
 	private static FileMeta fromModCandidate(ModCandidate candidate) {
 		FileMeta fileMeta = new FileMeta(candidate.getModContainer());
@@ -174,10 +191,6 @@ public class ModMetaStore {
 
 		return fileMeta;
 	}
-
-	private Map<File, FileMeta> files = Maps.newHashMap();
-
-	private Map<String, FileMeta> signatures = Maps.newHashMap();
 
 	private static String createFingerprint(File file) {
 		try {
@@ -274,7 +287,7 @@ public class ModMetaStore {
 		}
 	}
 
-	private void collectFilesFromTweakers(LoadDataStore store, ASMDataTable table) {
+	private void collectFilesFromTweakers(InjectedDataStore store, ASMDataTable table) {
 		List<ITweaker> tweakers = store.getTweakers();
 
 		try {
@@ -304,7 +317,7 @@ public class ModMetaStore {
 		}
 	}
 
-	private void collectFilesFromClassTransformers(LoadDataStore store, ASMDataTable table) {
+	private void collectFilesFromClassTransformers(InjectedDataStore store, ASMDataTable table) {
 		LaunchClassLoader loaders = store.getLoader();
 		if (loaders != null) {
 			List<IClassTransformer> transformers = loaders.getTransformers();
@@ -320,16 +333,6 @@ public class ModMetaStore {
 			signatures.put(meta.fingerprint(), meta);
 	}
 
-	public void populate(LoadDataStore store, ASMDataTable table) {
-		Collection<ModCandidate> allCandidates = stealCandidates(table);
-		collectFilesFromModCandidates(allCandidates);
-		collectFilesFromClassTransformers(store, table);
-		collectFilesFromTweakers(store, table);
-		collectFilesFromModContainers(table);
-
-		fillSignaturesMap();
-	}
-
 	public JsonRootNode getSignatures() {
 		List<JsonNode> result = Lists.newArrayList();
 		for (FileMeta meta : files.values())
@@ -338,17 +341,21 @@ public class ModMetaStore {
 		return array(result);
 	}
 
-	public JsonRootNode createModInfo(String signature, String type) {
+	public JsonRootNode getModInfo(String signature) {
 		FileMeta meta = signatures.get(signature);
-		return meta != null? meta.serialize(type) : null;
+		return meta != null? meta.serialize(TYPE_MOD_INFO) : null;
 	}
 
 	// debug function for now
 	public JsonRootNode dumpAllFiles() {
 		List<JsonNode> result = Lists.newArrayList();
 		for (FileMeta meta : files.values())
-			result.add(meta.serialize("mod_info"));
+			result.add(meta.serialize(TYPE_MOD_INFO));
 
 		return array(result);
+	}
+
+	public long getCollectingDuration() {
+		return operationDuration;
 	}
 }

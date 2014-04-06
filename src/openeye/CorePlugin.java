@@ -2,7 +2,7 @@ package openeye;
 
 import java.util.Map;
 
-import openeye.logic.LoadDataStore;
+import openeye.logic.InjectedDataStore;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
@@ -26,7 +26,7 @@ public class CorePlugin implements IFMLLoadingPlugin {
 
 	@Override
 	public void injectData(Map<String, Object> data) {
-		LoadDataStore.instance.populateFromInject(data);
+		InjectedDataStore.instance.populateFromInject(data);
 	}
 
 	@Deprecated
