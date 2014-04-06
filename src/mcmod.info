@@ -1,14 +1,14 @@
 [
 {
-  "modid" : "GreenHam",
-  "name" : "GreenHam",
+  "modid" : "OpenEye",
+  "name" : "OpenEye",
   "version" : "@VERSION@",
   "url" : "http://openmods.info",
   "credits" : "",
   "authors": [
-  	"boq"
+  	"boq", "Mikee"
   ],
-  "description": "Dyeable beacon beams",
+  "description": "User protection, error management and analytics",
   "logoFile" : "",
   "updateUrl" : "",
   "parent" : "",
