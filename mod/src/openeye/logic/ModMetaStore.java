@@ -99,6 +99,7 @@ public class ModMetaStore {
 		public final Set<String> classTransformers = Sets.newHashSet();
 		public final Map<String, ModMeta> mods = Maps.newHashMap();
 		public final List<TweakMeta> tweakers = Lists.newArrayList();
+		public final Set<String> packages = Sets.newHashSet();
 		public final File container;
 
 		public FileMeta(File container) {
@@ -145,6 +146,10 @@ public class ModMetaStore {
 			for (TweakMeta tweaker : tweakers)
 				tweakerNodes.add(tweaker.serialize());
 
+			List<JsonNode> packageNodes = Lists.newArrayList();
+			for (String pkg : packages)
+				packageNodes.add(string(pkg));
+
 			return object(
 					field("type", string(type)),
 					field("filename", pathNode),
@@ -152,7 +157,8 @@ public class ModMetaStore {
 					field("signature", signatureNode),
 					field("mods", array(modNodes)),
 					field("classTransformers", array(classTransformerNodes)),
-					field("tweakers", array(tweakerNodes)));
+					field("tweakers", array(tweakerNodes)),
+					field("packages", array(packageNodes)));
 		}
 	}
 
@@ -162,6 +168,7 @@ public class ModMetaStore {
 
 	private static FileMeta fromModCandidate(ModCandidate candidate) {
 		FileMeta fileMeta = new FileMeta(candidate.getModContainer());
+		fileMeta.packages.addAll(candidate.getContainedPackages());
 		for (ModContainer c : candidate.getContainedMods())
 			fileMeta.mods.put(c.getModId(), new ModMeta(c));
 

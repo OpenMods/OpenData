@@ -1,11 +1,13 @@
 package openeye;
 
+import java.io.*;
 import java.util.Arrays;
 
 import openeye.logic.LoadDataStore;
 import openeye.logic.ModMetaStore;
 import argo.format.JsonFormatter;
 import argo.format.PrettyJsonFormatter;
+import argo.jdom.JsonRootNode;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -39,7 +41,15 @@ public class Mod extends DummyModContainer {
 	@Subscribe
 	public void onModConstruct(FMLConstructionEvent evt) {
 		ModMetaStore.instance.populate(LoadDataStore.instance, evt.getASMHarvestedData());
-		System.out.println(JSON_SERIALIZER.format(ModMetaStore.instance.dumpAllFiles()));
+
+		JsonRootNode node = ModMetaStore.instance.dumpAllFiles();
+		try {
+			File file = new File("out.txt");
+			OutputStream out = new FileOutputStream(file);
+			Writer writer = new OutputStreamWriter(out);
+			JSON_SERIALIZER.format(node, writer);
+			writer.close();
+		} catch (Exception e) {}
 	}
 
 }
