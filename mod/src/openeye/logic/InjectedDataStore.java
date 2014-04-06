@@ -7,11 +7,11 @@ import java.util.Map;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
-public class LoadDataStore {
+public class InjectedDataStore {
 
-	private LoadDataStore() {}
+	private InjectedDataStore() {}
 
-	public static final LoadDataStore instance = new LoadDataStore();
+	public static final InjectedDataStore instance = new InjectedDataStore();
 
 	private boolean runtimeDeobfuscationEnabled;
 

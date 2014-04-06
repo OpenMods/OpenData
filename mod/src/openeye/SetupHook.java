@@ -2,7 +2,7 @@ package openeye;
 
 import java.util.Map;
 
-import openeye.logic.LoadDataStore;
+import openeye.logic.InjectedDataStore;
 import cpw.mods.fml.relauncher.IFMLCallHook;
 
 public class SetupHook implements IFMLCallHook {
@@ -14,7 +14,7 @@ public class SetupHook implements IFMLCallHook {
 
 	@Override
 	public void injectData(Map<String, Object> data) {
-		LoadDataStore.instance.populateFromSetupClass(data);
+		InjectedDataStore.instance.populateFromSetupClass(data);
 	}
 
 }
