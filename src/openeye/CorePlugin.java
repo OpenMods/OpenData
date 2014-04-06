@@ -29,7 +29,6 @@ public class CorePlugin implements IFMLLoadingPlugin {
 		LoadDataStore.instance.populateFromInject(data);
 	}
 
-	@Override
 	@Deprecated
 	public String[] getLibraryRequestClass() {
 		return null;
