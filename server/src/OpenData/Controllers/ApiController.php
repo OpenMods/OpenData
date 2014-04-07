@@ -86,7 +86,7 @@ class ApiController {
                 case 'crashlog':
                     $response = $this->crashlog($packet);
                     break;
-                case 'mod_info':
+                case 'file_info':
                     $response = $this->modinfo($packet);
                     break;
                 case 'filelist':
