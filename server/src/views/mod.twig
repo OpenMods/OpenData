@@ -15,7 +15,7 @@
         <!-- Nav tabs -->
         <ul class="nav nav-tabs tabs-left">
           {% for version in versions|keys %}
-            <li{% if loop.first %} class="active"{% endif %}><a href="#{{ version|replace('.', '-') }}" data-toggle="tab">{{ version }}</a></li>
+            <li{% if loop.first %} class="active"{% endif %}><a href="#{{ version|id }}" data-toggle="tab">{{ version }}</a></li>
           {% endfor %}
         </ul>
     </div>
@@ -24,7 +24,7 @@
         <!-- Tab panes -->
         <div class="tab-content">
           {% for version, files in versions %}
-            <div class="tab-pane{% if loop.first %} active{% endif %}" id="{{ version|replace('.', '-') }}">
+            <div class="tab-pane{% if loop.first %} active{% endif %}" id="{{ version|id }}">
 
                 <ul class="nav nav-pills" style="margin-bottom: 10px;">
                     <li class="active"><a href="#">Files</a></li>

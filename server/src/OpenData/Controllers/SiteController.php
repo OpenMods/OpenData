@@ -12,6 +12,9 @@ class SiteController {
         $this->twig->addFunction(new \Twig_SimpleFunction('relative', function ($string) use ($request) {
             return $request->getBasePath() . '/' . $string;
         }));
+        $this->twig->addFilter(new \Twig_SimpleFilter('id', function ($string) {
+            return substr(md5($string), 0, 5);
+        }));
 
         $this->serviceMods = $serviceMods;
     }
