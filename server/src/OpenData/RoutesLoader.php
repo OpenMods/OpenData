@@ -41,6 +41,7 @@ class RoutesLoader {
 
         $api = $this->app["controllers_factory"];
         $api->post('/data', "api.controller:main");
+        $api->post('/ping', "api.controller:ping");
 
         $site = $this->app["controllers_factory"];
         $site->get('/', "site.controller:home");

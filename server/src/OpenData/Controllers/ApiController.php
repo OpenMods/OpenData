@@ -41,6 +41,15 @@ class ApiController {
             $this->schemas[$schema] = $retriever->retrieve('file://' . __DIR__ . '/../Schemas/' . $schema . '.json');
         }
     }
+    
+    public function ping(Request $request) {
+        
+        $data = json_decode(mb_convert_encoding($request->getContent(), 'UTF-8', 'auto'), true);
+        
+        return new JsonResponse(array(
+            'pong' => $data['ping']
+        ));        
+    }
 
     public function main(Request $request) {
 
