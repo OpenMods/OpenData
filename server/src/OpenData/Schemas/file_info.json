@@ -102,6 +102,42 @@
                             }
                         }
                     },
+                    "dependants": {
+                        "type": "array",
+                        "required": false,
+                        "items": {
+                            "type": "object",
+                            "required": false,
+                            "properties": {
+                                "label": {
+                                    "type": "string",
+                                    "required": false
+                                },
+                                "version": {
+                                    "type": "string",
+                                    "required": false
+                                }
+                            }
+                        }
+                    },
+                    "dependencies": {
+                        "type": "array",
+                        "required": false,
+                        "items": {
+                            "type": "object",
+                            "required": false,
+                            "properties": {
+                                "label": {
+                                    "type": "string",
+                                    "required": false
+                                },
+                                "version": {
+                                    "type": "string",
+                                    "required": false
+                                }
+                            }
+                        }
+                    },
                     "updateUrl": {
                         "type": "string",
                         "required": false
