@@ -1,18 +1,14 @@
 package openeye.logic;
 
-import java.io.*;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import openeye.Log;
+import openeye.reports.ReportsList;
+import openeye.storage.IDataSource;
 import openeye.storage.Storages;
-import argo.format.JsonFormatter;
-import argo.format.PrettyJsonFormatter;
-import argo.jdom.JsonRootNode;
 import cpw.mods.fml.common.discovery.ASMDataTable;
 
 public final class ReportSender {
-	private static final JsonFormatter JSON_SERIALIZER = new PrettyJsonFormatter();
-
 	private ModMetaCollector collector;
 
 	private Storages storages;
@@ -30,14 +26,14 @@ public final class ReportSender {
 	private void collectData(InjectedDataStore dataStore, ASMDataTable table) {
 		collector = new ModMetaCollector(dataStore, table);
 
-		JsonRootNode node = collector.dumpAllFiles();
-		try {
-			File file = new File("out.txt");
-			OutputStream out = new FileOutputStream(file);
-			Writer writer = new OutputStreamWriter(out);
-			JSON_SERIALIZER.format(node, writer);
-			writer.close();
-		} catch (Exception e) {}
+		ReportsList initialReport = new ReportsList();
+		initialReport.append(AnalyticsReportBuilder.build(collector));
+
+		for (String signature : collector.getAllSignatures())
+			initialReport.append(collector.generateFileReport(signature));
+
+		IDataSource<ReportsList> list = storages.sentReports.createNew();
+		list.store(initialReport);
 	}
 
 	private void sendInitialReport() {

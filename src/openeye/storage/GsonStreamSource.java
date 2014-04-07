@@ -4,19 +4,17 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 import openeye.Log;
-import argo.format.JsonFormatter;
-import argo.format.PrettyJsonFormatter;
-import argo.jdom.JdomParser;
-import argo.jdom.JsonRootNode;
 
 import com.google.common.io.Closer;
+import com.google.gson.Gson;
 
-public abstract class JsonStreamSource implements IDataSource<JsonRootNode> {
-
-	private static final JsonFormatter JSON_SERIALIZER = new PrettyJsonFormatter();
-	private static final JdomParser JDOM_PARSER = new JdomParser();
+public abstract class GsonStreamSource<T> implements IDataSource<T> {
 
 	protected final String id;
+
+	protected final Gson gson;
+
+	protected final Class<? extends T> cls;
 
 	protected abstract InputStream createInputStream();
 
@@ -26,8 +24,10 @@ public abstract class JsonStreamSource implements IDataSource<JsonRootNode> {
 
 	protected abstract boolean sourceExists();
 
-	public JsonStreamSource(String id) {
+	public GsonStreamSource(String id, Class<? extends T> cls, Gson gson) {
 		this.id = id;
+		this.gson = gson;
+		this.cls = cls;
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public abstract class JsonStreamSource implements IDataSource<JsonRootNode> {
 	}
 
 	@Override
-	public JsonRootNode retrieve() {
+	public T retrieve() {
 		if (!sourceExists()) return null;
 
 		try {
@@ -44,7 +44,7 @@ public abstract class JsonStreamSource implements IDataSource<JsonRootNode> {
 			try {
 				InputStream input = closer.register(createInputStream());
 				Reader reader = closer.register(new InputStreamReader(input, StandardCharsets.UTF_8));
-				return JDOM_PARSER.parse(reader);
+				return gson.fromJson(reader, cls);
 			} finally {
 				closer.close();
 			}
@@ -55,13 +55,13 @@ public abstract class JsonStreamSource implements IDataSource<JsonRootNode> {
 	}
 
 	@Override
-	public void store(JsonRootNode value) {
+	public void store(T value) {
 		try {
 			final Closer closer = Closer.create();
 			try {
 				OutputStream output = closer.register(createOutputStream());
 				Writer writer = closer.register(new OutputStreamWriter(output, StandardCharsets.UTF_8));
-				JSON_SERIALIZER.format(value, writer);
+				gson.toJson(value, writer);
 			} finally {
 				closer.close();
 			}

@@ -2,32 +2,32 @@ package openeye.storage;
 
 import java.io.File;
 
-import argo.jdom.JsonRootNode;
-
 import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
 
-public class JsonArchiveStorage extends JsonStorageBase implements IAppendableStorage<JsonRootNode> {
+public class GsonArchiveStorage<T> extends GsonStorageBase<T> implements IAppendableStorage<T> {
 
 	private final File dir;
 	private final String prefix;
 
-	public JsonArchiveStorage(File dir, String prefix) {
+	public GsonArchiveStorage(File dir, String prefix, Class<? extends T> cls, Gson gson) {
+		super(cls, gson);
 		Preconditions.checkArgument(dir.isDirectory());
 		this.dir = dir;
 		this.prefix = prefix;
 	}
 
 	@Override
-	public IDataSource<JsonRootNode> createNew() {
+	public IDataSource<T> createNew() {
 		return createNew(generateId());
 	}
 
 	@Override
-	public IDataSource<JsonRootNode> createNew(String id) {
+	public IDataSource<T> createNew(String id) {
 		String filename = generateFilename(prefix, id);
 		File file = new File(dir, filename);
 
-		IDataSource<JsonRootNode> newSource = createFromFile(id, file);
+		IDataSource<T> newSource = createFromFile(id, file);
 		return newSource;
 	}
 

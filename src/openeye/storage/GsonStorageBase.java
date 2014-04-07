@@ -6,13 +6,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import openeye.Log;
-import argo.jdom.JsonRootNode;
 
 import com.google.common.base.Throwables;
+import com.google.gson.Gson;
 
-public abstract class JsonStorageBase {
+public abstract class GsonStorageBase<T> {
 
 	private static final DateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+
+	protected final Class<? extends T> cls;
+
+	protected final Gson gson;
+
+	protected GsonStorageBase(Class<? extends T> cls, Gson gson) {
+		this.cls = cls;
+		this.gson = gson;
+	}
 
 	protected static String generateId() {
 		return FORMATTER.format(new Date());
@@ -22,8 +31,8 @@ public abstract class JsonStorageBase {
 		return String.format("%s-%s.json", prefix, id);
 	}
 
-	protected IDataSource<JsonRootNode> createFromFile(String id, final File file) {
-		return new JsonStreamSource(id) {
+	protected IDataSource<T> createFromFile(String id, final File file) {
+		return new GsonStreamSource<T>(id, cls, gson) {
 			@Override
 			public void delete() {
 				try {
