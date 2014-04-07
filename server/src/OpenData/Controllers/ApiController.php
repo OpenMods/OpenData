@@ -14,7 +14,7 @@ class ApiController {
     private static $packetTypes = array(
         'analytics',
         'crashlog',
-        'mod_info',
+        'file_info',
         'filelist'
     );
     
@@ -180,7 +180,7 @@ class ApiController {
 
             if (!isset($fileData['packages'])) {
                 $responses[] = array_merge($fileNode, array(
-                    'type' => 'mod_info'
+                    'type' => 'file_info'
                 ));
             }
 
@@ -221,7 +221,7 @@ class ApiController {
             if (!in_array($signature, $fileSignaturesFound)) {
                 $this->serviceFiles->create($signature);
                 $responses[] = array(
-                    'type' => 'mod_info',
+                    'type' => 'file_info',
                     'signature' => $signature
                 );
             }
