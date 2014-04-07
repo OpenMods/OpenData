@@ -11,9 +11,20 @@
             "type": "string",
             "required": true
         },
-        "forge": {
-            "type": "string",
-            "required": true
+        "runtime": {
+                "type":"object",
+                "required":true,
+                "additionalProperties": true,
+                "properties":{
+                        "fml": {
+                                "type":"string",
+                                "required":false
+                        },
+                        "forge": {
+                                "type":"string",
+                                "required":false
+                        }
+                }
         },
         "language": {
             "type": "string",
@@ -31,7 +42,7 @@
             "type": "string",
             "required": true
         },
-        "files": {
+        "signatures": {
             "type": "array",
             "required": false,
             "items": {

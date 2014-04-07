@@ -162,7 +162,7 @@ class ApiController {
         $this->serviceAnalytics->add($packet);
         
         // find all the mods we already have in the database
-        $filesData = $this->serviceFiles->findIn($packet['files']);
+        $filesData = $this->serviceFiles->findIn($packet['signatures']);
 
         $responses = array();
 
@@ -217,12 +217,12 @@ class ApiController {
 
         // loop through any mods we didn't find in the database,
         // add them in, then tell the client we need the rest of the packages
-        foreach ($packet['files'] as $file) {
-            if (!in_array($file, $fileSignaturesFound)) {
-                $this->serviceFiles->create($file);
+        foreach ($packet['signatures'] as $signature) {
+            if (!in_array($signature, $fileSignaturesFound)) {
+                $this->serviceFiles->create($signature);
                 $responses[] = array(
                     'type' => 'mod_info',
-                    'signature' => $file
+                    'signature' => $signature
                 );
             }
         }
