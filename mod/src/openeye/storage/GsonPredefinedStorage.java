@@ -4,19 +4,19 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
-import argo.jdom.JsonRootNode;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
 
-public class JsonPredefinedStorage extends JsonStorageBase implements IQueryableStorage<JsonRootNode> {
+public class GsonPredefinedStorage<T> extends GsonStorageBase<T> implements IQueryableStorage<T> {
 
-	private final Map<String, IDataSource<JsonRootNode>> sources;
+	private final Map<String, IDataSource<T>> sources;
 
-	public JsonPredefinedStorage(File dir, String... ids) {
+	public GsonPredefinedStorage(File dir, Class<? extends T> cls, Gson gson, String... ids) {
+		super(cls, gson);
 		Preconditions.checkArgument(dir.isDirectory());
 
-		ImmutableMap.Builder<String, IDataSource<JsonRootNode>> builder = ImmutableMap.builder();
+		ImmutableMap.Builder<String, IDataSource<T>> builder = ImmutableMap.builder();
 
 		for (String id : ids) {
 			File f = new File(dir, id + ".json");
@@ -27,12 +27,12 @@ public class JsonPredefinedStorage extends JsonStorageBase implements IQueryable
 	}
 
 	@Override
-	public Collection<IDataSource<JsonRootNode>> listAll() {
+	public Collection<IDataSource<T>> listAll() {
 		return sources.values();
 	}
 
 	@Override
-	public IDataSource<JsonRootNode> getById(String id) {
+	public IDataSource<T> getById(String id) {
 		return sources.get(id);
 	}
 

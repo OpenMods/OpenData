@@ -6,25 +6,25 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import argo.jdom.JsonRootNode;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
-public class JsonWorkingStorage extends JsonStorageBase implements IWorkingStorage<JsonRootNode> {
+public class GsonWorkingStorage<T> extends GsonStorageBase<T> implements IWorkingStorage<T> {
 
 	@Override
 	protected void removeEntry(String id) {
 		sources.remove(id);
 	}
 
-	private final Map<String, IDataSource<JsonRootNode>> sources = Maps.newHashMap();
+	private final Map<String, IDataSource<T>> sources = Maps.newHashMap();
 
 	private final String prefix;
 
 	private final File dir;
 
-	public JsonWorkingStorage(File dir, String prefix) {
+	public GsonWorkingStorage(File dir, String prefix, Class<? extends T> cls, Gson gson) {
+		super(cls, gson);
 		Preconditions.checkArgument(dir.isDirectory());
 		this.prefix = prefix;
 		this.dir = dir;
@@ -41,17 +41,17 @@ public class JsonWorkingStorage extends JsonStorageBase implements IWorkingStora
 	}
 
 	@Override
-	public Collection<IDataSource<JsonRootNode>> listAll() {
+	public Collection<IDataSource<T>> listAll() {
 		return sources.values();
 	}
 
 	@Override
-	public IDataSource<JsonRootNode> getById(String id) {
+	public IDataSource<T> getById(String id) {
 		return sources.get(id);
 	}
 
 	@Override
-	public IDataSource<JsonRootNode> createNew() {
+	public IDataSource<T> createNew() {
 		String id;
 		do {
 			id = generateId();
@@ -61,11 +61,11 @@ public class JsonWorkingStorage extends JsonStorageBase implements IWorkingStora
 	}
 
 	@Override
-	public IDataSource<JsonRootNode> createNew(String id) {
+	public IDataSource<T> createNew(String id) {
 		String filename = generateFilename(prefix, id);
 		File file = new File(dir, filename);
 
-		IDataSource<JsonRootNode> newSource = createFromFile(id, file);
+		IDataSource<T> newSource = createFromFile(id, file);
 		sources.put(id, newSource);
 		return newSource;
 	}
