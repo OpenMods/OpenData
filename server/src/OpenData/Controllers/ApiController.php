@@ -48,7 +48,7 @@ class ApiController {
             return new JsonResponse(array());
         }
 
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode(utf8_encode($request->getContent()), true);
 
         if (!is_array($data)) {
             throw new \Exception('Array expected');
