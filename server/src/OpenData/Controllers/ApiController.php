@@ -15,7 +15,8 @@ class ApiController {
         'analytics',
         'crashlog',
         'file_info',
-        'filelist'
+        'filelist',
+        'ping'
     );
     
     protected $serviceCrashes;
@@ -41,15 +42,6 @@ class ApiController {
             $this->schemas[$schema] = $retriever->retrieve('file://' . __DIR__ . '/../Schemas/' . $schema . '.json');
         }
     }
-    
-    public function ping(Request $request) {
-        
-        $data = json_decode(mb_convert_encoding($request->getContent(), 'UTF-8', 'auto'), true);
-        
-        return new JsonResponse(array(
-            'pong' => $data['ping']
-        ));        
-    }
 
     public function main(Request $request) {
 
@@ -70,13 +62,13 @@ class ApiController {
             if (!isset($packet['type']) || !is_string($packet['type'])) {
                 throw new \Exception('Packet type not defined');
             }
-
+            
             $type = $packet['type'];
 
             $response = null;
 
             if (!in_array($type, self::$packetTypes)) {
-                throw new \Exception('Invalid packet type');
+                throw new \Exception('Invalid packet type '.$type);
             }
 
             $errors = $this->getErrors($packet);
@@ -98,6 +90,9 @@ class ApiController {
                 case 'file_info':
                     $response = $this->modinfo($packet);
                     break;
+                case 'ping':
+                    $response = $this->ping($packet);
+                    break;
                 case 'filelist':
                     $response = $this->filelist($packet);
                     break;
@@ -111,6 +106,13 @@ class ApiController {
         return new JsonResponse($responses);
     }
 
+    private function ping($packet) {
+        
+        $packet['type'] = 'pong';
+
+        return $packet;        
+    }
+    
     private function isUserFlooding(Request $request) {
 
         if ($this->memcache == null)
