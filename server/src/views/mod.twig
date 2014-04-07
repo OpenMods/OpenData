@@ -1,0 +1,69 @@
+{% extends 'base.twig' %}
+{% block main %}
+
+<h1>{{ modData.name }}</h1>
+<p class="lead">{{ modData.description }}</p>
+<p>Authors: {{ modData.authors|join(', ') }}</p>
+<p>Credits: {{ modData.credits }}</p>
+<p>Url: {{ modData.url }}</p>
+
+<h2>Versions:</h2>
+
+<div class="row">
+
+    <div class="col-xs-2"> <!-- required for floating -->
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs tabs-left">
+          {% for version in versions|keys %}
+            <li{% if loop.first %} class="active"{% endif %}><a href="#{{ version|replace('.', '-') }}" data-toggle="tab">{{ version }}</a></li>
+          {% endfor %}
+        </ul>
+    </div>
+
+    <div class="col-xs-10">
+        <!-- Tab panes -->
+        <div class="tab-content">
+          {% for version, files in versions %}
+            <div class="tab-pane{% if loop.first %} active{% endif %}" id="{{ version|replace('.', '-') }}">
+
+                <ul class="nav nav-pills" style="margin-bottom: 10px;">
+                    <li class="active"><a href="#">Files</a></li>
+                    <li><a href="#">Exceptions</a></li>
+                    <li><a href="#">Analytics</a></li>
+                </ul>
+
+              {% for file in files %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">{{ file.filename }} ({{ file.size }} bytes)</div>
+                    <div class="panel-body">
+                        <h4>Signature</h4>
+                        {{ file.signature }}
+                        {% if file.classTransformers|length > 0 %}
+                        <h4>Class transformers</h4>
+                            {% for transformer in file.classTransformers %}
+                                {{ transformer }}<br/>
+                            {% endfor %}
+                        {% endif%}
+                        <h4>Mods included:</h4>
+                        <ul>
+                        {% for mod in file.mods %}
+                            <li>{{ mod.name }} <small>({{ mod.version }})</small></li>
+                        {% endfor %}
+                        </ul>
+                        <h4>Packages:</h4>
+                        <ul>
+                        {% for package in file.packages|sort %}
+                            <li>{{ package }}</li>
+                        {% endfor %}
+                        </ul>
+
+                    </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

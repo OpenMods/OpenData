@@ -58,24 +58,20 @@ class ModsService extends BaseService {
 
     public function findUniqueMods() {
 
-        $cmd = $this->db->command(array(
-            'mapreduce' => 'mods',
-            'map' => "function() {
-				for (var i = 0; i < this.mods.length; i++) {
-					emit({modId: this.mods[i].modId}, {exists: 1, details:this.mods[i]});
-				}
-			}",
-            'reduce' => "function() {
-				return {exists: 1};
-			}",
-            'out' => 'result'
-        ));
-
-        $results = $this->db->selectCollection($cmd['result'])->find();
+        $results = $this->db->mods->aggregate(
+           array('$project' => array('mods' => 1 )),
+           array('$unwind' => '$mods'),
+           array('$match' => array('mods.parent' => '')),
+           array('$group' => array(
+                '_id' => '$mods.modId',
+                'data' => array('$first' => '$mods')))
+        );
 
         $mods = array();
-        foreach ($results as $result) {
-            $mods[] = $result['value']['details'];
+        foreach ($results['result'] as $result) {
+            if (isset($result['data'])) {
+                $mods[] = $result['data'];
+            }
         }
 
         usort($mods, function($a, $b) {

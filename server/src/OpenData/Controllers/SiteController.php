@@ -19,9 +19,18 @@ class SiteController {
     public function modinfo($modId) {
 
         $files = $this->serviceMods->findByModId($modId);
-        $lastFile = current(iterator_to_array($files->skip($files->count() - 1)->limit(1)));
-        $files->reset();
 
+        $numFiles = $files->count();
+        
+        if ($numFiles == 0) {
+            throw new \Exception();
+        }
+
+        $lastFile = current(iterator_to_array($files->skip($numFiles - 1)->limit(1)));
+        
+        $files = $this->serviceMods->findByModId($modId);
+        
+        
         if ($lastFile == null) {
             throw new \Exception();
         }
@@ -38,8 +47,22 @@ class SiteController {
             throw new \Exception();
         }
 
+        $versions = array();
+
+        foreach ($files as $file) {
+            foreach ($file['mods'] as $mod) {
+                if ($mod['modId'] == $modId) {
+                    $version = $mod['version'];
+                    if (!isset($versions[$version])) {
+                        $versions[$version] = array();
+                    }
+                    $versions[$version][] = $file;
+                }
+            }
+        }
+
         return $this->twig->render('mod.twig', array(
-                    'files' => $files,
+                    'versions' => $versions,
                     'modData' => $modData
         ));
     }
