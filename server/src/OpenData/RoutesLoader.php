@@ -24,7 +24,7 @@ class RoutesLoader {
         });
 
         $this->app['site.controller'] = $this->app->share(function () use ($loader) {
-            return new Controllers\SiteController($loader->app['twig'], $loader->app['request']);
+            return new Controllers\SiteController($loader->app['twig'], $loader->app['request'], $loader->app['mods.service']);
         });
     }
 
@@ -35,6 +35,7 @@ class RoutesLoader {
 
         $site = $this->app["controllers_factory"];
         $site->get('/', "site.controller:home");
+        $site->get('/mod/{modId}', "site.controller:modinfo");
 
         $this->app->mount($this->app["api.endpoint"] . '/' . $this->app["api.version"], $api);
         $this->app->mount('/', $site);

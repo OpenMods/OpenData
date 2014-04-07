@@ -21,6 +21,12 @@ class ModsService extends BaseService {
         return true;
     }
 
+    public function findByModId($modId) {
+        return $this->db->mods->find(
+                        array('mods.modId' => $modId)
+        );
+    }
+
     public function append($file) {
 
         $signature = $file['signature'];
@@ -48,6 +54,40 @@ class ModsService extends BaseService {
 
     public function findOne($signature) {
         return $this->db->mods->findOne(array('_id' => $signature));
+    }
+
+    public function findUniqueMods() {
+
+        $cmd = $this->db->command(array(
+            'mapreduce' => 'mods',
+            'map' => "function() {
+				for (var i = 0; i < this.mods.length; i++) {
+					emit({modId: this.mods[i].modId}, {exists: 1, details:this.mods[i]});
+				}
+			}",
+            'reduce' => "function() {
+				return {exists: 1};
+			}",
+            'out' => 'result'
+        ));
+
+        $results = $this->db->selectCollection($cmd['result'])->find();
+
+        $mods = array();
+        foreach ($results as $result) {
+            $mods[] = $result['value']['details'];
+        }
+
+        usort($mods, function($a, $b) {
+            $al = strtolower($a['modId']);
+            $bl = strtolower($b['modId']);
+            if ($al == $bl) {
+                return 0;
+            }
+            return ($al > $bl) ? +1 : -1;
+        });
+
+        return $mods;
     }
 
 }
