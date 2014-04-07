@@ -20,15 +20,15 @@ class ApiController {
     
     protected $serviceCrashes;
     protected $serviceAnalytics;
-    protected $serviceMods;
+    protected $serviceFiles;
     protected $memcache;
     protected $schemas;
 
-    public function __construct($crashes, $analytics, $mods, $memcache) {
+    public function __construct($crashes, $analytics, $files, $memcache) {
 
         $this->serviceCrashes = $crashes;
         $this->serviceAnalytics = $analytics;
-        $this->serviceMods = $mods;
+        $this->serviceFiles = $files;
 
         $this->memcache = $memcache;
 
@@ -121,11 +121,11 @@ class ApiController {
     }
 
     private function filelist($packet) {
-        $this->serviceMods->append($packet);
+        $this->serviceFiles->append($packet);
     }
     
     private function modinfo($packet) {
-        $this->serviceMods->append($packet);
+        $this->serviceFiles->append($packet);
     }
 
     private function crashlog($packet) {
@@ -145,7 +145,7 @@ class ApiController {
         $this->serviceAnalytics->add($packet);
         
         // find all the mods we already have in the database
-        $filesData = $this->serviceMods->findIn($packet['files']);
+        $filesData = $this->serviceFiles->findIn($packet['files']);
 
         $responses = array();
 
@@ -202,7 +202,7 @@ class ApiController {
         // add them in, then tell the client we need the rest of the packages
         foreach ($packet['files'] as $file) {
             if (!in_array($file, $fileSignaturesFound)) {
-                $this->serviceMods->create($file);
+                $this->serviceFiles->create($file);
                 $responses[] = array(
                     'type' => 'mod_info',
                     'signature' => $file

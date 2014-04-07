@@ -5,9 +5,9 @@ namespace OpenData\Controllers;
 class SiteController {
 
     private $twig;
-    private $serviceMods;
+    private $serviceFiles;
 
-    public function __construct($twig, $request, $serviceMods) {
+    public function __construct($twig, $request, $serviceFiles) {
         $this->twig = $twig;
         $this->twig->addFunction(new \Twig_SimpleFunction('relative', function ($string) use ($request) {
             return $request->getBasePath() . '/' . $string;
@@ -16,12 +16,12 @@ class SiteController {
             return substr(md5($string), 0, 5);
         }));
 
-        $this->serviceMods = $serviceMods;
+        $this->serviceFiles = $serviceFiles;
     }
 
     public function modinfo($modId) {
 
-        $files = $this->serviceMods->findByModId($modId);
+        $files = $this->serviceFiles->findByModId($modId);
 
         $numFiles = $files->count();
         
@@ -31,7 +31,7 @@ class SiteController {
 
         $lastFile = current(iterator_to_array($files->skip($numFiles - 1)->limit(1)));
         
-        $files = $this->serviceMods->findByModId($modId);
+        $files = $this->serviceFiles->findByModId($modId);
         
         
         if ($lastFile == null) {
@@ -73,7 +73,7 @@ class SiteController {
     public function home() {
 
         return $this->twig->render('home.twig', array(
-                    'mods' => $this->serviceMods->findUniqueMods()
+                    'mods' => $this->serviceFiles->findUniqueMods()
         ));
     }
 

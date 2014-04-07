@@ -2,17 +2,17 @@
 
 namespace OpenData\Services;
 
-class ModsService extends BaseService {
+class FilesService extends BaseService {
 
     public function findIn($signatures = array()) {
-        return $this->db->mods->find(
+        return $this->db->files->find(
                         array('_id' => array('$in' => $signatures))
         );
     }
 
     public function create($id) {
         try {
-            $this->db->mods->insert(array(
+            $this->db->files->insert(array(
                 '_id' => $id
             ));
         } catch (\MongoCursorException $e) {
@@ -22,7 +22,7 @@ class ModsService extends BaseService {
     }
 
     public function findByModId($modId) {
-        return $this->db->mods->find(
+        return $this->db->files->find(
                         array('mods.modId' => $modId)
         );
     }
@@ -45,7 +45,7 @@ class ModsService extends BaseService {
         unset($file['signature']);
         unset($currentEntry['_id']);
 
-        $this->db->mods->update(
+        $this->db->files->update(
                 array('_id' => $signature), array('$set' => $currentEntry)
         );
 
@@ -53,12 +53,12 @@ class ModsService extends BaseService {
     }
 
     public function findOne($signature) {
-        return $this->db->mods->findOne(array('_id' => $signature));
+        return $this->db->files->findOne(array('_id' => $signature));
     }
 
     public function findUniqueMods() {
 
-        $results = $this->db->mods->aggregate(
+        $results = $this->db->files->aggregate(
            array('$project' => array('mods' => 1 )),
            array('$unwind' => '$mods'),
            array('$match' => array('mods.parent' => '')),
