@@ -25,6 +25,9 @@ class ServicesLoader {
         $this->app['analytics.service'] = $this->app->share(function () use ($loader) {
             return new Services\AnalyticsService($loader->app["mongo"]);
         });
+        $this->app['mods.service'] = $this->app->share(function () use ($loader) {
+            return new Services\ModsService($loader->app["mongo"]);
+        });
     }
 
 }

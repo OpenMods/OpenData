@@ -1,11 +1,11 @@
 {% extends 'base.twig' %}
 {% block main %}
 
-<h1>{{ modData.name }}</h1>
-<p class="lead">{{ modData.description }}</p>
-<p>Authors: {{ modData.authors|join(', ') }}</p>
-<p>Credits: {{ modData.credits }}</p>
-<p>Url: {{ modData.url }}</p>
+<h1>{{ modInfo.name }}</h1>
+<p class="lead">{{ modInfo.description }}</p>
+<p>Authors: {{ modInfo.authors|join(', ') }}</p>
+<p>Credits: {{ modInfo.credits }}</p>
+<p>Url: {{ modInfo.url }}</p>
 
 <h2>Versions:</h2>
 

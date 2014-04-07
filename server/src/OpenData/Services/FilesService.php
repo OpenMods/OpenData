@@ -56,34 +56,4 @@ class FilesService extends BaseService {
         return $this->db->files->findOne(array('_id' => $signature));
     }
 
-    public function findUniqueMods() {
-
-        $results = $this->db->files->aggregate(
-           array('$project' => array('mods' => 1 )),
-           array('$unwind' => '$mods'),
-           array('$match' => array('mods.parent' => '')),
-           array('$group' => array(
-                '_id' => '$mods.modId',
-                'data' => array('$first' => '$mods')))
-        );
-
-        $mods = array();
-        foreach ($results['result'] as $result) {
-            if (isset($result['data'])) {
-                $mods[] = $result['data'];
-            }
-        }
-
-        usort($mods, function($a, $b) {
-            $al = strtolower($a['modId']);
-            $bl = strtolower($b['modId']);
-            if ($al == $bl) {
-                return 0;
-            }
-            return ($al > $bl) ? +1 : -1;
-        });
-
-        return $mods;
-    }
-
 }

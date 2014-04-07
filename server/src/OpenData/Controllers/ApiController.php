@@ -21,14 +21,16 @@ class ApiController {
     protected $serviceCrashes;
     protected $serviceAnalytics;
     protected $serviceFiles;
+    protected $serviceMods;
     protected $memcache;
     protected $schemas;
 
-    public function __construct($crashes, $analytics, $files, $memcache) {
+    public function __construct($crashes, $analytics, $files, $mods, $memcache) {
 
         $this->serviceCrashes = $crashes;
         $this->serviceAnalytics = $analytics;
         $this->serviceFiles = $files;
+        $this->serviceMods = $mods;
 
         $this->memcache = $memcache;
 
@@ -126,12 +128,27 @@ class ApiController {
     
     private function modinfo($packet) {
         $this->serviceFiles->append($packet);
+        
+        if (isset($packet['mods'])) {
+            foreach ($packet['mods'] as $mod) {
+                if (empty($mod['parent'])) {
+                    $this->serviceMods->upsert($mod['modId'], array(
+                        'authors' => $mod['authors'],
+                        'credits' => $mod['credits'],
+                        'description' => $mod['description'],
+                        'name' => $mod['name'],
+                        'parent' => $mod['parent'],
+                        'url' => $mod['url'],
+                        'updateUrl' => $mod['updateUrl']
+                    ));
+                }
+            }
+        }
     }
 
     private function crashlog($packet) {
         // allow this to throw
         $date = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));
-        ;
         $date->setTimezone(new \DateTimeZone('Europe/London'));
         $packet['date'] = $date;
         unset($packet['timezone']);

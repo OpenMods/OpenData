@@ -6,8 +6,9 @@ class SiteController {
 
     private $twig;
     private $serviceFiles;
+    private $serviceMods;
 
-    public function __construct($twig, $request, $serviceFiles) {
+    public function __construct($twig, $request, $files, $mods) {
         $this->twig = $twig;
         $this->twig->addFunction(new \Twig_SimpleFunction('relative', function ($string) use ($request) {
             return $request->getBasePath() . '/' . $string;
@@ -16,11 +17,18 @@ class SiteController {
             return substr(md5($string), 0, 5);
         }));
 
-        $this->serviceFiles = $serviceFiles;
+        $this->serviceFiles = $files;
+        $this->serviceMods = $mods;
     }
 
     public function modinfo($modId) {
 
+        $modInfo = $this->serviceMods->findById($modId);
+        
+        if ($modInfo == null) {
+            throw new \Exception();
+        }
+        
         $files = $this->serviceFiles->findByModId($modId);
 
         $numFiles = $files->count();
@@ -28,28 +36,7 @@ class SiteController {
         if ($numFiles == 0) {
             throw new \Exception();
         }
-
-        $lastFile = current(iterator_to_array($files->skip($numFiles - 1)->limit(1)));
         
-        $files = $this->serviceFiles->findByModId($modId);
-        
-        
-        if ($lastFile == null) {
-            throw new \Exception();
-        }
-
-        $modData = null;
-
-        foreach ($lastFile['mods'] as $mod) {
-            if ($mod['modId'] == $modId) {
-                $modData = $mod;
-            }
-        }
-
-        if ($modData == null) {
-            throw new \Exception();
-        }
-
         $versions = array();
 
         foreach ($files as $file) {
@@ -65,15 +52,15 @@ class SiteController {
         }
 
         return $this->twig->render('mod.twig', array(
-                    'versions' => $versions,
-                    'modData' => $modData
+            'versions' => $versions,
+            'modInfo' => $modInfo
         ));
     }
 
     public function home() {
-
+        
         return $this->twig->render('home.twig', array(
-                    'mods' => $this->serviceFiles->findUniqueMods()
+            'mods' => $this->serviceMods->findAll()->sort(array('name' => 1))
         ));
     }
 
