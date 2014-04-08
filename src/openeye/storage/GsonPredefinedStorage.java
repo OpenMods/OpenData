@@ -13,7 +13,7 @@ public class GsonPredefinedStorage<T> extends GsonStorageBase<T> implements IQue
 	private final Map<String, IDataSource<T>> sources;
 
 	public GsonPredefinedStorage(File dir, Class<? extends T> cls, Gson gson, String... ids) {
-		super(cls, gson);
+		super(cls, gson, "json");
 		Preconditions.checkArgument(dir.isDirectory());
 
 		ImmutableMap.Builder<String, IDataSource<T>> builder = ImmutableMap.builder();

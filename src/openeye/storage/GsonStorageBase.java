@@ -18,9 +18,12 @@ public abstract class GsonStorageBase<T> {
 
 	protected final Gson gson;
 
-	protected GsonStorageBase(Class<? extends T> cls, Gson gson) {
+	protected final String extension;
+
+	protected GsonStorageBase(Class<? extends T> cls, Gson gson, String extension) {
 		this.cls = cls;
 		this.gson = gson;
+		this.extension = extension;
 	}
 
 	protected static String generateId() {
@@ -28,7 +31,7 @@ public abstract class GsonStorageBase<T> {
 	}
 
 	protected String generateFilename(String prefix, String id) {
-		return String.format("%s-%s.json", prefix, id);
+		return String.format("%s-%s.%s", prefix, id, extension);
 	}
 
 	protected IDataSource<T> createFromFile(String id, final File file) {
@@ -51,7 +54,7 @@ public abstract class GsonStorageBase<T> {
 			@Override
 			protected OutputStream createOutputStream() {
 				try {
-					return new FileOutputStream(file);
+					return GsonStorageBase.this.createOutputStream(file);
 				} catch (Throwable t) {
 					throw Throwables.propagate(t);
 				}
@@ -60,7 +63,7 @@ public abstract class GsonStorageBase<T> {
 			@Override
 			protected InputStream createInputStream() {
 				try {
-					return new FileInputStream(file);
+					return GsonStorageBase.this.createInputStream(file);
 				} catch (Throwable t) {
 					throw Throwables.propagate(t);
 				}
@@ -74,5 +77,13 @@ public abstract class GsonStorageBase<T> {
 	}
 
 	protected abstract void removeEntry(String id);
+
+	protected OutputStream createOutputStream(final File file) throws IOException {
+		return new FileOutputStream(file);
+	}
+
+	protected InputStream createInputStream(final File file) throws IOException {
+		return new FileInputStream(file);
+	}
 
 }
