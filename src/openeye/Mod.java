@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 
 import openeye.logic.InjectedDataStore;
-import openeye.logic.ReportSender;
+import openeye.logic.MainWorker;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -35,7 +35,7 @@ public class Mod extends DummyModContainer {
 
 	@Subscribe
 	public void onModConstruct(final FMLConstructionEvent evt) {
-		new ReportSender().start(InjectedDataStore.instance, evt.getASMHarvestedData());
+		new MainWorker().start(InjectedDataStore.instance, evt.getASMHarvestedData());
 
 	}
 
