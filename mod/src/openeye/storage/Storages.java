@@ -18,6 +18,6 @@ public class Storages {
 
 		permanent = new GsonPredefinedStorage<PermanentStorage>(eyeDir, PermanentStorage.class, GsonUtils.PRETTY_GSON, "installed-mods");
 		pendingCrashes = new GsonWorkingStorage<CrashReport>(eyeDir, "pending-crash", CrashReport.class, GsonUtils.PRETTY_GSON);
-		sentReports = new GsonArchiveStorage<ReportsList>(eyeDir, "report", ReportsList.class, GsonUtils.PRETTY_GSON);
+		sentReports = new GsonArchiveStorage<ReportsList>(eyeDir, "report", "report.json", ReportsList.class, GsonUtils.PRETTY_GSON);
 	}
 }

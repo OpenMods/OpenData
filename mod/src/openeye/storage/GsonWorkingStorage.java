@@ -24,7 +24,7 @@ public class GsonWorkingStorage<T> extends GsonStorageBase<T> implements IWorkin
 	private final File dir;
 
 	public GsonWorkingStorage(File dir, String prefix, Class<? extends T> cls, Gson gson) {
-		super(cls, gson);
+		super(cls, gson, "json");
 		Preconditions.checkArgument(dir.isDirectory());
 		this.prefix = prefix;
 		this.dir = dir;
@@ -52,9 +52,11 @@ public class GsonWorkingStorage<T> extends GsonStorageBase<T> implements IWorkin
 
 	@Override
 	public IDataSource<T> createNew() {
+		String idPrefix = generateId();
+		int count = 0;
 		String id;
 		do {
-			id = generateId();
+			id = idPrefix + "-" + count++;
 		} while (sources.containsKey(id));
 
 		return createNew(id);
