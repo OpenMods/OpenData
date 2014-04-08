@@ -3,12 +3,17 @@ package openeye.logic;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import openeye.Log;
+import openeye.net.ReportSender;
+import openeye.reports.ReportFileInfo;
 import openeye.reports.ReportsList;
+import openeye.requests.RequestsList;
 import openeye.storage.IDataSource;
 import openeye.storage.Storages;
 import cpw.mods.fml.common.discovery.ASMDataTable;
 
-public final class ReportSender {
+public final class MainWorker {
+	private final String url = "http://37.139.27.100/api/v1/data";
+
 	private ModMetaCollector collector;
 
 	private Storages storages;
@@ -23,21 +28,69 @@ public final class ReportSender {
 		storages = new Storages(dataStore.getMcLocation());
 	}
 
-	private void collectData(InjectedDataStore dataStore, ASMDataTable table) {
-		collector = new ModMetaCollector(dataStore, table);
-
-		ReportsList initialReport = new ReportsList();
-		initialReport.append(AnalyticsReportBuilder.build(collector));
-
-		for (String signature : collector.getAllSignatures())
-			initialReport.append(collector.generateFileReport(signature));
-
+	private void storeReport(ReportsList report) {
 		IDataSource<ReportsList> list = storages.sentReports.createNew();
-		list.store(initialReport);
+		list.store(report);
 	}
 
-	private void sendInitialReport() {
+	private void storeRequest(RequestsList report) {
+		IDataSource<RequestsList> list = storages.receivedRequests.createNew();
+		list.store(report);
+	}
 
+	private void collectData(InjectedDataStore dataStore, ASMDataTable table) {
+		collector = new ModMetaCollector(dataStore, table);
+	}
+
+	private void sendReports() {
+		final ReportsList initialReport = new ReportsList();
+
+		try {
+			initialReport.append(AnalyticsReportBuilder.build(collector));
+		} catch (Exception e) {
+			Log.warn(e, "Failed to create initial report");
+			return;
+		}
+
+		final IContext context = new IContext() {
+			@Override
+			public ReportFileInfo generateFileReport(String signature) {
+				return collector.generateFileReport(signature);
+			}
+		};
+
+		try {
+			ReportSender sender = new ReportSender(url);
+
+			ReportsList currentReport = initialReport;
+
+			while (true) {
+				try {
+					storeReport(currentReport);
+				} catch (Exception e) {
+					Log.warn(e, "Failed to store report");
+				}
+
+				RequestsList response = sender.sendAndReceive(currentReport);
+
+				try {
+					storeRequest(response);
+				} catch (Exception e) {
+					Log.warn(e, "Failed to store report/request");
+				}
+
+				if (response == null || response.isEmpty()) break;
+
+				try {
+					currentReport = response.generateResponse(context);
+				} catch (Exception e) {
+					Log.warn(e, "Failed to create response");
+				}
+			}
+
+		} catch (Exception e) {
+			Log.warn(e, "Failed to send report to %s", url);
+		}
 	}
 
 	private void storeCrash(Throwable throwable) {
@@ -50,7 +103,7 @@ public final class ReportSender {
 			public void run() {
 				initStorage(dataStore);
 				collectData(dataStore, table);
-				sendInitialReport();
+				sendReports();
 			}
 		};
 

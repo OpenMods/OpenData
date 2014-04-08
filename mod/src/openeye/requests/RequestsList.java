@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import openeye.Log;
+import openeye.logic.IContext;
 import openeye.reports.ReportsList;
 
 import com.google.common.base.Preconditions;
@@ -15,8 +16,8 @@ import com.google.gson.*;
 public class RequestsList {
 	private static final BiMap<String, Class<? extends IRequest>> CLASSES = HashBiMap.create();
 
-	public static void registerRequestMapping(String type, Class<? extends IRequest> cls) {
-		CLASSES.put(type, cls);
+	static {
+		CLASSES.put("file_info", RequestFileInfo.class);
 	}
 
 	public List<IRequest> requests;
@@ -49,16 +50,36 @@ public class RequestsList {
 		}
 	};
 
+	public static final JsonSerializer<RequestsList> SERIALIZER = new JsonSerializer<RequestsList>() {
+		@Override
+		public JsonElement serialize(RequestsList src, Type typeOfSrc, JsonSerializationContext context) {
+			JsonArray result = new JsonArray();
+
+			if (src.requests != null) {
+				for (Object request : src.requests) {
+					String type = CLASSES.inverse().get(request.getClass());
+					if (type != null) {
+						JsonObject serializedRequest = context.serialize(request).getAsJsonObject();
+						serializedRequest.addProperty("type", type);
+						result.add(serializedRequest);
+					} else Log.warn("Trying to serialize class without mapping: %s", request.getClass());
+				}
+			}
+
+			return result;
+		}
+	};
+
 	public boolean isEmpty() {
 		return requests == null || requests.isEmpty();
 	}
 
-	public ReportsList generateResponse() {
+	public ReportsList generateResponse(IContext context) {
 		Preconditions.checkState(!isEmpty());
 		List<Object> reports = Lists.newArrayList();
 		for (IRequest request : requests) {
-			Object report = request.createReport();
-			reports.add(report);
+			Object report = request.createReport(context);
+			if (report != null) reports.add(report);
 		}
 
 		ReportsList result = new ReportsList();
