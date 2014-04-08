@@ -2,8 +2,8 @@ package openeye.logic;
 
 import java.lang.reflect.Type;
 
-import openeye.reports.ReportsList;
-import openeye.requests.RequestsList;
+import openeye.logic.TypedCollections.ReportsList;
+import openeye.logic.TypedCollections.RequestsList;
 
 import com.google.gson.*;
 
@@ -23,8 +23,8 @@ public class GsonUtils {
 
 	public static GsonBuilder setupCommonBuilder() {
 		return new GsonBuilder()
-				.registerTypeAdapter(ReportsList.class, ReportsList.SERIALIZER)
-				.registerTypeAdapter(RequestsList.class, RequestsList.DESERIALIZER)
+				.registerTypeAdapter(ReportsList.class, TypedCollections.REPORT_LIST_CONVERTER)
+				.registerTypeAdapter(RequestsList.class, TypedCollections.REQUEST_LIST_CONVERTER)
 				.registerTypeAdapter(ArtifactVersion.class, VERSION_SERIALIZER);
 	}
 

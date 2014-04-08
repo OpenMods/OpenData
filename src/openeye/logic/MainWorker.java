@@ -3,12 +3,17 @@ package openeye.logic;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import openeye.Log;
+import openeye.logic.TypedCollections.ReportsList;
+import openeye.logic.TypedCollections.RequestsList;
 import openeye.net.ReportSender;
+import openeye.reports.IReport;
 import openeye.reports.ReportFileInfo;
-import openeye.reports.ReportsList;
-import openeye.requests.RequestsList;
+import openeye.requests.IRequest;
 import openeye.storage.IDataSource;
 import openeye.storage.Storages;
+
+import com.google.common.base.Preconditions;
+
 import cpw.mods.fml.common.discovery.ASMDataTable;
 
 public final class MainWorker {
@@ -42,11 +47,22 @@ public final class MainWorker {
 		collector = new ModMetaCollector(dataStore, table);
 	}
 
+	public static ReportsList generateResponse(RequestsList requests, IContext context) {
+		Preconditions.checkState(!requests.isEmpty());
+		ReportsList result = new ReportsList();
+		for (IRequest request : requests) {
+			IReport report = request.createReport(context);
+			if (report != null) result.add(report);
+		}
+		return result;
+	}
+
 	private void sendReports() {
 		final ReportsList initialReport = new ReportsList();
 
 		try {
-			initialReport.append(AnalyticsReportBuilder.build(collector));
+			initialReport.add(AnalyticsReportBuilder.build(collector));
+			// initialReport.add(new ReportPing()); // @Mikee: bug in server code - not wrapped in array
 		} catch (Exception e) {
 			Log.warn(e, "Failed to create initial report");
 			return;
@@ -82,7 +98,7 @@ public final class MainWorker {
 				if (response == null || response.isEmpty()) break;
 
 				try {
-					currentReport = response.generateResponse(context);
+					currentReport = generateResponse(response, context);
 				} catch (Exception e) {
 					Log.warn(e, "Failed to create response");
 				}

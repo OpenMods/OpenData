@@ -1,9 +1,10 @@
 package openeye.requests;
 
 import openeye.logic.IContext;
+import openeye.reports.IReport;
 
 public interface IRequest {
 
-	public Object createReport(IContext context);
+	public IReport createReport(IContext context);
 
 }

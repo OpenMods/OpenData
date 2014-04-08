@@ -3,10 +3,9 @@ package openeye.storage;
 import java.io.File;
 
 import net.minecraft.crash.CrashReport;
-import openeye.logic.GsonUtils;
-import openeye.logic.PermanentStorage;
-import openeye.reports.ReportsList;
-import openeye.requests.RequestsList;
+import openeye.logic.*;
+import openeye.logic.TypedCollections.ReportsList;
+import openeye.logic.TypedCollections.RequestsList;
 
 public class Storages {
 	public final IQueryableStorage<PermanentStorage> permanent;

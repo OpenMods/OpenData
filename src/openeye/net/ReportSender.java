@@ -5,8 +5,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import openeye.logic.GsonUtils;
-import openeye.reports.ReportsList;
-import openeye.requests.RequestsList;
+import openeye.logic.TypedCollections.ReportsList;
+import openeye.logic.TypedCollections.RequestsList;
 
 public class ReportSender extends GenericSender<ReportsList, RequestsList> {
 
