@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 
-public class ReportAnalytics {
+public class ReportAnalytics implements IReport {
 	public interface RuntimeMeta {}
 
 	public static class FmlForgeRuntime implements RuntimeMeta {

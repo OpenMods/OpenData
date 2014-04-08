@@ -1,15 +1,15 @@
 package openeye.requests;
 
+import openeye.Log;
 import openeye.logic.IContext;
 import openeye.reports.IReport;
 
-public class RequestFileInfo implements IRequest {
-
-	public String signature;
+public class RequestPong implements IRequest {
+	public String payload;
 
 	@Override
 	public IReport createReport(IContext context) {
-		return context.generateFileReport(signature);
+		Log.info("Ping-pong: %s", payload);
+		return null;
 	}
-
 }

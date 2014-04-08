@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
 
 /* I'm marking all fields with serializable, just to prevent screwups. Yeah, I know about FieldNamingPolicy */
-public class ReportFileInfo {
+public class ReportFileInfo implements IReport {
 
 	public static class SerializableTweak {
 		@SerializedName("plugin")
