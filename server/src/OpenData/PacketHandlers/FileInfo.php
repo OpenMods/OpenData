@@ -22,7 +22,7 @@ class FileInfo implements IPacketHandler {
     }
     
     public function execute($packet) {
-        
+                
         $this->serviceFiles->append($packet);
         
         if (isset($packet['mods'])) {

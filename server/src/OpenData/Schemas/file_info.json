@@ -11,10 +11,6 @@
             "type": "string",
             "required": true
         },
-        "filename": {
-            "type": "string",
-            "required": true
-        },
         "size": {
             "type": "number",
             "required": true

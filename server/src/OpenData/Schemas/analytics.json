@@ -16,19 +16,19 @@
             }
         },
         "runtime": {
-                "type":"object",
-                "required":true,
-                "additionalProperties": true,
-                "properties":{
-                        "fml": {
-                                "type":"string",
-                                "required":false
-                        },
-                        "forge": {
-                                "type":"string",
-                                "required":false
-                        }
+            "type": "object",
+            "required": true,
+            "additionalProperties": true,
+            "properties": {
+                "fml": {
+                    "type": "string",
+                    "required": false
+                },
+                "forge": {
+                    "type": "string",
+                    "required": false
                 }
+            }
         },
         "language": {
             "type": "string",
@@ -48,10 +48,20 @@
         },
         "signatures": {
             "type": "array",
-            "required": false,
+            "required": true,
             "items": {
-                "type": "string",
-                "required": true
+                "type": "object",
+                "required": true,
+                "properties": {
+                    "filename": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "signature": {
+                        "type": "string",
+                        "required": true
+                    }
+                }
             }
         },
         "workTime": {

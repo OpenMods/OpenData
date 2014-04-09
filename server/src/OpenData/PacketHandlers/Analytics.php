@@ -27,8 +27,14 @@ class Analytics implements IPacketHandler {
 
         $this->serviceAnalytics->add($packet);
         
+        $signatureMap = array();
+        
+        foreach ($packet['signatures'] as $signature) {
+            $signatureMap[$signature['signature']] = $signature['filename'];
+        }
+        
         // find all the mods we already have in the database
-        $filesData = $this->serviceFiles->findIn($packet['signatures']);
+        $filesData = $this->serviceFiles->findIn(array_keys($signatureMap));
 
         $responses = array();
 
@@ -38,11 +44,24 @@ class Analytics implements IPacketHandler {
         // for example, packages, classes, file, or security/update warnings
         foreach ($filesData as $fileData) {
 
-            $fileSignaturesFound[] = $fileData['_id'];
+            $signature = $fileData['_id'];
+            
+            $fileSignaturesFound[] = $signature;
 
             $fileNode = array(
-                'signature' => $fileData['_id']
+                'signature' => $signature
             );
+            
+            if (isset($signatureMap[$signature])) {
+                $filename = $signatureMap[$signature];
+                if (!in_array($filename, $fileData['filenames'])) {
+                    $fileData['filenames'][] = $filename;
+                    $this->serviceFiles->append(array(
+                       'signature' => $fileData['_id'],
+                       'filenames' => $fileData['filenames']
+                    ));
+                }
+            }
 
             if (!isset($fileData['packages'])) {
                 $responses[] = array_merge($fileNode, array(
@@ -84,11 +103,12 @@ class Analytics implements IPacketHandler {
         // loop through any mods we didn't find in the database,
         // add them in, then tell the client we need the rest of the packages
         foreach ($packet['signatures'] as $signature) {
-            if (!in_array($signature, $fileSignaturesFound)) {
+            
+            if (!in_array($signature['signature'], $fileSignaturesFound)) {
                 $this->serviceFiles->create($signature);
                 $responses[] = array(
                     'type' => 'file_info',
-                    'signature' => $signature
+                    'signature' => $signature['signature']
                 );
             }
         }

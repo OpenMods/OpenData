@@ -20,7 +20,7 @@
     <li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>
         <ul>
         {% for file in mod.files %}
-            <li>{{ file.filename }}</li>
+            <li>{{ file.filenames|first }}</li>
         {% endfor %}
         </ul>
     </li>

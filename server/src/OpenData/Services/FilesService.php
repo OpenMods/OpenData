@@ -10,10 +10,11 @@ class FilesService extends BaseService {
         );
     }
 
-    public function create($id) {
+    public function create($signature) {
         try {
             $this->db->files->insert(array(
-                '_id' => $id
+                '_id' => $signature['signature'],
+                'filenames' => array($signature['filename'])
             ));
         } catch (\MongoCursorException $e) {
             return false;
@@ -75,13 +76,15 @@ class FilesService extends BaseService {
         if ($currentEntry == null) {
             return false;
         }
+        
+        unset($file['signature']);
+        
         foreach ($file as $k => $v) {
             if (!isset($currentEntry[$k])) {
                 $currentEntry[$k] = $v;
             }
         }
-
-        unset($file['signature']);
+        
         unset($currentEntry['_id']);
 
         $this->db->files->update(

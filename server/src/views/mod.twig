@@ -42,28 +42,52 @@
 
               {% for file in files %}
                 <div class="panel panel-default">
-                    <div class="panel-heading">{{ file.filename }} ({{ file.size }} bytes)</div>
+                    <div class="panel-heading">{{ file.filenames|first }} ({{ file.size }} bytes)</div>
                     <div class="panel-body">
+
                         <h4>Signature</h4>
-                        {{ file.signature }}
+                        {{ file._id }}
                         {% if file.classTransformers|length > 0 %}
                         <h4>Class transformers</h4>
                             {% for transformer in file.classTransformers %}
                                 {{ transformer }}<br/>
                             {% endfor %}
                         {% endif%}
+                        
+                        <h4>Known filenames</h4>
+                        <ul>
+                        {% for filename in file.filenames %}
+                            <li>{{ filename }}</li>
+                        {% endfor %}
+                        </ul>
+                                
                         <h4>Mods included:</h4>
                         <ul>
                         {% for mod in file.mods %}
                             <li>{{ mod.name }} <small>({{ mod.version }})</small></li>
                         {% endfor %}
                         </ul>
-                        <h4>Packages:</h4>
-                        <ul>
-                        {% for package in file.packages|sort %}
-                            <li><a href="{{ relative('package/' ~ package) }}">{{ package }}</a></li>
-                        {% endfor %}
-                        </ul>
+                        
+                        <div class="panel-group" id="accordion">
+                          <div class="panel panel-default">
+                            <div class="panel-heading">
+                              <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#packages">
+                                  Packages
+                                </a>
+                              </h4>
+                            </div>
+                            <div id="packages" class="panel-collapse collapse in">
+                              <div class="panel-body">
+                                <ul>
+                                {% for package in file.packages|sort %}
+                                    <li><a href="{{ relative('package/' ~ package) }}">{{ package }}</a></li>
+                                {% endfor %}
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
 
                     </div>
                 </div>
