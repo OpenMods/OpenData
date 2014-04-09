@@ -63,6 +63,13 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/views',
 ));
 
+$app['twig']->addFunction(new \Twig_SimpleFunction('relative', function ($string) use ($app) {
+    return $app['request']->getBasePath() . '/' . $string;
+}));
+$app['twig']->addFilter(new \Twig_SimpleFilter('id', function ($string) {
+    return substr(md5($string), 0, 5);
+}));
+
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 
 $app->register(new MonologServiceProvider(), array(

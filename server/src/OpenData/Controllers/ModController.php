@@ -2,21 +2,14 @@
 
 namespace OpenData\Controllers;
 
-class SiteController {
+class ModController {
 
-    private $twig;
     private $serviceFiles;
     private $serviceMods;
+    private $twig;
 
-    public function __construct($twig, $request, $files, $mods) {
+    public function __construct($twig, $files, $mods) {
         $this->twig = $twig;
-        $this->twig->addFunction(new \Twig_SimpleFunction('relative', function ($string) use ($request) {
-            return $request->getBasePath() . '/' . $string;
-        }));
-        $this->twig->addFilter(new \Twig_SimpleFilter('id', function ($string) {
-            return substr(md5($string), 0, 5);
-        }));
-
         $this->serviceFiles = $files;
         $this->serviceMods = $mods;
     }
@@ -54,13 +47,6 @@ class SiteController {
         return $this->twig->render('mod.twig', array(
             'versions' => $versions,
             'modInfo' => $modInfo
-        ));
-    }
-
-    public function home() {
-        
-        return $this->twig->render('home.twig', array(
-            'mods' => $this->serviceMods->findAll()->sort(array('name' => 1))
         ));
     }
 

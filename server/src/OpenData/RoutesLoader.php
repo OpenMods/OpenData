@@ -35,7 +35,29 @@ class RoutesLoader {
         $this->app['site.controller'] = $this->app->share(function () use ($loader) {
             return new Controllers\SiteController(
                 $loader->app['twig'],
-                $loader->app['request'],
+                $loader->app['files.service'],
+                $loader->app['mods.service']
+            );
+        });
+
+        $this->app['home.controller'] = $this->app->share(function () use ($loader) {
+            return new Controllers\HomeController(
+                $loader->app['twig'],
+                $loader->app['mods.service']
+            );
+        });
+
+        $this->app['mod.controller'] = $this->app->share(function () use ($loader) {
+            return new Controllers\ModController(
+                $loader->app['twig'],
+                $loader->app['files.service'],
+                $loader->app['mods.service']
+            );
+        });
+
+        $this->app['package.controller'] = $this->app->share(function () use ($loader) {
+            return new Controllers\PackageController(
+                $loader->app['twig'],
                 $loader->app['files.service'],
                 $loader->app['mods.service']
             );
@@ -44,12 +66,27 @@ class RoutesLoader {
 
     public function bindRoutesToControllers() {
 
+        /**
+         * API
+         */
         $api = $this->app["controllers_factory"];
         $api->post('/data', "api.controller:main");
         
+        /**
+         * Home
+         */
         $site = $this->app["controllers_factory"];
-        $site->get('/', "site.controller:home");
-        $site->get('/mod/{modId}', "site.controller:modinfo");
+        $site->get('/', "home.controller:home");
+        
+        /**
+         * Mods
+         */
+        $site->get('/mod/{modId}', "mod.controller:modinfo");
+        
+        /**
+         * Packages
+         */
+        $site->get('/package/{package}', "package.controller:package");
 
         $this->app->mount($this->app["api.endpoint"] . '/' . $this->app["api.version"], $api);
         $this->app->mount('/', $site);

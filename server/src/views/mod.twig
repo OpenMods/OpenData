@@ -53,7 +53,7 @@
                         <h4>Packages:</h4>
                         <ul>
                         {% for package in file.packages|sort %}
-                            <li>{{ package }}</li>
+                            <li><a href="{{ relative('package/' ~ package) }}">{{ package }}</a></li>
                         {% endfor %}
                         </ul>
 

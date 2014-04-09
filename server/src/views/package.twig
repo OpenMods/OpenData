@@ -1,0 +1,22 @@
+{% extends 'base.twig' %}
+{% block main %}
+<div class="row">
+    <div class="col-md-12">
+
+<h1>Package: {{ packageName }}</h1>
+
+<h3>Included in files:</h3>
+<ul>
+{% for file in files %}
+    <li>{{ file.filename }}
+{% endfor %}
+</ul>
+
+<h3>Included with mods:</h3>
+<ul>
+{% for mod in mods %}
+    <li>{{ mods.modId }}
+{% endfor %}
+</ul>
+
+{% endblock %}

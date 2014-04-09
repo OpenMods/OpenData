@@ -23,8 +23,19 @@ class FilesService extends BaseService {
 
     public function findByModId($modId) {
         return $this->db->files->find(
-                        array('mods.modId' => $modId)
+            array('mods.modId' => $modId)
         );
+    }
+    
+    public function findByPackage($package) {
+        return $this->db->files->find(
+            array('packages' => $package)
+        );
+    }
+    
+    public function findUniqueModIdsForPackage($package) {
+        return array();
+        //db.files.aggregate({'$match' : {'packages' : 'thaumcraft.api'}}, {'$project' : {'mods' : 1}}, {'$unwind' : '$mods'}, {'$group' : {'_id' : '$mods.modId'}})
     }
 
     public function append($file) {
