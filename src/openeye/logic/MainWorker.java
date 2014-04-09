@@ -5,9 +5,11 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import openeye.Log;
 import openeye.logic.TypedCollections.ReportsList;
 import openeye.logic.TypedCollections.RequestsList;
+import openeye.net.GenericSender.FailedToSend;
 import openeye.net.ReportSender;
 import openeye.reports.IReport;
 import openeye.reports.ReportFileInfo;
+import openeye.reports.ReportPing;
 import openeye.requests.IRequest;
 import openeye.storage.IDataSource;
 import openeye.storage.Storages;
@@ -62,7 +64,7 @@ public final class MainWorker {
 
 		try {
 			initialReport.add(AnalyticsReportBuilder.build(collector));
-			// initialReport.add(new ReportPing()); // @Mikee: bug in server code - not wrapped in array
+			initialReport.add(new ReportPing());
 		} catch (Exception e) {
 			Log.warn(e, "Failed to create initial report");
 			return;
@@ -80,7 +82,7 @@ public final class MainWorker {
 
 			ReportsList currentReport = initialReport;
 
-			while (true) {
+			while (!currentReport.isEmpty()) {
 				try {
 					storeReport(currentReport);
 				} catch (Exception e) {
@@ -89,13 +91,13 @@ public final class MainWorker {
 
 				RequestsList response = sender.sendAndReceive(currentReport);
 
+				if (response == null || response.isEmpty()) break;
+
 				try {
 					storeRequest(response);
 				} catch (Exception e) {
 					Log.warn(e, "Failed to store report/request");
 				}
-
-				if (response == null || response.isEmpty()) break;
 
 				try {
 					currentReport = generateResponse(response, context);
@@ -104,6 +106,8 @@ public final class MainWorker {
 				}
 			}
 
+		} catch (FailedToSend e) {
+			Log.warn("Failed to send report to %s, cause: %s", url, e.getMessage());
 		} catch (Exception e) {
 			Log.warn(e, "Failed to send report to %s", url);
 		}
