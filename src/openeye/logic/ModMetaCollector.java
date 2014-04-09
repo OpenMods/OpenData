@@ -319,12 +319,17 @@ public class ModMetaCollector {
 		return result;
 	}
 
+	public long getCollectingDuration() {
+		return operationDuration;
+	}
+
 	public ReportFileInfo generateFileReport(String signature) {
 		FileMeta meta = signatures.get(signature);
 		return meta != null? meta.generateReport() : null;
 	}
 
-	public long getCollectingDuration() {
-		return operationDuration;
+	public Set<String> getModsForSignature(String signature) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

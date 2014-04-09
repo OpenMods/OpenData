@@ -13,6 +13,7 @@ import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLConstructionEvent;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
 
 public class Mod extends DummyModContainer {
 
@@ -27,6 +28,8 @@ public class Mod extends DummyModContainer {
 		meta.description = "We see you...";
 	}
 
+	private MainWorker worker;
+
 	@Override
 	public boolean registerBus(EventBus bus, LoadController controller) {
 		bus.register(this);
@@ -34,9 +37,16 @@ public class Mod extends DummyModContainer {
 	}
 
 	@Subscribe
-	public void onModConstruct(final FMLConstructionEvent evt) {
-		new MainWorker().start(InjectedDataStore.instance, evt.getASMHarvestedData());
+	public void onModConstruct(FMLConstructionEvent evt) {
+		worker = new MainWorker();
+		worker.start(InjectedDataStore.instance, evt.getASMHarvestedData());
 
+	}
+
+	@Subscribe
+	public void onInit(FMLInitializationEvent evt) {
+		// give thread enough time to receive IMC
+		if (worker != null) worker.waitForFirstMsg();
 	}
 
 	@Override

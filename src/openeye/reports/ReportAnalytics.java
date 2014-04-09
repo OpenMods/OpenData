@@ -1,6 +1,7 @@
 package openeye.reports;
 
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
@@ -50,4 +51,7 @@ public class ReportAnalytics implements IReport {
 
 	@SerializedName("workTime")
 	public Long workTime;
+
+	@SerializedName("tags")
+	public Set<String> tags;
 }

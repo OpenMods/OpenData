@@ -1,18 +1,19 @@
 package openeye.logic;
 
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 import net.minecraftforge.common.ForgeVersion;
 import openeye.reports.ReportAnalytics;
 import openeye.reports.ReportAnalytics.FmlForgeRuntime;
+
+import com.google.common.collect.Sets;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 
 public class AnalyticsReportBuilder {
 
-	public static ReportAnalytics build(ModMetaCollector data) {
+	public static ReportAnalytics build(Config config, ModMetaCollector data) {
 		ReportAnalytics analytics = new ReportAnalytics();
 
 		analytics.branding = FMLCommonHandler.instance().getBrandings();
@@ -36,6 +37,16 @@ public class AnalyticsReportBuilder {
 		analytics.minecraft = Loader.instance().getMCVersionString();
 
 		analytics.signatures = data.getAllSignatures();
+
+		Set<String> tags = Sets.newHashSet();
+
+		Set<String> configTags = config.tags;
+		if (configTags != null) tags.addAll(configTags);
+
+		Set<String> envTags = TagsCollector.collectSystemTags();
+		tags.addAll(envTags);
+
+		if (!tags.isEmpty()) analytics.tags = tags;
 
 		return analytics;
 	}

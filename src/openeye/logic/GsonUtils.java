@@ -3,7 +3,7 @@ package openeye.logic;
 import java.lang.reflect.Type;
 
 import openeye.logic.TypedCollections.ReportsList;
-import openeye.logic.TypedCollections.RequestsList;
+import openeye.logic.TypedCollections.ResponseList;
 
 import com.google.gson.*;
 
@@ -24,7 +24,7 @@ public class GsonUtils {
 	public static GsonBuilder setupCommonBuilder() {
 		return new GsonBuilder()
 				.registerTypeAdapter(ReportsList.class, TypedCollections.REPORT_LIST_CONVERTER)
-				.registerTypeAdapter(RequestsList.class, TypedCollections.REQUEST_LIST_CONVERTER)
+				.registerTypeAdapter(ResponseList.class, TypedCollections.RESPONSE_LIST_CONVERTER)
 				.registerTypeAdapter(ArtifactVersion.class, VERSION_SERIALIZER);
 	}
 

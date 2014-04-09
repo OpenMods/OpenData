@@ -1,16 +1,18 @@
 package openeye.logic;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import openeye.Log;
 import openeye.logic.TypedCollections.ReportsList;
-import openeye.logic.TypedCollections.RequestsList;
+import openeye.logic.TypedCollections.ResponseList;
 import openeye.net.GenericSender.FailedToSend;
 import openeye.net.ReportSender;
 import openeye.reports.IReport;
 import openeye.reports.ReportFileInfo;
 import openeye.reports.ReportPing;
-import openeye.requests.IRequest;
+import openeye.responses.IResponse;
 import openeye.storage.IDataSource;
 import openeye.storage.Storages;
 
@@ -24,6 +26,8 @@ public final class MainWorker {
 	private ModMetaCollector collector;
 
 	private Storages storages;
+
+	private CountDownLatch initialMsgReceived = new CountDownLatch(1);
 
 	private static Throwable lethalException;
 
@@ -40,8 +44,8 @@ public final class MainWorker {
 		list.store(report);
 	}
 
-	private void storeRequest(RequestsList report) {
-		IDataSource<RequestsList> list = storages.receivedRequests.createNew();
+	private void storeRequest(ResponseList report) {
+		IDataSource<ResponseList> list = storages.receivedRequests.createNew();
 		list.store(report);
 	}
 
@@ -49,33 +53,43 @@ public final class MainWorker {
 		collector = new ModMetaCollector(dataStore, table);
 	}
 
-	public static ReportsList generateResponse(RequestsList requests, IContext context) {
+	public ReportsList executeResponses(ResponseList requests) {
 		Preconditions.checkState(!requests.isEmpty());
-		ReportsList result = new ReportsList();
-		for (IRequest request : requests) {
-			IReport report = request.createReport(context);
-			if (report != null) result.add(report);
-		}
-		return result;
-	}
-
-	private void sendReports() {
-		final ReportsList initialReport = new ReportsList();
-
-		try {
-			initialReport.add(AnalyticsReportBuilder.build(collector));
-			initialReport.add(new ReportPing());
-		} catch (Exception e) {
-			Log.warn(e, "Failed to create initial report");
-			return;
-		}
+		final ReportsList result = new ReportsList();
 
 		final IContext context = new IContext() {
 			@Override
 			public ReportFileInfo generateFileReport(String signature) {
 				return collector.generateFileReport(signature);
 			}
+
+			@Override
+			public Set<String> getModsForSignature(String signature) {
+				return collector.getModsForSignature(signature);
+			}
+
+			@Override
+			public void queueReport(IReport report) {
+				result.add(report);
+			}
 		};
+
+		for (IResponse request : requests)
+			request.execute(context);
+
+		return result;
+	}
+
+	private void sendReports(Config config) {
+		final ReportsList initialReport = new ReportsList();
+
+		try {
+			initialReport.add(AnalyticsReportBuilder.build(config, collector));
+			initialReport.add(new ReportPing());
+		} catch (Exception e) {
+			Log.warn(e, "Failed to create initial report");
+			return;
+		}
 
 		try {
 			ReportSender sender = new ReportSender(url);
@@ -89,7 +103,8 @@ public final class MainWorker {
 					Log.warn(e, "Failed to store report");
 				}
 
-				RequestsList response = sender.sendAndReceive(currentReport);
+				ResponseList response = sender.sendAndReceive(currentReport);
+				initialMsgReceived.countDown();
 
 				if (response == null || response.isEmpty()) break;
 
@@ -100,7 +115,7 @@ public final class MainWorker {
 				}
 
 				try {
-					currentReport = generateResponse(response, context);
+					currentReport = executeResponses(response);
 				} catch (Exception e) {
 					Log.warn(e, "Failed to create response");
 				}
@@ -110,6 +125,18 @@ public final class MainWorker {
 			Log.warn("Failed to send report to %s, cause: %s", url, e.getMessage());
 		} catch (Exception e) {
 			Log.warn(e, "Failed to send report to %s", url);
+		}
+		initialMsgReceived.countDown();
+	}
+
+	protected Config loadConfig() {
+		try {
+			IDataSource<Config> configSource = storages.config.getById(Storages.CONFIG_ID);
+			Config config = configSource.retrieve();
+			return config != null? config : new Config();
+		} catch (Throwable t) {
+			Log.warn(t, "Failed to parse config file");
+			return new Config();
 		}
 	}
 
@@ -123,7 +150,9 @@ public final class MainWorker {
 			public void run() {
 				initStorage(dataStore);
 				collectData(dataStore, table);
-				sendReports();
+
+				Config config = loadConfig();
+				sendReports(config);
 			}
 		};
 
@@ -166,5 +195,13 @@ public final class MainWorker {
 	public void start(InjectedDataStore dataStore, ASMDataTable table) {
 		startDataCollection(dataStore, table);
 		setupCrashReportDumper();
+	}
+
+	public void waitForFirstMsg() {
+		try {
+			initialMsgReceived.await();
+		} catch (InterruptedException e) {
+			Log.warn("Thread interrupted while waiting for msg");
+		}
 	}
 }

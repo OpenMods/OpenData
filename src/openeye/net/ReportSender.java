@@ -6,9 +6,9 @@ import java.nio.charset.StandardCharsets;
 
 import openeye.logic.GsonUtils;
 import openeye.logic.TypedCollections.ReportsList;
-import openeye.logic.TypedCollections.RequestsList;
+import openeye.logic.TypedCollections.ResponseList;
 
-public class ReportSender extends GenericSender<ReportsList, RequestsList> {
+public class ReportSender extends GenericSender<ReportsList, ResponseList> {
 
 	public ReportSender(URL url) {
 		super(url);
@@ -26,9 +26,9 @@ public class ReportSender extends GenericSender<ReportsList, RequestsList> {
 	}
 
 	@Override
-	protected RequestsList decodeResponse(InputStream input) throws IOException {
+	protected ResponseList decodeResponse(InputStream input) throws IOException {
 		Reader reader = new InputStreamReader(input);
-		RequestsList result = GsonUtils.NET_GSON.fromJson(reader, RequestsList.class);
+		ResponseList result = GsonUtils.NET_GSON.fromJson(reader, ResponseList.class);
 		reader.close();
 		return result;
 	}
