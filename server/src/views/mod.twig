@@ -2,10 +2,18 @@
 {% block main %}
 
 <h1>{{ modInfo.name }}</h1>
-<p class="lead">{{ modInfo.description }}</p>
-<p>Authors: {{ modInfo.authors|join(', ') }}</p>
-<p>Credits: {{ modInfo.credits }}</p>
-<p>Url: {{ modInfo.url }}</p>
+{% if modInfo.description is not empty %}
+    <p class="lead">{{ modInfo.description }}</p>
+{% endif %}
+{% if modInfo.authors|length > 0 %}
+    <p><strong>Author{% if modInfo.authors|length > 1 %}s{% endif %}:</strong> {{ modInfo.authors|join(', ') }}</p>
+{% endif %}
+{% if modInfo.credits is not empty %}
+    <p><strong>Credits:</strong> {{ modInfo.credits }}</p>
+{% endif %}
+{% if modInfo.url is not empty %}
+    <p><strong>Url:</strong> <a href="{{ modInfo.url }}" target="_blank">{{ modInfo.url }}</a></p>
+{% endif %}
 
 <h2>Versions:</h2>
 

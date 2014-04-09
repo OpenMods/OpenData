@@ -16,20 +16,33 @@ class PackageController {
     
     public function package($package) {
         
-        $files = $this->serviceFiles->findByPackage($package);
+        $files = $this->serviceFiles->findByPackage($package)->sort(array('filename' => 1));
         
         if ($files->count() == 0) {
             throw new \Exception('Unknown package');
         }
         
         $modIds = $this->serviceFiles->findUniqueModIdsForPackage($package);
+                
+        $modList = array();
         
-        $mods = $this->serviceMods->findByIds($modIds);
+        foreach ($this->serviceMods->findByIds($modIds) as $mod) {
+            $mod['files'] = array();
+            $modList[$mod['_id']] = $mod;
+        }
+        
+        foreach ($files as $file) {
+            foreach ($file['mods'] as $mod) {
+                if (isset($modList[$mod['modId']])) {
+                    $modList[$mod['modId']]['files'][] = $file;
+                }
+            }
+        }
         
         return $this->twig->render('package.twig', array(
             'packageName' => $package,
-            'files' => $files,
-            'mods' => $mods
+            'mods' => $modList,
+            'subpackages' => $this->serviceFiles->findSubPackages($package)
         ));
     }
     

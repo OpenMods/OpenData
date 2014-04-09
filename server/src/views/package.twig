@@ -5,18 +5,27 @@
 
 <h1>Package: {{ packageName }}</h1>
 
-<h3>Included in files:</h3>
+{% if subpackages|length > 0 %}
+<h3>Sub Packages:</h3>
 <ul>
-{% for file in files %}
-    <li>{{ file.filename }}
+{% for subpackage in subpackages|sort %}
+    <li><a href="{{ relative('package/' ~ subpackage) }}">{{ subpackage }}</a></li>
 {% endfor %}
 </ul>
+{% endif %}
 
 <h3>Included with mods:</h3>
 <ul>
 {% for mod in mods %}
-    <li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a></li>
+    <li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>
+        <ul>
+        {% for file in mod.files %}
+            <li>{{ file.filename }}</li>
+        {% endfor %}
+        </ul>
+    </li>
 {% endfor %}
 </ul>
+
 
 {% endblock %}

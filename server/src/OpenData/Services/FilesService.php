@@ -33,6 +33,22 @@ class FilesService extends BaseService {
         );
     }
     
+    public function findSubPackages($package) {
+        
+        $results = $this->db->files->aggregate(
+            array('$project' => array('packages' => 1)),
+            array('$unwind' => '$packages'),
+            array('$match' => array('packages' => new \MongoRegex('/^'.preg_quote($package).'\./'))),
+            array('$group' => array('_id' => '$packages')));
+        
+        $packages = array();
+        foreach ($results['result'] as $result) {
+            $packages[] = $result['_id'];
+        }
+        
+        return $packages;
+    }
+    
     public function findUniqueModIdsForPackage($package) {
         
         $results = $this->db->files->aggregate(
