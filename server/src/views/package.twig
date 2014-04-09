@@ -15,7 +15,7 @@
 <h3>Included with mods:</h3>
 <ul>
 {% for mod in mods %}
-    <li>{{ mods.modId }}
+    <li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a></li>
 {% endfor %}
 </ul>
 

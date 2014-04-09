@@ -34,8 +34,20 @@ class FilesService extends BaseService {
     }
     
     public function findUniqueModIdsForPackage($package) {
-        return array();
-        //db.files.aggregate({'$match' : {'packages' : 'thaumcraft.api'}}, {'$project' : {'mods' : 1}}, {'$unwind' : '$mods'}, {'$group' : {'_id' : '$mods.modId'}})
+        
+        $results = $this->db->files->aggregate(
+                array('$match' => array('packages' => $package)),
+                array('$project' => array('mods' => 1)),
+                array('$unwind' => '$mods'),
+                array('$group' => array('_id' => '$mods.modId'))
+                );
+        
+        $mods = array();
+        foreach ($results['result'] as $result) {
+            $mods[] = $result['_id'];
+        }
+        
+        return $mods;
     }
 
     public function append($file) {
