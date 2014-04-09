@@ -60,9 +60,6 @@ public class ReportFileInfo implements IReport {
 	@SerializedName("signature")
 	public String signature;
 
-	@SerializedName("filename")
-	public String filename;
-
 	@SerializedName("size")
 	public Long size;
 

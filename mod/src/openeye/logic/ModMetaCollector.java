@@ -9,7 +9,8 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import openeye.Log;
-import openeye.reports.ReportFileInfo;
+import openeye.reports.ReportAnalytics.SerializableSignature;
+import openeye.reports.*;
 import openeye.reports.ReportFileInfo.SerializableMod;
 import openeye.reports.ReportFileInfo.SerializableTweak;
 
@@ -114,7 +115,6 @@ public class ModMetaCollector {
 		public ReportFileInfo generateReport() {
 			ReportFileInfo report = new ReportFileInfo();
 			report.signature = signature();
-			report.filename = container.getName();
 			report.size = getSize();
 
 			{
@@ -307,10 +307,14 @@ public class ModMetaCollector {
 			signatures.put(meta.signature(), meta);
 	}
 
-	public List<String> getAllSignatures() {
-		List<String> result = Lists.newArrayList();
-		for (FileMeta meta : files.values())
-			result.add(meta.signature());
+	public List<SerializableSignature> getAllSignatures() {
+		List<SerializableSignature> result = Lists.newArrayList();
+		for (FileMeta meta : files.values()) {
+			SerializableSignature tmp = new SerializableSignature();
+			tmp.signature = meta.signature();
+			tmp.filename = meta.container.getName();
+			result.add(tmp);
+		}
 
 		return result;
 	}
