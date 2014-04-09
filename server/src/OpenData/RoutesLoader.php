@@ -18,21 +18,26 @@ class RoutesLoader {
 
         $loader = $this;
         $this->app['api.controller'] = $this->app->share(function () use ($loader) {
-            return new Controllers\ApiController(
-                    $loader->app['crashes.service'],
-                    $loader->app['analytics.service'],
-                    $loader->app['files.service'],
-                    $loader->app['mods.service'],
-                    class_exists('\Memcache') ? $loader->app['memcache'] : null
+            
+            $apiController = new Controllers\ApiController(
+                class_exists('\Memcache') ? $loader->app['memcache'] : null
             );
+            
+            $apiController->registerPacketHandler($loader->app['handler.analytics']);
+            $apiController->registerPacketHandler($loader->app['handler.ping']);
+            $apiController->registerPacketHandler($loader->app['handler.fileinfo']);
+            $apiController->registerPacketHandler($loader->app['handler.crashlog']);
+            $apiController->registerPacketHandler($loader->app['handler.filelist']);
+            
+            return $apiController;
         });
 
         $this->app['site.controller'] = $this->app->share(function () use ($loader) {
             return new Controllers\SiteController(
-                    $loader->app['twig'],
-                    $loader->app['request'],
-                    $loader->app['files.service'],
-                    $loader->app['mods.service']
+                $loader->app['twig'],
+                $loader->app['request'],
+                $loader->app['files.service'],
+                $loader->app['mods.service']
             );
         });
     }

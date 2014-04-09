@@ -6,43 +6,39 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use JsonSchema\Uri\UriRetriever;
 use JsonSchema\Validator;
+use OpenData\PacketHandlers\IPacketHandler;
 
 class ApiController {
 
     private static $FLOOD_LIMIT = 10000; // during dev
-            
-    private static $packetTypes = array(
-        'analytics',
-        'crashlog',
-        'file_info',
-        'filelist',
-        'ping'
-    );
     
-    protected $serviceCrashes;
-    protected $serviceAnalytics;
-    protected $serviceFiles;
-    protected $serviceMods;
     protected $memcache;
-    protected $schemas;
+    
+    private $schemas = array();
+    
+    /**
+     *
+     * @var type IPacketHandler[]
+     */
+    private $packetHandlers = array();
 
-    public function __construct($crashes, $analytics, $files, $mods, $memcache) {
-
-        $this->serviceCrashes = $crashes;
-        $this->serviceAnalytics = $analytics;
-        $this->serviceFiles = $files;
-        $this->serviceMods = $mods;
-
+    public function __construct($memcache) {
         $this->memcache = $memcache;
-
-        $this->schemas = array();
-
-        foreach (self::$packetTypes as $schema) {
-            $retriever = new UriRetriever();
-            $this->schemas[$schema] = $retriever->retrieve('file://' . __DIR__ . '/../Schemas/' . $schema . '.json');
-        }
     }
 
+    public function registerPacketHandler(IPacketHandler $handler) {
+        
+        $this->packetHandlers[$handler->getPacketType()] = $handler;
+        
+        $schema = $handler->getJsonSchema();
+        
+        if (!isset($this->schemas[$schema])) {
+            $retriever = new UriRetriever();
+            $this->schemas[$schema] = $retriever->retrieve('file://' . __DIR__ . '/../Schemas/'.$schema);
+        }
+        
+    }
+    
     public function main(Request $request) {
 
         if ($this->isUserFlooding($request)) {
@@ -67,11 +63,13 @@ class ApiController {
 
             $response = null;
 
-            if (!in_array($type, self::$packetTypes)) {
+            if (!isset($this->packetHandlers[$type])) {
                 throw new \Exception('Invalid packet type '.$type);
             }
+            
+            $handler = $this->packetHandlers[$type];
 
-            $errors = $this->getErrors($packet);
+            $errors = $this->getErrors($packet, $handler->getJsonSchema());
 
             unset($packet['type']);
 
@@ -79,38 +77,12 @@ class ApiController {
                 throw new \Exception(implode("\n", $errors));
             }
 
-
-            switch ($type) {
-                case 'analytics':
-                    $response = $this->analytics($packet);
-                    break;
-                case 'crashlog':
-                    $response = $this->crashlog($packet);
-                    break;
-                case 'file_info':
-                    $response = $this->modinfo($packet);
-                    break;
-                case 'ping':
-                    $response = $this->ping($packet);
-                    break;
-                case 'filelist':
-                    $response = $this->filelist($packet);
-                    break;
-            }
-
-            if ($response != null) {
+            if ($response = $handler->execute($packet)) {
                 $responses = array_merge($responses, $response);
             }
         }
 
         return new JsonResponse($responses);
-    }
-
-    private function ping($packet) {
-        
-        $packet['type'] = 'pong';
-
-        return $packet;        
     }
     
     private function isUserFlooding(Request $request) {
@@ -133,135 +105,15 @@ class ApiController {
         return false;
     }
 
-    private function filelist($packet) {
-        $this->serviceFiles->append($packet);
-    }
-    
-    private function modinfo($packet) {
-        $this->serviceFiles->append($packet);
-        
-        if (isset($packet['mods'])) {
-            foreach ($packet['mods'] as $mod) {
-                if (empty($mod['parent'])) {
-                    $this->serviceMods->upsert($mod['modId'], array(
-                        'authors' => $mod['authors'],
-                        'credits' => $mod['credits'],
-                        'description' => $mod['description'],
-                        'name' => $mod['name'],
-                        'parent' => $mod['parent'],
-                        'url' => $mod['url'],
-                        'updateUrl' => $mod['updateUrl']
-                    ));
-                }
-            }
-        }
-    }
-
-    private function crashlog($packet) {
-        // allow this to throw
-        $date = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));
-        $date->setTimezone(new \DateTimeZone('Europe/London'));
-        $packet['date'] = $date;
-        unset($packet['timezone']);
-        $this->serviceCrashes->add($packet);
-    }
-
-    private function analytics($packet) {
-
-        $packet['created_at'] = new \MongoDate();
-
-        $this->serviceAnalytics->add($packet);
-        
-        // find all the mods we already have in the database
-        $filesData = $this->serviceFiles->findIn($packet['signatures']);
-
-        $responses = array();
-
-        $fileSignaturesFound = array();
-
-        // loop through them all and check for any additional data needed
-        // for example, packages, classes, file, or security/update warnings
-        foreach ($filesData as $fileData) {
-
-            $fileSignaturesFound[] = $fileData['_id'];
-
-            $fileNode = array(
-                'signature' => $fileData['_id']
-            );
-
-            if (!isset($fileData['packages'])) {
-                $responses[] = array_merge($fileNode, array(
-                    'type' => 'file_info'
-                ));
-            }
-
-            if ($this->shouldRequestFiles($fileData)) {
-                $responses[] = array_merge($fileNode, array(
-                    'type' => 'filelist'
-                ));
-            }
-
-            if ($this->shouldUploadFile($fileData)) {
-                $responses[] = array_merge($fileNode, array(
-                    'type' => 'upload_file'
-                ));
-            }
-
-            if (isset($fileData['security_warning']) && is_string($fileData['security_warning'])) {
-                $responses[] = array_merge($fileNode, array(
-                    'type' => 'security_warning',
-                    'message' => $fileData['security_warning']
-                ));
-            }
-
-            if (isset($fileData['notes']) && is_array($fileData['notes'])) {
-                foreach ($fileData['notes'] as $note) {
-                    $responses[] = array_merge($fileNode, array(
-                        'type' => 'note',
-                        'note_type' => $note['type'],
-                        'priority' => $note['priority'],
-                        'message' => $note['message']
-                    ));
-                }
-            }
-        }
-
-        // loop through any mods we didn't find in the database,
-        // add them in, then tell the client we need the rest of the packages
-        foreach ($packet['signatures'] as $signature) {
-            if (!in_array($signature, $fileSignaturesFound)) {
-                $this->serviceFiles->create($signature);
-                $responses[] = array(
-                    'type' => 'file_info',
-                    'signature' => $signature
-                );
-            }
-        }
-
-
-        return $responses;
-    }
-
-    private function shouldRequestFiles($fileData) {
-        return isset($fileData['list_files']) &&
-                $fileData['list_files'] &&
-                !isset($fileData['files']);
-    }
-
-    private function shouldUploadFile($fileData) {
-        return isset($fileData['upload_file']) &&
-                $fileData['upload_file'] &&
-                !isset($fileData['file_id']);
-    }
-
-    private function getErrors($packet) {
+    private function getErrors($packet, $schema) {
 
         // real nasty, but the json validator requires we pass in as an stdClass.
         // so we'll recode it as a class.
         $packet = json_decode(json_encode($packet), false);
 
         $validator = new Validator();
-        $validator->check($packet, $this->schemas[$packet->type]);
+        $validator->check($packet, $this->schemas[$schema]);
+        
         if (!$validator->isValid()) {
             $errors = array();
             foreach ($validator->getErrors() as $error) {
