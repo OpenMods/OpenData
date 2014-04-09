@@ -67,7 +67,7 @@ class FilesService extends BaseService {
         return $mods;
     }
 
-    public function append($file) {
+    public function append($file, $overwrite = false) {
 
         $signature = $file['signature'];
 
@@ -80,7 +80,7 @@ class FilesService extends BaseService {
         unset($file['signature']);
         
         foreach ($file as $k => $v) {
-            if (!isset($currentEntry[$k])) {
+            if ($overwrite || (!$overwrite && !isset($currentEntry[$k]))) {
                 $currentEntry[$k] = $v;
             }
         }

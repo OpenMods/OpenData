@@ -59,7 +59,7 @@ class Analytics implements IPacketHandler {
                     $this->serviceFiles->append(array(
                        'signature' => $fileData['_id'],
                        'filenames' => $fileData['filenames']
-                    ));
+                    ), true);
                 }
             }
 
