@@ -6,9 +6,9 @@ import java.util.Collection;
 
 import openeye.Log;
 import openeye.reports.*;
-import openeye.requests.IRequest;
-import openeye.requests.RequestFileInfo;
-import openeye.requests.RequestPong;
+import openeye.responses.IResponse;
+import openeye.responses.ResponseFileInfo;
+import openeye.responses.ResponsePong;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -71,12 +71,12 @@ public class TypedCollections {
 		private static final long serialVersionUID = -6580030458427773185L;
 	}
 
-	public static class RequestsList extends ArrayList<IRequest> {
+	public static class ResponseList extends ArrayList<IResponse> {
 		private static final long serialVersionUID = 4069373518963113118L;
 	}
 
 	private static final BiMap<String, Class<? extends IReport>> REPORTS_TYPES = HashBiMap.create();
-	private static final BiMap<String, Class<? extends IRequest>> REQUESTS_TYPES = HashBiMap.create();
+	private static final BiMap<String, Class<? extends IResponse>> RESPONSE_TYPES = HashBiMap.create();
 
 	public static final Object REPORT_LIST_CONVERTER = new TypedListConverter<IReport>(REPORTS_TYPES) {
 		@Override
@@ -85,10 +85,10 @@ public class TypedCollections {
 		}
 	};
 
-	public static final Object REQUEST_LIST_CONVERTER = new TypedListConverter<IRequest>(REQUESTS_TYPES) {
+	public static final Object RESPONSE_LIST_CONVERTER = new TypedListConverter<IResponse>(RESPONSE_TYPES) {
 		@Override
-		protected Collection<IRequest> createCollection() {
-			return new RequestsList();
+		protected Collection<IResponse> createCollection() {
+			return new ResponseList();
 		}
 	};
 
@@ -98,8 +98,8 @@ public class TypedCollections {
 		REPORTS_TYPES.put("crash", ReportCrash.class);
 		REPORTS_TYPES.put("ping", ReportPing.class);
 
-		REQUESTS_TYPES.put("file_info", RequestFileInfo.class);
-		REQUESTS_TYPES.put("pong", RequestPong.class);
+		RESPONSE_TYPES.put("file_info", ResponseFileInfo.class);
+		RESPONSE_TYPES.put("pong", ResponsePong.class);
 	}
 
 }
