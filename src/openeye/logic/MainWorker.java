@@ -9,9 +9,7 @@ import openeye.logic.TypedCollections.ReportsList;
 import openeye.logic.TypedCollections.ResponseList;
 import openeye.net.GenericSender.FailedToSend;
 import openeye.net.ReportSender;
-import openeye.reports.IReport;
-import openeye.reports.ReportFileInfo;
-import openeye.reports.ReportPing;
+import openeye.reports.*;
 import openeye.responses.IResponse;
 import openeye.storage.IDataSource;
 import openeye.storage.Storages;
@@ -32,7 +30,7 @@ public final class MainWorker {
 	private static Throwable lethalException;
 
 	public static void storeThrowableForReport(Throwable throwable) {
-		lethalException = throwable;
+		if (lethalException == null) lethalException = throwable;
 	}
 
 	private void initStorage(InjectedDataStore dataStore) {
@@ -84,7 +82,7 @@ public final class MainWorker {
 		final ReportsList initialReport = new ReportsList();
 
 		try {
-			initialReport.add(AnalyticsReportBuilder.build(config, collector));
+			initialReport.add(ReportBuilders.buildAnalyticsReport(config, collector));
 			initialReport.add(new ReportPing());
 		} catch (Exception e) {
 			Log.warn(e, "Failed to create initial report");
@@ -141,7 +139,9 @@ public final class MainWorker {
 	}
 
 	private void storeCrash(Throwable throwable) {
-
+		ReportCrash crashReport = ReportBuilders.buildCrashReport(throwable, collector);
+		IDataSource<ReportCrash> crashStorage = storages.pendingCrashes.createNew();
+		crashStorage.store(crashReport);
 	}
 
 	private void startDataCollection(final InjectedDataStore dataStore, final ASMDataTable table) {
@@ -175,7 +175,7 @@ public final class MainWorker {
 					if (storages != null) {
 						storeCrash(lethalException);
 					} else {
-						System.err.println("[OpenEye] Can't store crash report, since storage is not initlized");
+						System.err.println("[OpenEye] Can't store crash report, since storage is not initialized");
 					}
 				}
 			}
