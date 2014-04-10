@@ -1,0 +1,36 @@
+{% extends 'base.twig' %}
+{% block main %}
+<form role="form">
+  <div class="form-group">
+    <label for="exampleInputEmail1">Mod</label>
+    <select class="form-control">
+        <option>Any</option>
+        <option>OpenBlocks</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Version</label>
+    <select class="form-control">
+        <option>Any</option>
+        <option>1.2.7</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">File</label>
+    <select class="form-control">
+        <option>Any</option>
+        <option>Blah-1.7.1.jar (sha: 123inwoindfsadfsadnauisdonaisdonaisdonaisdoaisdn)</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Package</label>
+    <input type="text" class="form-control" placeholder="openblocks.common">
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox"> Check me out
+    </label>
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+{% endblock %}

@@ -62,26 +62,42 @@ class RoutesLoader {
                 $loader->app['mods.service']
             );
         });
+
+        $this->app['crashes.controller'] = $this->app->share(function () use ($loader) {
+            return new Controllers\CrashesController(
+                $loader->app['twig'],
+                $loader->app['files.service'],
+                $loader->app['mods.service'],
+                $loader->app['crashes.service']
+            );
+        });
     }
 
     public function bindRoutesToControllers() {
 
+        $api = $this->app["controllers_factory"];
+        $site = $this->app["controllers_factory"];
+        
         /**
          * API
          */
-        $api = $this->app["controllers_factory"];
         $api->post('/data', "api.controller:main");
+        
         
         /**
          * Home
          */
-        $site = $this->app["controllers_factory"];
         $site->get('/', "home.controller:home");
         
         /**
          * Mods
          */
         $site->get('/mod/{modId}', "mod.controller:modinfo");
+        
+        /**
+         * Crashes
+         */
+        $site->get('/crashes', "crashes.controller:search");
         
         /**
          * Packages
