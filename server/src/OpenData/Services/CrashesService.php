@@ -11,11 +11,24 @@ class CrashesService extends BaseService {
         $this->db->crashes->insert($packet);
     }
     
+    
+    public function findByPackage($package, $skip = 0, $limit = 40) {
+        return $this->find(array('stack.class' => new \MongoRegex('/^'.preg_quote($package).'\./')))
+                ->sort(array('timestamp' => -1))
+                ->skip($skip)
+                ->limit($limit);
+           
+    }
+    
     public function findLatest($skip = 0, $limit = 40) {
-        return $this->db->crashes->find()
-                                    ->sort(array('timestamp' => -1))
-                                    ->skip($skip)
-                                    ->limit($limit);
+        return $this->find()
+                ->sort(array('timestamp' => -1))
+                ->skip($skip)
+                ->limit($limit);
     }
 
+    private function find($query = array()) {
+        return $this->db->crashes->find($query);
+    }
+    
 }

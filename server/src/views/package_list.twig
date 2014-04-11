@@ -1,0 +1,12 @@
+{% extends 'base.twig' %}
+{% block main %}
+<div class="page-header">
+    <h1>Packages</h1>
+</div>
+<ul>
+    {% for package in packages %}
+        <li><a href="{{ relative('package/' ~ package) }}">{{ package }}</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

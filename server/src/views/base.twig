@@ -29,6 +29,7 @@
                 </div>
                 <ul class="nav navbar-nav navbar-right">
                   <li><a href="{{ relative('') }}">Mods</a></li>
+                  <li><a href="{{ relative('package') }}">Packages</a></li>
                   <li><a href="{{ relative('crashes') }}">Crashes</a></li>
                 </ul>
               </div>
@@ -38,5 +39,6 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <script src="{{ relative('js/bootstrap.min.js') }}"></script>
+        {% block javascript %}{% endblock %}
     </body>
 </html>

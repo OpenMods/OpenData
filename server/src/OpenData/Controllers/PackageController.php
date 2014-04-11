@@ -8,10 +8,20 @@ class PackageController {
     private $serviceFiles;
     private $serviceMods;
     
-    public function __construct($twig, $files, $mods) {
+    public function __construct($twig, $files, $mods, $crashes) {
         $this->twig = $twig;
         $this->serviceFiles = $files;
         $this->serviceMods = $mods;
+        $this->serviceCrashes = $crashes;
+    }
+    
+    public function listAll() {
+
+        $packages = $this->serviceFiles->findUniquePackages();
+        usort($packages, 'strcasecmp');
+        return $this->twig->render('package_list.twig', array(
+            'packages' => $packages
+        ));
     }
     
     public function package($package) {
@@ -42,7 +52,8 @@ class PackageController {
         return $this->twig->render('package.twig', array(
             'packageName' => $package,
             'mods' => $modList,
-            'subpackages' => $this->serviceFiles->findSubPackages($package)
+            'subpackages' => $this->serviceFiles->findSubPackages($package),
+            'crashes' => iterator_to_array($this->serviceCrashes->findByPackage($package))
         ));
     }
     

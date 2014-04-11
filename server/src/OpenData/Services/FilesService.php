@@ -97,5 +97,9 @@ class FilesService extends BaseService {
     public function findOne($signature) {
         return $this->db->files->findOne(array('_id' => $signature));
     }
+    
+    public function findUniquePackages() {
+        return $this->db->files->distinct('packages');
+    }
 
 }

@@ -59,7 +59,8 @@ class RoutesLoader {
             return new Controllers\PackageController(
                 $loader->app['twig'],
                 $loader->app['files.service'],
-                $loader->app['mods.service']
+                $loader->app['mods.service'],
+                $loader->app['crashes.service']
             );
         });
 
@@ -102,6 +103,7 @@ class RoutesLoader {
         /**
          * Packages
          */
+        $site->get('/package', "package.controller:listAll");
         $site->get('/package/{package}', "package.controller:package");
 
         $this->app->mount($this->app["api.endpoint"] . '/' . $this->app["api.version"], $api);

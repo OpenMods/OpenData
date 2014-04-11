@@ -17,7 +17,7 @@
 <h3>Included with mods:</h3>
 <ul>
 {% for mod in mods %}
-    <li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>
+    <li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a></li>
         <ul>
         {% for file in mod.files %}
             <li>{{ file.filenames|first }}</li>
@@ -27,5 +27,24 @@
 {% endfor %}
 </ul>
 
+{% if crashes|length > 0 %}
+<h3>Recent crashes:</h3>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Date</th><th>Class</th><th>Exception</th><th>File</th><th>Method</th><th>Line</th>            
+    </tr>
+    </thead>
+    <tbody>
+    {% for crash in crashes %}
+    {% set trace = crash.stack|first %}
+        <tr>
+            <td>{{ (crash.timestamp/1000)|round|date("Y-m-d h:i:s") }}</td><td>{{ trace.class }}</td><td>{{ crash.exception }}</td><td>{{ trace.file }}</td><td>{{ trace.method }}</td><td>{{ trace.line }}</td>            
+        </tr>
+    {% endfor %}
+    </tbody>
+    
+</table>
+{% endif %}
 
 {% endblock %}

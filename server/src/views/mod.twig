@@ -15,87 +15,80 @@
     <p><strong>Url:</strong> <a href="{{ modInfo.url }}" target="_blank">{{ modInfo.url }}</a></p>
 {% endif %}
 
-<h2>Versions:</h2>
+<h3>Files:</h3>
 
-<div class="row">
-
-    <div class="col-xs-2"> <!-- required for floating -->
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs tabs-left">
-          {% for version in versions|keys %}
-            <li{% if loop.first %} class="active"{% endif %}><a href="#{{ version|id }}" data-toggle="tab">{{ version }}</a></li>
-          {% endfor %}
-        </ul>
-    </div>
-
-    <div class="col-xs-10">
-        <!-- Tab panes -->
-        <div class="tab-content">
-          {% for version, files in versions %}
-            <div class="tab-pane{% if loop.first %} active{% endif %}" id="{{ version|id }}">
-
-                <ul class="nav nav-pills" style="margin-bottom: 10px;">
-                    <li class="active"><a href="#">Files</a></li>
-                    <li><a href="#">Exceptions</a></li>
-                    <li><a href="#">Analytics</a></li>
-                </ul>
-
-              {% for file in files %}
-                <div class="panel panel-default">
-                    <div class="panel-heading">{{ file.filenames|first }} ({{ file.size }} bytes)</div>
-                    <div class="panel-body">
-
-                        <h4>Signature</h4>
-                        {{ file._id }}
-                        {% if file.classTransformers|length > 0 %}
-                        <h4>Class transformers</h4>
-                            {% for transformer in file.classTransformers %}
-                                {{ transformer }}<br/>
-                            {% endfor %}
-                        {% endif%}
-                        
-                        <h4>Known filenames</h4>
-                        <ul>
-                        {% for filename in file.filenames %}
-                            <li>{{ filename }}</li>
+<table class="table">
+    {% for version, files in versions %}
+    <tr>
+        <th>{{ version }}</th>
+        <td>
+        {% for file in files %}
+            <div class="panel panel-default">
+                <div class="panel-heading">{{ file.filenames|first }} ({{ file.size }} bytes)</div>
+                <div class="panel-body">
+                    <div class="row">
+                      <div class="col-md-3"><strong>Signature:</strong></div>
+                      <div class="col-md-9">{{ file._id }}</div>
+                    </div>                    
+                    {% if file.classTransformers|length > 0 %}
+                    <div class="row">
+                      <div class="col-md-3"><strong>Class transformers:</strong></div>
+                      <div class="col-md-9">
+                        {% for transformer in file.classTransformers %}
+                            {{ transformer }}<br/>
                         {% endfor %}
-                        </ul>
-                                
-                        <h4>Mods included:</h4>
-                        <ul>
-                        {% for mod in file.mods %}
-                            <li>{{ mod.name }} <small>({{ mod.version }})</small></li>
-                        {% endfor %}
-                        </ul>
-                        
-                        <div class="panel-group" id="accordion">
-                          <div class="panel panel-default">
-                            <div class="panel-heading">
-                              <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#packages">
-                                  Packages
-                                </a>
-                              </h4>
-                            </div>
-                            <div id="packages" class="panel-collapse collapse in">
-                              <div class="panel-body">
-                                <ul>
-                                {% for package in file.packages|sort %}
-                                    <li><a href="{{ relative('package/' ~ package) }}">{{ package }}</a></li>
-                                {% endfor %}
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
+                      </div>
                     </div>
+                    {% endif%}
+                    
+                    <div class="row">
+                      <div class="col-md-3"><strong>Known filenames:</strong></div>
+                      <div class="col-md-9">
+                        {% for filename in file.filenames %}
+                            {{ filename }}<br />
+                        {% endfor %}
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-3"><strong>Contains mods:</strong></div>
+                      <div class="col-md-9">
+                        {% for mod in file.mods %}
+                            {{ mod.name }} <small>({{ mod.version }})</small><br />
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <div class="row packages_list" style="display: none;">
+                      <div class="col-md-3"><strong>Packages:</strong></div>
+                      <div class="col-md-9">
+                        {% for package in file.packages|sort %}
+                            <a href="{{ relative('package/' ~ package) }}">{{ package }}</a><br />
+                        {% endfor %}
+                      </div>
+                    </div>
+                      
+                    <div style="margin-top: 15px;">
+                      <button type="button" class="btn btn-primary show_packages"><span class="glyphicon glyphicon-list"></span> View packages</button>
+                      <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> View crashes</button>
+                    </div>
+                    
                 </div>
-              {% endfor %}
             </div>
           {% endfor %}
-        </div>
-    </div>
+        </td>         
+    </tr>
+    {% endfor %}   
+</table>
 
-</div>
+{% endblock %}
+
+
+{% block javascript %}
+<script type="text/javascript">
+    $(function() {
+        $('.show_packages').click(function(e) {
+           $(this).parents('.panel-body').find('.packages_list').toggle();
+        });
+    });
+</script>
 {% endblock %}
