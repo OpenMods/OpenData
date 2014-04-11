@@ -2,10 +2,10 @@ package openeye.storage;
 
 import java.io.File;
 
-import net.minecraft.crash.CrashReport;
 import openeye.logic.*;
 import openeye.logic.TypedCollections.ReportsList;
 import openeye.logic.TypedCollections.ResponseList;
+import openeye.reports.ReportCrash;
 
 public class Storages {
 	public static final String CONFIG_ID = "config";
@@ -13,7 +13,7 @@ public class Storages {
 
 	public final IQueryableStorage<LogList> installedMods;
 	public final IQueryableStorage<Config> config;
-	public final IWorkingStorage<CrashReport> pendingCrashes;
+	public final IWorkingStorage<ReportCrash> pendingCrashes;
 	public final IAppendableStorage<ReportsList> sentReports;
 	public final IAppendableStorage<ResponseList> receivedRequests;
 
@@ -23,7 +23,7 @@ public class Storages {
 
 		installedMods = new GsonPredefinedStorage<LogList>(eyeDir, LogList.class, GsonUtils.PRETTY_GSON, INSTALLED_MODS_ID);
 		config = new GsonPredefinedStorage<Config>(eyeDir, Config.class, GsonUtils.PRETTY_GSON, CONFIG_ID);
-		pendingCrashes = new GsonWorkingStorage<CrashReport>(eyeDir, "pending-crash", CrashReport.class, GsonUtils.PRETTY_GSON);
+		pendingCrashes = new GsonWorkingStorage<ReportCrash>(eyeDir, "pending-crash", ReportCrash.class, GsonUtils.PRETTY_GSON);
 		sentReports = new GsonArchiveStorage<ReportsList>(eyeDir, "report", "report.json", ReportsList.class, GsonUtils.PRETTY_GSON);
 		receivedRequests = new GsonArchiveStorage<ResponseList>(eyeDir, "request", "request.json", ResponseList.class, GsonUtils.PRETTY_GSON);
 	}

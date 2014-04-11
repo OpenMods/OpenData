@@ -329,7 +329,22 @@ public class ModMetaCollector {
 	}
 
 	public Set<String> getModsForSignature(String signature) {
-		// TODO Auto-generated method stub
-		return null;
+		FileMeta meta = signatures.get(signature);
+		if (meta != null) return ImmutableSet.copyOf(meta.mods.keySet());
+		else return ImmutableSet.of();
+	}
+
+	public Set<String> identifyClassSource(String className) {
+		String packageName = extractPackage(className);
+
+		Set<String> result = Sets.newHashSet();
+		if (packageName.startsWith("net.minecraft") ||
+				packageName.startsWith("net.minecraftforge") ||
+				packageName.startsWith("cpw.mods.fml")) return result;
+
+		for (FileMeta m : files.values())
+			if (m.packages.contains(packageName)) result.add(m.signature());
+
+		return result;
 	}
 }
