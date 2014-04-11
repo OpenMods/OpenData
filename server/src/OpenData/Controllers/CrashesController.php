@@ -19,13 +19,9 @@ class CrashesController {
         
     }
     
-    public function filterPanel() {
-        
-    }
-    
     public function search() {
         return $this->twig->render('crashes.twig', array(
-            
+            'crashes' => $this->serviceCrashes->findLatest()
         ));
     }
     
