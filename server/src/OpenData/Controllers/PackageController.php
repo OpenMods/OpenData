@@ -49,11 +49,20 @@ class PackageController {
             }
         }
         
+        $parentPackage = null;
+        if (substr_count($package, '.') > 0) {
+            $parentPackage = substr($package, 0, (strlen ($package)) - (strlen (strrchr($package,'.'))));
+            if (!$this->serviceFiles->hasPackage($parentPackage)) {
+                $parentPackage = null;
+            }
+        }
+        
         return $this->twig->render('package.twig', array(
             'packageName' => $package,
             'mods' => $modList,
             'subpackages' => $this->serviceFiles->findSubPackages($package),
-            'crashes' => iterator_to_array($this->serviceCrashes->findByPackage($package))
+            'crashes' => iterator_to_array($this->serviceCrashes->findByPackage($package)),
+            'parent' => $parentPackage
         ));
     }
     

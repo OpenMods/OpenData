@@ -50,6 +50,10 @@ class FilesService extends BaseService {
         return $packages;
     }
     
+    public function hasPackage($package) {
+        return $this->findByPackage($package)->count() > 0;
+    }
+    
     public function findUniqueModIdsForPackage($package) {
         
         $results = $this->db->files->aggregate(

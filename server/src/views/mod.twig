@@ -1,7 +1,9 @@
 {% extends 'base.twig' %}
 {% block main %}
 
+<div class="page-header">
 <h1>{{ modInfo.name }}</h1>
+</div>
 {% if modInfo.description is not empty %}
     <p class="lead">{{ modInfo.description }}</p>
 {% endif %}
