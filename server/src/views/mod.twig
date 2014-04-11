@@ -26,9 +26,15 @@
         <td>
         {% for file in files %}
             <div class="panel panel-default">
-                <div class="panel-heading">{{ file.filenames|first }} ({{ file.size }} bytes)</div>
+                <div class="panel-heading">{{ file.filenames|first }} ({{ file.size }} bytes)
+                    <div class="btn-group btn-group-xs pull-right">
+                      <button type="button" class="btn btn-primary show_packages"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View packages</button>
+                      <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;View crashes</button>
+                    </div></div>
                 <div class="panel-body">
-                    <div class="row">
+                      
+                                        
+                    <div class="row" style="clear:both;">
                       <div class="col-md-3"><strong>Signature:</strong></div>
                       <div class="col-md-9">{{ file._id }}</div>
                     </div>                    
@@ -60,6 +66,7 @@
                         {% endfor %}
                       </div>
                     </div>
+                      
                     <div class="row packages_list" style="display: none;">
                       <div class="col-md-3"><strong>Packages:</strong></div>
                       <div class="col-md-9">
@@ -67,11 +74,6 @@
                             <a href="{{ relative('package/' ~ package) }}">{{ package }}</a><br />
                         {% endfor %}
                       </div>
-                    </div>
-                      
-                    <div style="margin-top: 15px;">
-                      <button type="button" class="btn btn-primary show_packages"><span class="glyphicon glyphicon-list"></span> View packages</button>
-                      <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> View crashes</button>
                     </div>
                     
                 </div>
@@ -89,7 +91,7 @@
 <script type="text/javascript">
     $(function() {
         $('.show_packages').click(function(e) {
-           $(this).parents('.panel-body').find('.packages_list').toggle();
+           $(this).parents('.panel').find('.packages_list').toggle();
         });
     });
 </script>
