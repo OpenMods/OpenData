@@ -2,9 +2,9 @@ package openeye.storage;
 
 import java.io.File;
 
-import openeye.logic.*;
-import openeye.logic.TypedCollections.ReportsList;
-import openeye.logic.TypedCollections.ResponseList;
+import openeye.logic.Config;
+import openeye.logic.GsonUtils;
+import openeye.logic.LogList;
 import openeye.reports.ReportCrash;
 
 public class Storages {
@@ -14,8 +14,7 @@ public class Storages {
 	public final IQueryableStorage<LogList> installedMods;
 	public final IQueryableStorage<Config> config;
 	public final IWorkingStorage<ReportCrash> pendingCrashes;
-	public final IAppendableStorage<ReportsList> sentReports;
-	public final IAppendableStorage<ResponseList> receivedRequests;
+	public final IAppendableStorage<Object> sessionArchive;
 
 	public Storages(File mcDir) {
 		File eyeDir = new File(mcDir, "reports");
@@ -24,7 +23,6 @@ public class Storages {
 		installedMods = new GsonPredefinedStorage<LogList>(eyeDir, LogList.class, GsonUtils.PRETTY_GSON, INSTALLED_MODS_ID);
 		config = new GsonPredefinedStorage<Config>(eyeDir, Config.class, GsonUtils.PRETTY_GSON, CONFIG_ID);
 		pendingCrashes = new GsonWorkingStorage<ReportCrash>(eyeDir, "pending-crash", ReportCrash.class, GsonUtils.PRETTY_GSON);
-		sentReports = new GsonArchiveStorage<ReportsList>(eyeDir, "report", "report.json", ReportsList.class, GsonUtils.PRETTY_GSON);
-		receivedRequests = new GsonArchiveStorage<ResponseList>(eyeDir, "request", "request.json", ResponseList.class, GsonUtils.PRETTY_GSON);
+		sessionArchive = new GsonSessionStorage<Object>(eyeDir, "json", Object.class, GsonUtils.PRETTY_GSON);
 	}
 }
