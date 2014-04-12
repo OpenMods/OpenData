@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
@@ -42,7 +43,7 @@ public class GsonWorkingStorage<T> extends GsonStorageBase<T> implements IWorkin
 
 	@Override
 	public Collection<IDataSource<T>> listAll() {
-		return sources.values();
+		return ImmutableList.copyOf(sources.values());
 	}
 
 	@Override
