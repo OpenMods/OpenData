@@ -14,8 +14,13 @@ import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLConstructionEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 
 public class Mod extends DummyModContainer {
+
+	private LoadController controller;
+
+	public static boolean I_LIKE_MY_MINECRAFT_UNCRASHED = true;
 
 	public Mod() {
 		super(new ModMetadata());
@@ -32,6 +37,7 @@ public class Mod extends DummyModContainer {
 
 	@Override
 	public boolean registerBus(EventBus bus, LoadController controller) {
+		this.controller = controller;
 		bus.register(this);
 		return true;
 	}
@@ -47,6 +53,11 @@ public class Mod extends DummyModContainer {
 	public void onInit(FMLInitializationEvent evt) {
 		// give thread enough time to receive IMC
 		if (worker != null) worker.waitForFirstMsg();
+	}
+
+	@Subscribe
+	public void onInit(FMLPostInitializationEvent evt) {
+		if (!I_LIKE_MY_MINECRAFT_UNCRASHED) controller.errorOccurred(this, new RuntimeException("derp"));
 	}
 
 	@Override

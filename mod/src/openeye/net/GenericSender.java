@@ -86,6 +86,8 @@ public abstract class GenericSender<I, O> {
 				stream.close();
 
 				return response;
+			} catch (FailedToSend e) {
+				throw e;
 			} catch (SocketTimeoutException e) {
 				Log.warn("Connection to %s timed out (retry %d)", url, retry);
 			} catch (Throwable t) {

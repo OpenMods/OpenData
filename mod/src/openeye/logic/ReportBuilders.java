@@ -27,7 +27,7 @@ public class ReportBuilders {
 		TimeZone tz = Calendar.getInstance().getTimeZone();
 		analytics.timezone = tz.getID();
 
-		analytics.workTime = data.getCollectingDuration();
+		analytics.workTime = data.getCollectingDuration() / 1000.0f;
 
 		FmlForgeRuntime runtime = new FmlForgeRuntime();
 		runtime.mcpVersion = Loader.instance().getMCPVersionString();
@@ -56,7 +56,7 @@ public class ReportBuilders {
 	public static ReportCrash buildCrashReport(Throwable throwable, ModMetaCollector collector) {
 		ReportCrash crash = new ReportCrash();
 
-		crash.timestamp = new Date().getTime();
+		crash.timestamp = new Date().getTime() / 1000; // bleh
 
 		crash.exceptionCls = throwable.getClass().getName();
 
@@ -74,7 +74,10 @@ public class ReportBuilders {
 			if (collector != null) el.signatures = collector.identifyClassSource(clsName);
 			trace.add(el);
 		}
+
 		crash.stackTrace = trace;
+
+		if (collector != null) crash.states = collector.collectStates();
 
 		return crash;
 	}

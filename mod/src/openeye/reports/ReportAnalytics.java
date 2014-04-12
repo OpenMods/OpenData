@@ -50,7 +50,7 @@ public class ReportAnalytics implements IReport {
 	public List<SerializableSignature> signatures = ImmutableList.of();
 
 	@SerializedName("workTime")
-	public Long workTime;
+	public float workTime;
 
 	@SerializedName("tags")
 	public Set<String> tags;
