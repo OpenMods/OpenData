@@ -8,10 +8,6 @@
             "type": "string",
             "required": true
         },
-        "date": {
-            "type": "string",
-            "required": true
-        },
         "exception_cause": {
             "type": "string",
             "required": true
@@ -20,8 +16,8 @@
             "type": "string",
             "required": true
         },
-        "timezone": {
-            "type": "string",
+        "timestamp": {
+            "type": "integer",
             "required": true
         },
         "branding": {

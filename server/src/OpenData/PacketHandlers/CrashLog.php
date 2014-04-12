@@ -19,13 +19,7 @@ class CrashLog implements IPacketHandler {
     }
     
     public function execute($packet) {
-
-        $date = new \DateTime($packet['date'], new \DateTimeZone($packet['timezone']));
-        $date->setTimezone(new \DateTimeZone('Europe/London'));
-        $packet['date'] = $date;
-        unset($packet['timezone']);
         $this->serviceCrashes->add($packet);
-        
     }
 
 }
