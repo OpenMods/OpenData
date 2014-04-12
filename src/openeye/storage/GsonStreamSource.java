@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 
 import openeye.Log;
 
-import com.google.common.io.Closer;
 import com.google.gson.Gson;
 
 public abstract class GsonStreamSource<T> implements IDataSource<T> {
@@ -24,6 +23,14 @@ public abstract class GsonStreamSource<T> implements IDataSource<T> {
 
 	protected abstract boolean sourceExists();
 
+	protected void afterWrite(Writer writer) throws IOException {
+		writer.close();
+	}
+
+	protected void afterRead(Reader reader) throws IOException {
+		reader.close();
+	}
+
 	public GsonStreamSource(String id, Class<? extends T> cls, Gson gson) {
 		this.id = id;
 		this.gson = gson;
@@ -40,13 +47,12 @@ public abstract class GsonStreamSource<T> implements IDataSource<T> {
 		if (!sourceExists()) return null;
 
 		try {
-			final Closer closer = Closer.create();
+			InputStream input = createInputStream();
+			Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
 			try {
-				InputStream input = closer.register(createInputStream());
-				Reader reader = closer.register(new InputStreamReader(input, StandardCharsets.UTF_8));
 				return gson.fromJson(reader, cls);
 			} finally {
-				closer.close();
+				afterRead(reader);
 			}
 		} catch (Throwable t) {
 			Log.severe(t, "Failed to save JSON data to file %s (id: %s)", description(), id);
@@ -57,13 +63,12 @@ public abstract class GsonStreamSource<T> implements IDataSource<T> {
 	@Override
 	public void store(T value) {
 		try {
-			final Closer closer = Closer.create();
+			OutputStream output = createOutputStream();
+			Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
 			try {
-				OutputStream output = closer.register(createOutputStream());
-				Writer writer = closer.register(new OutputStreamWriter(output, StandardCharsets.UTF_8));
 				gson.toJson(value, writer);
 			} finally {
-				closer.close();
+				afterWrite(writer);
 			}
 		} catch (Throwable t) {
 			Log.warn(t, "Failed to save JSON data to file %s (id: %s)", description(), id);

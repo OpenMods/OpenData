@@ -38,12 +38,12 @@ public final class MainWorker {
 	}
 
 	private void storeReport(ReportsList report) {
-		IDataSource<ReportsList> list = storages.sentReports.createNew();
+		IDataSource<Object> list = storages.sessionArchive.createNew("report");
 		list.store(report);
 	}
 
 	private void storeRequest(ResponseList report) {
-		IDataSource<ResponseList> list = storages.receivedRequests.createNew();
+		IDataSource<Object> list = storages.sessionArchive.createNew("request");
 		list.store(report);
 	}
 
@@ -109,7 +109,7 @@ public final class MainWorker {
 				try {
 					storeRequest(response);
 				} catch (Exception e) {
-					Log.warn(e, "Failed to store report/request");
+					Log.warn(e, "Failed to store request");
 				}
 
 				try {
