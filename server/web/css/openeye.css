@@ -1,0 +1,15 @@
+.nav-home  {
+    overflow: hidden;
+    zoom: 1;
+    margin-top: 15px;
+    margin-bottom: 30px;
+}
+.nav-home > li {
+    float: left;
+    padding: 0px;
+    margin: 0;
+}
+.nav-home > li > a {
+    padding: 4px;
+    margin: 0;
+}

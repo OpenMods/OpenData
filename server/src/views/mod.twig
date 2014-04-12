@@ -102,11 +102,10 @@
            $(this).parents('.panel').find('.packages_list').toggle();
         });
         
-        var latestStats = [{{ hourly|json_encode()|raw }}];
-        
-        $.plot("#stats_hourly", latestStats, {
+        $.plot("#stats_hourly", {{ hourly|json_encode()|raw }}, {
             xaxis: {
                 minTickSize: [1, "hour"],
+		twelveHourClock: true,
                 mode: "time"
             }
         });

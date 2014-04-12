@@ -59,19 +59,32 @@ class ModController {
         
         $lastHour = strtotime(date("Y-m-d H:00:00"));
         
-        $hourlyFormatted = array();
-        for ($i = 0; $i < 48; $i++) {
-            $time = ($lastHour - ($i * 3600)) * 1000;
-            $hourlyFormatted[] = array(
-                $time,
-                isset($tmp[$time]) ? $tmp[$time] : 0
-            );
+        $hourlyStats = array(
+            'today' => array(),
+            'yesterday' => array()
+        );
+        
+        foreach ($hourlyStats as $day => $v) {
+            for ($i = 0; $i < 24; $i++) {
+                $displayTime = ($lastHour - ($i * 3600)) * 1000;
+                $statTime = $displayTime;
+                if ($day == 'yesterday') {
+                    $statTime -= 86400000;
+                }
+               $hourlyStats[$day][] = array(
+                    $displayTime,
+                    isset($tmp[$statTime]) ? $tmp[$statTime] : 0
+                ); 
+            }
         }
         
         return $this->twig->render('mod.twig', array(
             'versions' => $versions,
             'modInfo' => $modInfo,
-            'hourly' => $hourlyFormatted
+            'hourly' => array(
+                array('label' => '&nbsp;&nbsp;Todays runs/hour', 'data' => $hourlyStats['today']),
+                array('label' => '&nbsp;&nbsp;Yesterdays runs/hour', 'data' => $hourlyStats['yesterday'])
+            )
         ));
     }
 

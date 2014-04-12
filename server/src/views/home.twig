@@ -4,7 +4,7 @@
     <h1>Mods</h1>
 </div>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-9">
         {% for mod in mods %}
         <div class="media">
             <a class="pull-left" href="#">
@@ -16,6 +16,25 @@
             </div>
         </div>
         {% endfor %}
+    </div>
+    <div class="col-md-3">
+        <div class="affix-top" role="complementary">
+          <strong>Filter by name:</strong>
+          <ul class="nav nav-home">
+              {% for letter in range('A', 'Z') %}
+                <li><a href="#{{ letter }}">{{ letter }}</a></li>
+              {% endfor %}
+          </ul>
+          <strong>Filter by tag:</strong>
+          <ul class="nav nav-home">
+            <li><a href="#">magic</a></li>
+            <li><a href="#">tech</a></li>
+            <li><a href="#">random</a></li>
+            <li><a href="#">util</a></li>
+            <li><a href="#">library</a></li>
+            <li><a href="#">addon</a></li>
+          </ul>
+        </div>
     </div>
 </div>
 {% endblock %}
