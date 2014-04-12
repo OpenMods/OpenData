@@ -65,7 +65,7 @@
             }
         },
         "workTime": {
-            "type": "integer",
+            "type": "number",
             "required": true
         }
     }
