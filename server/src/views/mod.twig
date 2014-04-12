@@ -4,6 +4,10 @@
 <div class="page-header">
 <h1>{{ modInfo.name }}</h1>
 </div>
+<div id="stats_hourly" style="height: 200px;margin-bottom: 30px;">
+
+</div>
+
 {% if modInfo.description is not empty %}
     <p class="lead">{{ modInfo.description }}</p>
 {% endif %}
@@ -88,10 +92,21 @@
 
 
 {% block javascript %}
+<script src="{{ relative('js/jquery.flot.js') }}"></script>
+<script src="{{ relative('js/jquery.flot.time.js') }}"></script>
 <script type="text/javascript">
     $(function() {
         $('.show_packages').click(function(e) {
            $(this).parents('.panel').find('.packages_list').toggle();
+        });
+        
+        var latestStats = [];
+        {% for series in hourly %}
+        latestStats.push({{ series|json_encode()|raw }});
+        {% endfor %}
+        
+        $.plot("#stats_hourly", latestStats, {
+            xaxis: { mode: "time" }
         });
     });
 </script>

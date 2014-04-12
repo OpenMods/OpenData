@@ -23,7 +23,7 @@ class Analytics implements IPacketHandler {
     
     public function execute($packet) {
 
-        $packet['created_at'] = new \MongoDate();
+        $packet['created_at'] = time();
 
         $this->serviceAnalytics->add($packet);
         

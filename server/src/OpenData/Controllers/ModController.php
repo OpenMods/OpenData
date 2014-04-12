@@ -6,12 +6,14 @@ class ModController {
 
     private $serviceFiles;
     private $serviceMods;
+    private $serviceAnalytics;
     private $twig;
 
-    public function __construct($twig, $files, $mods) {
+    public function __construct($twig, $files, $mods, $analytics) {
         $this->twig = $twig;
         $this->serviceFiles = $files;
         $this->serviceMods = $mods;
+        $this->serviceAnalytics = $analytics;
     }
 
     public function modinfo($modId) {
@@ -31,8 +33,10 @@ class ModController {
         }
         
         $versions = array();
+        $signatures = array();
 
         foreach ($files as $file) {
+            $signatures[] = $file['_id'];
             foreach ($file['mods'] as $mod) {
                 if ($mod['modId'] == $modId) {
                     $version = $mod['version'];
@@ -43,10 +47,25 @@ class ModController {
                 }
             }
         }
-
+        
+        $hourlyStats = $this->serviceAnalytics->hourlyForFiles($signatures);
+        
+        $hourlyFormatted = array();
+        foreach ($hourlyStats as $stat) {
+            $file = $stat['file'];
+            if (!isset($hourlyFormatted[$file])) {
+                $hourlyFormatted[$file] = array();
+            }
+            $hourlyFormatted[$file][] = array(
+                $stat['time']->sec * 1000,
+                $stat['launches']
+            );
+        }
+        
         return $this->twig->render('mod.twig', array(
             'versions' => $versions,
-            'modInfo' => $modInfo
+            'modInfo' => $modInfo,
+            'hourly' => $hourlyFormatted
         ));
     }
 

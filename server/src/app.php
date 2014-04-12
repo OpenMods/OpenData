@@ -54,7 +54,7 @@ if (class_exists('\Memcache')) {
     $app->register(new SilexMemcache\MemcacheExtension(), array(
             'memcache.library'    => 'memcache',
             'memcache.server' => array(
-                    array('127.0.0.1', 11211)
+                array('127.0.0.1', 11211)
             )
     ));
 }
@@ -70,8 +70,10 @@ $app['twig']->addFilter(new \Twig_SimpleFilter('id', function ($string) {
     return substr(md5($string), 0, 5);
 }));
 $app['twig']->addFilter(new \Twig_SimpleFilter('fullurl', function ($string) {
-    if(!preg_match("/^https?:///", $string)) {
-        $string = 'http://'.$string;
+    if (!empty($string)) {
+        if(!preg_match("/^https?:\/\//", $string)) {
+            $string = 'http://'.$string;
+        }
     }
     return $string;
 }));
