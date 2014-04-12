@@ -20,26 +20,6 @@
             "type": "integer",
             "required": true
         },
-        "branding": {
-            "type": "string",
-            "required": true
-        },
-        "forge": {
-            "type": "string",
-            "required": true
-        },
-        "language": {
-            "type": "string",
-            "required": true
-        },
-        "locale": {
-            "type": "string",
-            "required": true
-        },
-        "minecraft": {
-            "type": "string",
-            "required": true
-        },
         "stacktrace": {
             "type": "array",
             "required": true,

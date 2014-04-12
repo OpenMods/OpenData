@@ -50,13 +50,22 @@ class ModController {
         
         $hourlyStats = $this->serviceAnalytics->hourlyForFiles($signatures);
         
+        
+        
         $tmp = array();
         foreach ($hourlyStats as $stat) {
             $tmp[$stat['time']->sec * 1000] += $stat['launches'];
         }
+        
+        $lastHour = strtotime(date("Y-m-d H:00:00"));
+        
         $hourlyFormatted = array();
-        foreach ($tmp as $k => $v) {
-            $hourlyFormatted[] = array($k, $v);
+        for ($i = 0; $i < 48; $i++) {
+            $time = ($lastHour - ($i * 3600)) * 1000;
+            $hourlyFormatted[] = array(
+                $time,
+                isset($tmp[$time]) ? $tmp[$time] : 0
+            );
         }
         
         return $this->twig->render('mod.twig', array(
