@@ -4,13 +4,15 @@
 <div class="page-header">
 <h1>{{ modInfo.name }}</h1>
 </div>
-<div id="stats_hourly" style="height: 200px;margin-bottom: 30px;">
-
-</div>
 
 {% if modInfo.description is not empty %}
     <p class="lead">{{ modInfo.description }}</p>
 {% endif %}
+
+<div id="stats_hourly" style="height: 200px;margin: 30px 0;">
+
+</div>
+
 {% if modInfo.authors|length > 0 %}
     <p><strong>Author{% if modInfo.authors|length > 1 %}s{% endif %}:</strong> {{ modInfo.authors|join(', ') }}</p>
 {% endif %}
@@ -106,7 +108,10 @@
         {% endfor %}
         
         $.plot("#stats_hourly", latestStats, {
-            xaxis: { mode: "time" }
+            xaxis: {
+                minTickSize: [1, "hour"],
+                mode: "time"
+            }
         });
     });
 </script>
