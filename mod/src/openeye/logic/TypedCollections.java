@@ -95,7 +95,7 @@ public class TypedCollections {
 	static {
 		REPORTS_TYPES.put("analytics", ReportAnalytics.class);
 		REPORTS_TYPES.put("file_info", ReportFileInfo.class);
-		REPORTS_TYPES.put("crash", ReportCrash.class);
+		REPORTS_TYPES.put("crashlog", ReportCrash.class);
 		REPORTS_TYPES.put("ping", ReportPing.class);
 
 		RESPONSE_TYPES.put("file_info", ResponseFileInfo.class);

@@ -24,6 +24,25 @@ public class ReportCrash implements IReport {
 		public Collection<String> signatures;
 	}
 
+	public static class ModState {
+		@SerializedName("modId")
+		public String modId;
+
+		@SerializedName("state")
+		public String state;
+	}
+
+	public static class FileState {
+		@SerializedName("signature")
+		public String signature;
+
+		@SerializedName("mods")
+		public List<ModState> mods;
+	}
+
+	@SerializedName("states")
+	public List<FileState> states;
+
 	@SerializedName("stack")
 	public List<StackTrace> stackTrace;
 

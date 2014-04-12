@@ -9,12 +9,15 @@ import openeye.logic.TypedCollections.ReportsList;
 import openeye.logic.TypedCollections.ResponseList;
 import openeye.net.GenericSender.FailedToSend;
 import openeye.net.ReportSender;
-import openeye.reports.*;
+import openeye.reports.IReport;
+import openeye.reports.ReportCrash;
+import openeye.reports.ReportPing;
 import openeye.responses.IResponse;
 import openeye.storage.IDataSource;
 import openeye.storage.Storages;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 
 import cpw.mods.fml.common.discovery.ASMDataTable;
 
@@ -38,12 +41,12 @@ public final class MainWorker {
 	}
 
 	private void storeReport(ReportsList report) {
-		IDataSource<ReportsList> list = storages.sentReports.createNew();
+		IDataSource<Object> list = storages.sessionArchive.createNew("report");
 		list.store(report);
 	}
 
 	private void storeRequest(ResponseList report) {
-		IDataSource<ResponseList> list = storages.receivedRequests.createNew();
+		IDataSource<Object> list = storages.sessionArchive.createNew("request");
 		list.store(report);
 	}
 
@@ -56,10 +59,7 @@ public final class MainWorker {
 		final ReportsList result = new ReportsList();
 
 		final IContext context = new IContext() {
-			@Override
-			public ReportFileInfo generateFileReport(String signature) {
-				return collector.generateFileReport(signature);
-			}
+			private final Set<String> alreadyAddedSignatures = Sets.newHashSet();
 
 			@Override
 			public Set<String> getModsForSignature(String signature) {
@@ -69,6 +69,14 @@ public final class MainWorker {
 			@Override
 			public void queueReport(IReport report) {
 				result.add(report);
+			}
+
+			@Override
+			public void queueFileReport(String signature) {
+				if (!alreadyAddedSignatures.contains(signature)) {
+					result.add(collector.generateFileReport(signature));
+					alreadyAddedSignatures.add(signature);
+				}
 			}
 		};
 
@@ -84,9 +92,18 @@ public final class MainWorker {
 		try {
 			initialReport.add(ReportBuilders.buildAnalyticsReport(config, collector));
 			initialReport.add(new ReportPing());
+
 		} catch (Exception e) {
 			Log.warn(e, "Failed to create initial report");
 			return;
+		}
+
+		for (IDataSource<ReportCrash> crash : storages.pendingCrashes.listAll()) {
+			try {
+				initialReport.add(crash.retrieve());
+			} catch (Exception e) {
+				Log.warn(e, "Failed to add crash report %s", crash.getId());
+			}
 		}
 
 		try {
@@ -109,7 +126,7 @@ public final class MainWorker {
 				try {
 					storeRequest(response);
 				} catch (Exception e) {
-					Log.warn(e, "Failed to store report/request");
+					Log.warn(e, "Failed to store request");
 				}
 
 				try {
@@ -118,6 +135,9 @@ public final class MainWorker {
 					Log.warn(e, "Failed to create response");
 				}
 			}
+
+			for (IDataSource<ReportCrash> crash : storages.pendingCrashes.listAll())
+				crash.delete();
 
 		} catch (FailedToSend e) {
 			Log.warn("Failed to send report to %s, cause: %s", url, e.getMessage());
@@ -163,7 +183,7 @@ public final class MainWorker {
 			}
 		});
 
-		senderThread.run();
+		senderThread.start();
 	}
 
 	private void setupCrashReportDumper() {

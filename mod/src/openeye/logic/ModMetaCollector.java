@@ -10,6 +10,8 @@ import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import openeye.Log;
 import openeye.reports.ReportAnalytics.SerializableSignature;
+import openeye.reports.ReportCrash.FileState;
+import openeye.reports.ReportCrash.ModState;
 import openeye.reports.*;
 import openeye.reports.ReportFileInfo.SerializableMod;
 import openeye.reports.ReportFileInfo.SerializableTweak;
@@ -52,8 +54,10 @@ public class ModMetaCollector {
 		private final String name;
 		private final String version;
 		private final ModMetadata metadata;
+		private final ModContainer container;
 
 		private ModMeta(ModContainer container) {
+			this.container = container;
 			this.modId = Strings.nullToEmpty(container.getModId());
 			this.name = Strings.nullToEmpty(container.getName());
 			this.version = Strings.nullToEmpty(container.getVersion());
@@ -80,6 +84,13 @@ public class ModMetaCollector {
 			result.dependants = safeCopy(metadata.dependants);
 			result.dependencies = safeCopy(metadata.dependencies);
 			return result;
+		}
+
+		public ModState getState() {
+			ModState state = new ModState();
+			state.modId = modId;
+			state.state = Loader.instance().getModState(container).toString();
+			return state;
 		}
 	}
 
@@ -110,6 +121,19 @@ public class ModMetaCollector {
 				Log.info(t, "Can't get size info for file %s", container);
 			}
 			return null;
+		}
+
+		public FileState getStates() {
+			FileState result = new FileState();
+			result.signature = signature();
+
+			List<ModState> mods = Lists.newArrayList();
+
+			for (ModMeta meta : this.mods.values())
+				mods.add(meta.getState());
+
+			result.mods = mods;
+			return result;
 		}
 
 		public ReportFileInfo generateReport() {
@@ -305,6 +329,23 @@ public class ModMetaCollector {
 	private void fillSignaturesMap() {
 		for (FileMeta meta : files.values())
 			signatures.put(meta.signature(), meta);
+	}
+
+	public List<String> listSignatures() {
+		List<String> result = Lists.newArrayList();
+		for (FileMeta meta : files.values())
+			result.add(meta.signature);
+
+		return result;
+	}
+
+	public List<FileState> collectStates() {
+		List<FileState> result = Lists.newArrayList();
+
+		for (FileMeta meta : files.values())
+			result.add(meta.getStates());
+
+		return result;
 	}
 
 	public List<SerializableSignature> getAllSignatures() {
