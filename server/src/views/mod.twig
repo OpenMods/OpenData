@@ -14,7 +14,7 @@
     <p><strong>Credits:</strong> {{ modInfo.credits }}</p>
 {% endif %}
 {% if modInfo.url is not empty %}
-    <p><strong>Url:</strong> <a href="{{ modInfo.url }}" target="_blank">{{ modInfo.url }}</a></p>
+    <p><strong>Url:</strong> <a href="{{ modInfo.url|fullurl }}" target="_blank">{{ modInfo.url|fullurl }}</a></p>
 {% endif %}
 
 <h3>Files:</h3>

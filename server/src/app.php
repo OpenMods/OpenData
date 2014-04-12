@@ -69,6 +69,12 @@ $app['twig']->addFunction(new \Twig_SimpleFunction('relative', function ($string
 $app['twig']->addFilter(new \Twig_SimpleFilter('id', function ($string) {
     return substr(md5($string), 0, 5);
 }));
+$app['twig']->addFilter(new \Twig_SimpleFilter('fullurl', function ($string) {
+    if(!preg_match("/^https?:///", $string)) {
+        $string = 'http://'.$string;
+    }
+    return $string;
+}));
 
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 
