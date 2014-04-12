@@ -2,7 +2,10 @@
 {% block main %}
 
 <div class="page-header">
-<h1>{{ modInfo.name }}</h1>
+<h1>{{ modInfo.name }}
+{% if modInfo.authors|length > 0 %}
+    <small>by {{ modInfo.authors|join(', ') }}</small>
+{% endif %}</h1>
 </div>
 
 {% if modInfo.description is not empty %}
@@ -13,9 +16,6 @@
 
 </div>
 
-{% if modInfo.authors|length > 0 %}
-    <p><strong>Author{% if modInfo.authors|length > 1 %}s{% endif %}:</strong> {{ modInfo.authors|join(', ') }}</p>
-{% endif %}
 {% if modInfo.credits is not empty %}
     <p><strong>Credits:</strong> {{ modInfo.credits }}</p>
 {% endif %}
@@ -102,10 +102,7 @@
            $(this).parents('.panel').find('.packages_list').toggle();
         });
         
-        var latestStats = [];
-        {% for series in hourly %}
-        latestStats.push({{ series|json_encode()|raw }});
-        {% endfor %}
+        var latestStats = [{{ hourly|json_encode()|raw }}];
         
         $.plot("#stats_hourly", latestStats, {
             xaxis: {
