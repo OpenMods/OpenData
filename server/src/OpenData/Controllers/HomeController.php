@@ -14,7 +14,7 @@ class HomeController {
     
     public function home() {
         return $this->twig->render('home.twig', array(
-            'mods' => $this->serviceMods->findAll()->sort(array('name' => 1))
+            'mods' => $this->serviceMods->findAll()
         ));
     }
 }

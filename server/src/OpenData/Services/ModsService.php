@@ -9,7 +9,7 @@ class ModsService extends BaseService {
     }
     
     public function findAll() {
-        return $this->db->mods->find();
+        return $this->db->mods->find(array('hide' => array('$ne' => true)))->sort(array('name' => 1));
     }
 
     public function findByIds($modIds = array()) {
