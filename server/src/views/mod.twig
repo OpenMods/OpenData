@@ -12,9 +12,23 @@
     <p class="lead">{{ modInfo.description }}</p>
 {% endif %}
 
-<div id="stats_hourly" style="height: 200px;margin: 30px 0;">
-
+<div style="padding: 30px 0">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#hour" data-toggle="tab">Runs per hour</a></li>
+        <li><a href="#day" data-toggle="tab">Runs per day</a></li>
+        <li><a href="#week" data-toggle="tab">Runs per month</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade active in" id="hour">
+            <div id="stats_hour" style="height: 200px;margin: 30px 0;"></div>
+        </div>
+        <div class="tab-pane fade" id="day">
+        </div>
+        <div class="tab-pane fade" id="week">
+        </div>
+    </div>
 </div>
+
 
 {% if modInfo.credits is not empty %}
     <p><strong>Credits:</strong> {{ modInfo.credits }}</p>
@@ -102,7 +116,7 @@
            $(this).parents('.panel').find('.packages_list').toggle();
         });
         
-        $.plot("#stats_hourly", {{ hourly|json_encode()|raw }}, {
+        $.plot("#stats_hour", {{ hourly|json_encode()|raw }}, {
             xaxis: {
                 minTickSize: [1, "hour"],
 		twelveHourClock: true,

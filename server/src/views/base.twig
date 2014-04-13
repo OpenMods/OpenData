@@ -40,6 +40,17 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <script src="{{ relative('js/bootstrap.min.js') }}"></script>
+        <script>
+            $(function() {
+                function fixSideNav() {
+                    $('#sidenav').each(function() {
+                        $(this).width($(this).parent().width());
+                    });
+                }
+                $(window).resize(fixSideNav);
+                fixSideNav();
+            });
+        </script>
         {% block javascript %}{% endblock %}
     </body>
 </html>

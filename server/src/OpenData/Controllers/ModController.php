@@ -9,11 +9,10 @@ class ModController {
     private $serviceAnalytics;
     private $twig;
 
-    public function __construct($twig, $files, $mods, $analytics) {
+    public function __construct($twig, $files, $mods) {
         $this->twig = $twig;
         $this->serviceFiles = $files;
         $this->serviceMods = $mods;
-        $this->serviceAnalytics = $analytics;
     }
 
     public function modinfo($modId) {
@@ -48,15 +47,13 @@ class ModController {
             }
         }
         
-        $hourlyStats = $this->serviceAnalytics->hourlyForFiles($signatures);
-        
-        
-        
-        $tmp = array();
-        foreach ($hourlyStats as $stat) {
-            $tmp[$stat['time']->sec * 1000] += $stat['launches'];
+        $hourly = array();
+        if (isset($modInfo['hours'])) {
+            foreach ($modInfo['hours'] as $hour) {
+                $hourly[$hour['time']->sec * 1000] = $hour['launches'];
+            }
         }
-        
+ 
         $lastHour = strtotime(date("Y-m-d H:00:00"));
         
         $hourlyStats = array(
@@ -71,9 +68,9 @@ class ModController {
                 if ($day == 'yesterday') {
                     $statTime -= 86400000;
                 }
-               $hourlyStats[$day][] = array(
+                $hourlyStats[$day][] = array(
                     $displayTime,
-                    isset($tmp[$statTime]) ? $tmp[$statTime] : 0
+                    isset($hourly[$statTime]) ? $hourly[$statTime] : 0
                 ); 
             }
         }
@@ -82,8 +79,8 @@ class ModController {
             'versions' => $versions,
             'modInfo' => $modInfo,
             'hourly' => array(
-                array('label' => '&nbsp;&nbsp;Todays runs/hour', 'data' => $hourlyStats['today']),
-                array('label' => '&nbsp;&nbsp;Yesterdays runs/hour', 'data' => $hourlyStats['yesterday'])
+                array('label' => '&nbsp;&nbsp;Past 24 hours', 'data' => $hourlyStats['today']),
+                array('color' => '#cccccc', 'label' => '&nbsp;&nbsp;Previous 24 hours', 'data' => $hourlyStats['yesterday'])
             )
         ));
     }

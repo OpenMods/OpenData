@@ -51,8 +51,7 @@ class RoutesLoader {
             return new Controllers\ModController(
                 $loader->app['twig'],
                 $loader->app['files.service'],
-                $loader->app['mods.service'],
-                $loader->app['analytics.service']
+                $loader->app['mods.service']
             );
         });
 

@@ -24,5 +24,20 @@ class ModsService extends BaseService {
             array('new' => true, 'upsert' => true)
         );
     }
+    
+    public function findOrderedByPastHourLaunches($limit = 20) {
+        $currentHour = strtotime(date("Y-m-d H:00:00"));
+        $previousHour = $currentHour - 3600;
+        $searchDate = new \MongoDate($previousHour);
+        return $this->db->mods->find(
+            array('hours.time' => $searchDate),
+            array(
+                'name' => 1,
+                'authors' => 1,
+                'description' => 1,
+                'hours' => array('$elemMatch' => array('time' => $searchDate))
+            )
+        )->sort(array('hours.launches' => -1))->limit($limit);
+    }
 
 }

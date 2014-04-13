@@ -1,3 +1,6 @@
+#sidenav.affix {
+    top: 50px;
+}
 .nav-home  {
     overflow: hidden;
     zoom: 1;
