@@ -28,7 +28,7 @@ class FileInfo implements IPacketHandler {
         if (isset($packet['mods'])) {
             foreach ($packet['mods'] as $mod) {
                 if (empty($mod['parent'])) {
-                    $this->serviceMods->upsert($mod['modId'], array(
+                    $this->serviceMods->upsert(strtolower($mod['modId']), array(
                         'authors' => $mod['authors'],
                         'credits' => $mod['credits'],
                         'description' => $mod['description'],

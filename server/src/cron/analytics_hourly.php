@@ -1,6 +1,7 @@
 <?php
 
 $rustart = getrusage();
+$time_start = microtime(true); 
 
 $mongo = new MongoClient();
 
@@ -18,7 +19,6 @@ $results = $db->analytics->aggregate(array(
 
 $fileLaunches = array();
 $modLaunches = array();
-
 
 foreach ($results['result'] as $result) {
     $fileLaunches[$result['_id']] = $result['launches'];
@@ -97,6 +97,12 @@ function rutime($ru, $rus, $index) {
 }
 
 $ru = getrusage();
+$time_end = microtime(true);
+$timeTaken = $time_end - $time_start;
+
 $date = date("Y-m-d H:i:s");
 echo "[".$date."] Computations: " . rutime($ru, $rustart, "utime")."\n";
 echo "[".$date."] System calls: " . rutime($ru, $rustart, "stime")."\n";
+echo "[".$date."] Memory: " . memory_get_peak_usage()."\n";
+echo "[".$date."] Clock time: " . $timeTaken."\n";
+ 
