@@ -16,8 +16,21 @@ class HomeController {
     public function home() {
         return $this->twig->render('home.twig', array(
             'mods' => $this->serviceMods->findOrderedByPastHourLaunches(),
-            'title' => 'Most popular in the past hour',
+            'title' => 'Most popular this week',
             'tags' => $this->serviceMods->getDistinctTags()
+        ));
+    }
+    
+    public function all(Request $request) {       
+        return $this->twig->render('home.twig', array_merge(
+                $this->getPagination(
+                    $this->serviceMods->findAll(),
+                    $request->get('page', 1),
+                    50
+                ),
+                array(
+                    'title' => 'Listing all mods'
+                )
         ));
     }
     
@@ -52,9 +65,8 @@ class HomeController {
         ));
     }
     
-    private function getPagination($iterator, $page = 1) {
+    private function getPagination($iterator, $page = 1, $perPage = 25) {
         
-        $perPage = 20;
         $skip = ($page - 1) * $perPage;
         $total = $iterator->count();
         

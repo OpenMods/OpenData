@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="page-header">
-            <h1>{{ title }}</h1>
+            <h1>{{ title }}{% if total %} <small>({{ total }} total)</small>{% endif %}</h1>
         </div>
     </div>
 
@@ -60,6 +60,12 @@
     </div>
     <div class="col-md-3">
         <div id="sidenav" data-spy="affix" data-offset-top="50">
+            
+          <strong>Find by:</strong>
+          <ul class="nav nav-home nav-home-stacked">
+                <li><a href="{{ relative('') }}">Popular this week</a></li>
+                <li><a href="{{ relative('all') }}">List all mods</a></li>
+          </ul>
           <strong>Find by name:</strong>
           <ul class="nav nav-home">
               {% for letter in range('A', 'Z') %}

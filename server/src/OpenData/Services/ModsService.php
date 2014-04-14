@@ -32,15 +32,17 @@ class ModsService extends BaseService {
     public function findByLetter($letter) {
         $letter = substr($letter, 0, 1);
         return $this->db->mods->find(array(
+            'hide' => array('$ne' => true),
             'name' => new \MongoRegex('/^'.$letter.'/i')
-        ));
+        ))->sort(array('name' => 1));
     }
     
     public function findByTag($tag) {
         $tag = trim($tag);
         return $this->db->mods->find(array(
+            'hide' => array('$ne' => true),
             'tags' => new \MongoRegex('/^'.$tag.'/i')
-        ));
+        ))->sort(array('name' => 1));
     }
 
     public function findOrderedByPastHourLaunches($limit = 50, $filterLibraries = true) {

@@ -14,7 +14,7 @@ date_default_timezone_set('Europe/London');
 
 define("ROOT_PATH", __DIR__ . "/..");
 
-$app->before(function (Request $request) {
+$app->before(function (Request $request) use ($app) {
     if ($request->getMethod() === "OPTIONS") {
         $response = new Response();
         $response->headers->set("Access-Control-Allow-Origin", "*");
@@ -23,12 +23,15 @@ $app->before(function (Request $request) {
         $response->setStatusCode(200);
         $response->send();
     }
+    $app['monolog']->addInfo($request->getContent());
+    
 }, Application::EARLY_EVENT);
 
 //handling CORS respons with right headers
-$app->after(function (Request $request, Response $response) {
+$app->after(function (Request $request, Response $response) use ($app) {
     $response->headers->set("Access-Control-Allow-Origin", "*");
     $response->headers->set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    $app['monolog']->addInfo($response->getContent());
 });
 
 //accepting JSON
@@ -81,7 +84,7 @@ $app['twig']->addFilter(new \Twig_SimpleFilter('fullurl', function ($string) {
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 
 $app->register(new MonologServiceProvider(), array(
-    "monolog.logfile" => ROOT_PATH . "/storage/logs/" . Carbon::now('Europe/London')->format("Y-m-d") . ".log",
+    "monolog.logfile" => ROOT_PATH . "/storage/logs/" . time() . ".log",
     "monolog.level" => $app["log.level"],
     "monolog.name" => "application"
 ));

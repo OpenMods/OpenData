@@ -16,3 +16,7 @@
     padding: 4px;
     margin: 0;
 }
+
+.nav-home-stacked > li {
+    float: none !important;
+}

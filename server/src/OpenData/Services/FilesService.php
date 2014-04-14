@@ -89,8 +89,10 @@ class FilesService extends BaseService {
             }
         }
 
-        for ($i = 0; $i < count($file['mods']); $i++) {
-        	$file['mods'][$i]['modId'] = strtolower($file['mods'][$i]['modId']);
+        if (isset($file['mods'])) {
+            for ($i = 0; $i < count($file['mods']); $i++) {
+                    $file['mods'][$i]['modId'] = strtolower($file['mods'][$i]['modId']);
+            }
         }
 
         unset($currentEntry['_id']);
