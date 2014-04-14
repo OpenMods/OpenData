@@ -89,6 +89,8 @@ class RoutesLoader {
          * Home
          */
         $site->get('/', "home.controller:home");
+        $site->get('/letter/{letter}', "home.controller:letter");
+        $site->get('/tag/{tag}', "home.controller:tag");
         
         /**
          * Mods

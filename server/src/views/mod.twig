@@ -1,108 +1,115 @@
 {% extends 'base.twig' %}
 {% block main %}
+<div class="row">
 
-<div class="page-header">
-<h1>{{ modInfo.name }}
-{% if modInfo.authors|length > 0 %}
-    <small>by {{ modInfo.authors|join(', ') }}</small>
-{% endif %}</h1>
-</div>
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1>{{ modInfo.name }}
+            {% if modInfo.authors|length > 0 %}
+                <small>by {{ modInfo.authors|join(', ') }}</small>
+            {% endif %}</h1>
+        </div>
 
-{% if modInfo.description is not empty %}
-    <p class="lead">{{ modInfo.description }}</p>
-{% endif %}
+        {% if modInfo.description is not empty %}
+            <p class="lead">{{ modInfo.description }}</p>
+        {% endif %}
 
-<div style="padding: 30px 0">
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#hour" data-toggle="tab">Runs per hour</a></li>
-        <li><a href="#day" data-toggle="tab">Runs per day</a></li>
-        <li><a href="#week" data-toggle="tab">Runs per month</a></li>
-    </ul>
-    <div class="tab-content">
-        <div class="tab-pane fade active in" id="hour">
-            <div id="stats_hour" style="height: 200px;margin: 30px 0;"></div>
+        <div style="padding: 30px 0">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#hour" data-toggle="tab">Runs per hour</a></li>
+                <li><a href="#day" data-toggle="tab">Runs per day</a></li>
+                <li><a href="#week" data-toggle="tab">Runs per month</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade active in" id="hour">
+                    <div id="stats_hour" style="height: 200px;margin: 30px 0;"></div>
+                </div>
+                <div class="tab-pane fade" id="day">
+                </div>
+                <div class="tab-pane fade" id="week">
+                </div>
+            </div>
         </div>
-        <div class="tab-pane fade" id="day">
-        </div>
-        <div class="tab-pane fade" id="week">
-        </div>
+            
+
+        {% if modInfo.credits is not empty %}
+            <p><strong>Credits:</strong> {{ modInfo.credits }}</p>
+        {% endif %}
+        {% if modInfo.url is not empty %}
+            <p><strong>Url:</strong> <a href="{{ modInfo.url|fullurl }}" target="_blank">{{ modInfo.url|fullurl }}</a></p>
+        {% endif %}
+            
+
+        <h3>Files:</h3>
+
+        <table class="table">
+            {% for version, files in versions %}
+            <tr>
+                <th>{{ version }}</th>
+                <td>
+                {% for file in files %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">{{ file.filenames|first }} ({{ file.size }} bytes)
+                            <div class="btn-group btn-group-xs pull-right">
+                              <button type="button" class="btn btn-primary show_packages"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View packages</button>
+                              <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;View crashes</button>
+                            </div></div>
+                        <div class="panel-body">
+
+
+                            <div class="row" style="clear:both;">
+                              <div class="col-md-3"><strong>Signature:</strong></div>
+                              <div class="col-md-9">{{ file._id }}</div>
+                            </div>                    
+                            {% if file.classTransformers|length > 0 %}
+                            <div class="row">
+                              <div class="col-md-3"><strong>Class transformers:</strong></div>
+                              <div class="col-md-9">
+                                {% for transformer in file.classTransformers %}
+                                    {{ transformer }}<br/>
+                                {% endfor %}
+                              </div>
+                            </div>
+                            {% endif%}
+
+                            <div class="row">
+                              <div class="col-md-3"><strong>Known filenames:</strong></div>
+                              <div class="col-md-9">
+                                {% for filename in file.filenames %}
+                                    {{ filename }}<br />
+                                {% endfor %}
+                              </div>
+                            </div>
+
+                            <div class="row">
+                              <div class="col-md-3"><strong>Contains mods:</strong></div>
+                              <div class="col-md-9">
+                                {% for mod in file.mods %}
+                                    {{ mod.name }} <small>({{ mod.version }})</small><br />
+                                {% endfor %}
+                              </div>
+                            </div>
+
+                            <div class="row packages_list" style="display: none;">
+                              <div class="col-md-3"><strong>Packages:</strong></div>
+                              <div class="col-md-9">
+                                {% for package in file.packages|sort %}
+                                    <a href="{{ relative('package/' ~ package) }}">{{ package }}</a><br />
+                                {% endfor %}
+                              </div>
+                            </div>
+
+                        </div>
+                    </div>
+                  {% endfor %}
+                </td>         
+            </tr>
+            {% endfor %}   
+        </table>
     </div>
 </div>
 
 
-{% if modInfo.credits is not empty %}
-    <p><strong>Credits:</strong> {{ modInfo.credits }}</p>
-{% endif %}
-{% if modInfo.url is not empty %}
-    <p><strong>Url:</strong> <a href="{{ modInfo.url|fullurl }}" target="_blank">{{ modInfo.url|fullurl }}</a></p>
-{% endif %}
-
-<h3>Files:</h3>
-
-<table class="table">
-    {% for version, files in versions %}
-    <tr>
-        <th>{{ version }}</th>
-        <td>
-        {% for file in files %}
-            <div class="panel panel-default">
-                <div class="panel-heading">{{ file.filenames|first }} ({{ file.size }} bytes)
-                    <div class="btn-group btn-group-xs pull-right">
-                      <button type="button" class="btn btn-primary show_packages"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View packages</button>
-                      <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;View crashes</button>
-                    </div></div>
-                <div class="panel-body">
-                      
-                                        
-                    <div class="row" style="clear:both;">
-                      <div class="col-md-3"><strong>Signature:</strong></div>
-                      <div class="col-md-9">{{ file._id }}</div>
-                    </div>                    
-                    {% if file.classTransformers|length > 0 %}
-                    <div class="row">
-                      <div class="col-md-3"><strong>Class transformers:</strong></div>
-                      <div class="col-md-9">
-                        {% for transformer in file.classTransformers %}
-                            {{ transformer }}<br/>
-                        {% endfor %}
-                      </div>
-                    </div>
-                    {% endif%}
-                    
-                    <div class="row">
-                      <div class="col-md-3"><strong>Known filenames:</strong></div>
-                      <div class="col-md-9">
-                        {% for filename in file.filenames %}
-                            {{ filename }}<br />
-                        {% endfor %}
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <div class="col-md-3"><strong>Contains mods:</strong></div>
-                      <div class="col-md-9">
-                        {% for mod in file.mods %}
-                            {{ mod.name }} <small>({{ mod.version }})</small><br />
-                        {% endfor %}
-                      </div>
-                    </div>
-                      
-                    <div class="row packages_list" style="display: none;">
-                      <div class="col-md-3"><strong>Packages:</strong></div>
-                      <div class="col-md-9">
-                        {% for package in file.packages|sort %}
-                            <a href="{{ relative('package/' ~ package) }}">{{ package }}</a><br />
-                        {% endfor %}
-                      </div>
-                    </div>
-                    
-                </div>
-            </div>
-          {% endfor %}
-        </td>         
-    </tr>
-    {% endfor %}   
-</table>
 
 {% endblock %}
 

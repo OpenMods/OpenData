@@ -24,6 +24,24 @@ class ModsService extends BaseService {
             array('new' => true, 'upsert' => true)
         );
     }
+    
+    public function getDistinctTags() {
+        return $this->db->mods->distinct('tags');
+    }
+    
+    public function findByLetter($letter) {
+        $letter = substr($letter, 0, 1);
+        return $this->db->mods->find(array(
+            'name' => new \MongoRegex('/^'.$letter.'/i')
+        ));
+    }
+    
+    public function findByTag($tag) {
+        $tag = trim($tag);
+        return $this->db->mods->find(array(
+            'tags' => new \MongoRegex('/^'.$tag.'/i')
+        ));
+    }
 
     public function findOrderedByPastHourLaunches($limit = 50, $filterLibraries = true) {
     	return $this->findAll();
