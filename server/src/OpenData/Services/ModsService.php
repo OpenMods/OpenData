@@ -7,7 +7,7 @@ class ModsService extends BaseService {
     public function findById($modId) {
         return $this->db->mods->findOne(array('_id' => $modId));
     }
-    
+
     public function findAll() {
         return $this->db->mods->find(array('hide' => array('$ne' => true)))->sort(array('name' => 1));
     }
@@ -24,8 +24,10 @@ class ModsService extends BaseService {
             array('new' => true, 'upsert' => true)
         );
     }
-    
+
     public function findOrderedByPastHourLaunches($limit = 50, $filterLibraries = true) {
+    	return $this->findAll();
+    /*
         $currentHour = strtotime(date("Y-m-d H:00:00"));
         $searchDate = new \MongoDate($currentHour);
         return $this->db->mods->find(
@@ -43,7 +45,7 @@ class ModsService extends BaseService {
                 'image' => 1,
                 'hours' => array('$elemMatch' => array('time' => $searchDate))
             )
-        )->sort(array('hours.launches' => -1))->limit($limit);
+        )->sort(array('hours.launches' => -1))->limit($limit);*/
     }
 
 }

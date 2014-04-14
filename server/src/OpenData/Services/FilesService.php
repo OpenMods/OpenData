@@ -24,50 +24,50 @@ class FilesService extends BaseService {
 
     public function findByModId($modId) {
         return $this->db->files->find(
-            array('mods.modId' => $modId)
+            array('mods.modId' => strtolower($modId))
         );
     }
-    
+
     public function findByPackage($package) {
         return $this->db->files->find(
             array('packages' => $package)
         );
     }
-    
+
     public function findSubPackages($package) {
-        
+
         $results = $this->db->files->aggregate(
             array('$project' => array('packages' => 1)),
             array('$unwind' => '$packages'),
             array('$match' => array('packages' => new \MongoRegex('/^'.preg_quote($package).'\./'))),
             array('$group' => array('_id' => '$packages')));
-        
+
         $packages = array();
         foreach ($results['result'] as $result) {
             $packages[] = $result['_id'];
         }
-        
+
         return $packages;
     }
-    
+
     public function hasPackage($package) {
         return $this->findByPackage($package)->count() > 0;
     }
-    
+
     public function findUniqueModIdsForPackage($package) {
-        
+
         $results = $this->db->files->aggregate(
                 array('$match' => array('packages' => $package)),
                 array('$project' => array('mods' => 1)),
                 array('$unwind' => '$mods'),
                 array('$group' => array('_id' => '$mods.modId'))
                 );
-        
+
         $mods = array();
         foreach ($results['result'] as $result) {
             $mods[] = $result['_id'];
         }
-        
+
         return $mods;
     }
 
@@ -80,15 +80,19 @@ class FilesService extends BaseService {
         if ($currentEntry == null) {
             return false;
         }
-        
+
         unset($file['signature']);
-        
+
         foreach ($file as $k => $v) {
             if ($overwrite || (!$overwrite && !isset($currentEntry[$k]))) {
                 $currentEntry[$k] = $v;
             }
         }
-        
+
+        for ($i = 0; $i < count($file['mods']); $i++) {
+        	$file['mods'][$i]['modId'] = strtolower($file['mods'][$i]['modId']);
+        }
+
         unset($currentEntry['_id']);
 
         $this->db->files->update(
@@ -101,7 +105,7 @@ class FilesService extends BaseService {
     public function findOne($signature) {
         return $this->db->files->findOne(array('_id' => $signature));
     }
-    
+
     public function findUniquePackages() {
         return $this->db->files->distinct('packages');
     }
