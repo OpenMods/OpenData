@@ -7,6 +7,10 @@ $mongo = new MongoClient();
 
 $db = $mongo->hopper;
 
+/*************************************************
+ * Hourly stats
+ ************************************************/
+
 $currentHour = strtotime(date("Y-m-d H:00:00"));
 $previousHour = $currentHour - 3600;
 
@@ -37,7 +41,7 @@ foreach ($files as $file) {
     
     $hours = isset($file['hours']) ? $file['hours'] : array();
 
-    if (count($hours) == 48) {
+    if (count($hours) >= 48) {
         array_shift($hours);
     }
     
@@ -88,6 +92,48 @@ foreach ($modDocuments as $mod) {
                 'hours' => $hours            
             ))
         );
+    }
+}
+
+/*************************************************
+ * Daily stats
+ ************************************************/
+
+if ((int)date('G', $currentHour) == 0) {
+
+    $today = strtotime(date("Y-m-d 00:00:00"));
+    $yesterday = $today - 86400;
+
+    foreach (array('files', 'mods') as $collection) {
+
+	foreach($db->$collection->find() as $document) {
+	    $launches = 0;
+	    if (isset($document['hours'])) {
+		foreach($document['hours'] as $hour) {
+		    if ($hour['time']->sec >= $yesterday) {
+			$launches += $hour['launches'];
+		    }
+		}
+	    }
+	    $days = array();
+	    if (isset($document['days'])) {
+		$days = $document['days'];
+	    }
+	    if (count($days) >= 14) {
+		array_shift($days);
+	    }
+	    $days[] = array(
+		'time' => new \MongoDate($yesterday),
+		'launches' => $launches
+	    );
+
+	    $db->$collection->update(
+		    array('_id' => $document['_id']),
+		    array('$set' => array(
+			'days' => $days
+		    ))
+	    );
+	}
     }
 }
 
