@@ -43,6 +43,8 @@ if ($modDocument == null)
 
 $updateUrl = $modDocument['releasesPage'];
 
+echo "Checking ".$updateUrl."\n";
+
 $checkedUrls = isset($modDocument['checkedUrls']) ? $modDocument['checkedUrls'] : array();
 
 $parsed = parse_url($updateUrl);
@@ -99,64 +101,165 @@ try {
 
         // get the page
         $contents = file_get_contents($updateUrl);
-
-        //get all the links
-        preg_match_all("@href=\"([^\"]*?)\"@Ui", $contents, $matches);
-
-
-        foreach ($matches[1] as $match) {
-
-            // make absolute
-            $match = relativeToAbsolute($match, $updateUrl);
-
-            if (in_array($match, $checkedUrls)) {
-                continue;
+        
+        $isJenkins = preg_match("@buildHistory@Ui", $contents);
+        
+        if ($isJenkins) {
+            $dom = new DOMDocument('1.0');
+            $dom->loadHTML($contents);
+            $finder = new DomXPath($dom);
+            $nodes = $finder->query("//a[contains(@class, 'model-link')]");
+            for ($i = 0; $i < $nodes->length; $i++) {
+                $attr = $nodes->item($i)->attributes->getNamedItem('href');
+                if ($attr != null) {
+                    $absolute = relativeToAbsolute($attr->nodeValue, $updateUrl);
+                    if (in_array($absolute, $checkedUrls)) {
+                        continue;
+                    }
+                    echo $absolute."\n";
+                    $newlyChecked[] = $absolute;
+                }
             }
-
-            $newlyChecked[] = $match;
-
-            // resolve the adfly link (if it is one!)
-            $jarUrl = resolveAdfly($match);
-
-            $isProbablyAMod = (
-                    endsWith($jarUrl, '.jar') ||
-                    endsWith($jarUrl, '.zip') ||
-                    strpos($jarUrl, 'file=') !== false ||
-                    strpos($jarUrl, 'f=') !== false
-                    ) && strpos($jarUrl, '/archive/') === false;
-
-            if ($isProbablyAMod) {
-
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $jarUrl);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-
-                curl_setopt($ch, CURLOPT_HEADER, 1);
-                $response = curl_exec($ch);
-
-                $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-                $header = substr($response, 0, $header_size);
-                $body = substr($response, $header_size);
-
-                $validMod = false;
-
-                foreach (explode("\n", $header) as $line) {
-                    $parts = explode(": ", $line);
-                    if ($parts[0] == "Content-Type") {
-                        if (in_array(trim($parts[1]), array("application/x-java-archive", "application/zip", "application/java-archive"))) {
-                            $validMod = true;
-                            break;
-                        }
+            $files = array();
+            foreach ($newlyChecked as $page) {
+                $dom = new DOMDocument('1.0');
+                $html = file_get_contents($page);
+                $dom->loadHTML($html);
+                $finder = new DomXPath($dom);
+                $nodes = $finder->query("//table[contains(@class, 'fileList')]//a");
+                for ($i = 0; $i < $nodes->length; $i++) {
+                    $node = $nodes->item($i);
+                    $href = $node->attributes->item(0)->nodeValue;
+                    if (endsWith($href, '.jar') || endsWith($href, '.zip')) {
+                        $absolute = relativeToAbsolute($href, $page);
+                        echo $absolute."\n";
+                        $files[] = $absolute;
                     }
                 }
+            }
 
-                if ($validMod) {
-                    $signature = 'sha256:' . hash('sha256', $body);
-                    $modUrls[$signature] = array(
-                        'jarUrl' => $jarUrl,
-                        'url' => $match
-                    );
+            foreach ($files as $file) {
+                $signature = 'sha256:' . hash('sha256', file_get_contents($file));
+                $modUrls[$signature] = array(
+                    'jarUrl' => $file,
+                    'url' => $file
+                );
+            }
+        } else {
+
+            $dom = new DOMDocument('1.0');
+            $dom->loadHTML($contents);
+            $finder = new DomXPath($dom);
+            $nodes = $finder->query("//a");
+
+            $baseNodes = $finder->query("//base");
+
+            $baseUrl = null;
+            if ($baseNodes->length > 0) {
+                $attr = $baseNodes->item(0)->attributes->getNamedItem('href');
+                if ($attr != null) {
+                    $baseUrl = $attr->nodeValue;
+                }
+            }
+
+            $matches = array();
+
+            for ($i = 0; $i < $nodes->length; $i++) {
+                $node = $nodes->item($i);
+                foreach ($node->attributes as $attribute) {
+                    if (strtolower($attribute->nodeName) == "href") {
+                        $matches[] = trim($attribute->nodeValue);
+                    }
+                }
+            }
+
+            foreach ($matches as $match) {
+
+                // make absolute
+                $match = relativeToAbsolute($match, $baseUrl == null ? $updateUrl : $baseUrl);
+
+                if (in_array($match, $checkedUrls)) {
+                    continue;
+                }
+
+                $newlyChecked[] = $match;
+
+                // resolve the adfly link (if it is one!)
+                $jarUrl = resolveAdfly($match);
+
+                $isProbablyAMod = (
+                        endsWith($jarUrl, '.jar') ||
+                        endsWith($jarUrl, '.zip') ||
+                        strpos($jarUrl, 'file=') !== false ||
+                        strpos($jarUrl, 'f=') !== false
+                        ) && strpos($jarUrl, '/archive/') === false;
+
+                echo "IsMod? ".$jarUrl.": ".($isProbablyAMod ? "Yes": "No")."\n";
+
+                if ($isProbablyAMod) {
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $jarUrl);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
+                    curl_setopt($ch, CURLOPT_HEADER, 1);
+                    $response = curl_exec($ch);
+
+                    $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+                    $header = substr($response, 0, $header_size);
+                    $body = substr($response, $header_size);
+
+                    $validMod = false;
+
+                    if (preg_match("@https?:\/\/www\.dropbox\.com@i", $jarUrl)) {
+                        $dom = new DOMDocument('1.0');
+                        $contents = file_get_contents($jarUrl);
+                        $dom->loadHTML($contents);
+                        $finder = new DomXPath($dom);
+                        $nodes = $finder->query("//a[@id=\"default_content_download_button\"]");
+                        if ($nodes->length > 0) {
+                            $href = $nodes->item(0)->attributes->getNamedItem('href');
+                            if ($href != null) {
+                                $jarUrl = $href->nodeValue;
+                                $ch = curl_init();
+                                curl_setopt($ch, CURLOPT_URL, $jarUrl);
+                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
+                                curl_setopt($ch, CURLOPT_HEADER, 1);
+                                $response = curl_exec($ch);
+
+                                $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+                                $header = substr($response, 0, $header_size);
+                                $body = substr($response, $header_size);
+
+                            }
+                        }
+                    }
+
+                    foreach (explode("\n", $header) as $line) {
+                        $parts = explode(": ", $line);
+                        if ($parts[0] == "Content-Type") {
+                            echo $parts[1]."\n";
+                            if (in_array(trim($parts[1]), array("application/octet-stream", "application/x-java-archive", "application/zip", "application/java-archive"))) {
+                                $validMod = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if ($validMod) {
+                        $signature = 'sha256:' . hash('sha256', $body);
+                        $modUrls[$signature] = array(
+                            'jarUrl' => $jarUrl,
+                            'url' => $match
+                        );
+                    }
                 }
             }
         }
@@ -187,7 +290,7 @@ foreach ($allModFiles as $modToInsert) {
 $collection->update(
     array('_id' => $modDocument['_id']),
     array('$set' => array(
-        'checkedUrls' => $checkedUrls,
+        'checkedUrls' => array_values($checkedUrls),
         'lastChecked' => time()
     ))
 );
@@ -203,10 +306,10 @@ function relativeToAbsolute($rel, $base) {
     $path = preg_replace('#/[^/]*$#', '', $path);
     if ($rel[0] == '/')
         $path = '';
-    $abs = "$host$path/$rel";
+    $abs = "$host".(!empty($port) ? ':'.$port : '')."$path/$rel";
     $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
     for ($n = 1; $n > 0; $abs = preg_replace($re, '/', $abs, -1, $n)) {
-        
+
     }
     return $scheme . '://' . $abs;
 }
