@@ -45,14 +45,13 @@ $updateUrl = $modDocument['releasesPage'];
 
 echo "Checking ".$updateUrl."\n";
 
-$checkedUrls = isset($modDocument['checkedUrls']) ? $modDocument['checkedUrls'] : array();
-
 $parsed = parse_url($updateUrl);
 
 $newlyChecked = array();
 $modUrls = array();
 
 // differnet behaviour for curse
+
 
 try {
     if ($parsed['host'] == 'minecraft.curseforge.com') {
@@ -69,12 +68,12 @@ try {
                 $href = $node->attributes->item(0)->nodeValue;
                 if (preg_match("|\/files\/|U", $href)) {
                     $fullUrl = 'http://minecraft.curseforge.com' . $href;
-                    if (!in_array($fullUrl, $checkedUrls)) {
-                        $newlyChecked[] = 'http://minecraft.curseforge.com' . $href;
-                    }
+                    $newlyChecked[] = $fullUrl;
                 }
             }
         }
+        
+        $newlyChecked = reduceURLList($db, $newlyChecked);
 
         $files = array();
         foreach ($newlyChecked as $page) {
@@ -91,11 +90,15 @@ try {
         }
 
         foreach ($files as $file) {
-            $signature = 'sha256:' . hash('sha256', file_get_contents($file));
-            $modUrls[$signature] = array(
-                'jarUrl' => $file,
-                'url' => $file
-            );
+            $ctx = stream_context_create(array('http'=>array('timeout' => 120)));
+            $contents = @file_get_contents($file, false, $ctx);
+            if ($contents != null) {
+                $signature = 'sha256:' . hash('sha256', $$contents);
+                $modUrls[$signature] = array(
+                    'jarUrl' => $file,
+                    'url' => $file
+                );
+            }
         }
     } else {
 
@@ -112,38 +115,51 @@ try {
             for ($i = 0; $i < $nodes->length; $i++) {
                 $attr = $nodes->item($i)->attributes->getNamedItem('href');
                 if ($attr != null) {
-                    $absolute = relativeToAbsolute($attr->nodeValue, $updateUrl);
-                    if (in_array($absolute, $checkedUrls)) {
-                        continue;
+                    if (strlen($attr->nodeValue) > 0) {
+                        $absolute = relativeToAbsolute($attr->nodeValue, $updateUrl);
+                        echo $absolute."\n";
+                        $newlyChecked[] = $absolute;
                     }
-                    echo $absolute."\n";
-                    $newlyChecked[] = $absolute;
                 }
             }
+            
+            $newlyChecked = reduceURLList($db, $newlyChecked);
+            
             $files = array();
             foreach ($newlyChecked as $page) {
                 $dom = new DOMDocument('1.0');
-                $html = file_get_contents($page);
-                $dom->loadHTML($html);
-                $finder = new DomXPath($dom);
-                $nodes = $finder->query("//table[contains(@class, 'fileList')]//a");
-                for ($i = 0; $i < $nodes->length; $i++) {
-                    $node = $nodes->item($i);
-                    $href = $node->attributes->item(0)->nodeValue;
-                    if (endsWith($href, '.jar') || endsWith($href, '.zip')) {
-                        $absolute = relativeToAbsolute($href, $page);
-                        echo $absolute."\n";
-                        $files[] = $absolute;
+                
+                $ctx = stream_context_create(array('http'=>array('timeout' => 40)));
+                $html = @file_get_contents($page, false, $ctx);
+                if ($html != null) {
+                    $dom->loadHTML($html);
+                    $finder = new DomXPath($dom);
+                    $nodes = $finder->query("//table[contains(@class, 'fileList')]//a");
+                    for ($i = 0; $i < $nodes->length; $i++) {
+                        $node = $nodes->item($i);
+                        $href = $node->attributes->item(0)->nodeValue;
+                        if (strlen($href) > 0) {
+                            if (endsWith($href, '.jar') || endsWith($href, '.zip')) {
+                                $absolute = relativeToAbsolute($href, $page);
+                                echo $absolute."\n";
+                                $files[] = $absolute;
+                            }
+                        }
                     }
                 }
             }
 
             foreach ($files as $file) {
-                $signature = 'sha256:' . hash('sha256', file_get_contents($file));
-                $modUrls[$signature] = array(
-                    'jarUrl' => $file,
-                    'url' => $file
-                );
+                $ctx = stream_context_create(array('http'=>array('timeout' => 120)));
+                $contents = @file_get_contents($file, false, $ctx);
+                if ($contents != null) {
+                    echo $file."\n";
+                    $signature = 'sha256:' . hash('sha256', $contents);
+                    $modUrls[$signature] = array(
+                        'jarUrl' => $file,
+                        'url' => $file
+                    );
+                }
             }
         } else {
 
@@ -168,22 +184,19 @@ try {
                 $node = $nodes->item($i);
                 foreach ($node->attributes as $attribute) {
                     if (strtolower($attribute->nodeName) == "href") {
-                        $matches[] = trim($attribute->nodeValue);
+                        $href = trim($attribute->nodeValue);
+                        if (strlen($href) > 0) {
+                            $u = relativeToAbsolute($href, $baseUrl == null ? $updateUrl : $baseUrl);
+                            $newlyChecked[] = $u;
+                        }
                     }
                 }
             }
+            
+            $newlyChecked = reduceURLList($db, $newlyChecked);
 
-            foreach ($matches as $match) {
-
-                // make absolute
-                $match = relativeToAbsolute($match, $baseUrl == null ? $updateUrl : $baseUrl);
-
-                if (in_array($match, $checkedUrls)) {
-                    continue;
-                }
-
-                $newlyChecked[] = $match;
-
+            foreach ($newlyChecked as $match) {
+                
                 // resolve the adfly link (if it is one!)
                 $jarUrl = resolveAdfly($match);
 
@@ -277,8 +290,6 @@ foreach ($modUrls as $k => $mod) {
     );
 }
 
-$checkedUrls = array_unique(array_merge($checkedUrls, $newlyChecked));
-
 foreach ($allModFiles as $modToInsert) {
     $db->hopper->urls->update(
         array('_id' => $modToInsert['_id']),
@@ -287,15 +298,34 @@ foreach ($allModFiles as $modToInsert) {
     );
 }
 
-$collection->update(
+$db->hopper->mods->update(
     array('_id' => $modDocument['_id']),
-    array('$set' => array(
-        'checkedUrls' => array_values($checkedUrls),
-        'lastChecked' => time()
-    ))
+    array('$set' => array('lastChecked' => time()))
 );
 
+foreach ($newlyChecked as $url) {
+    $db->hopper->checked_urls->update(
+        array('_id' => $url),
+        array('_id' => $url),
+        array('upsert' => true)
+    );
+}
+
+
 libxml_clear_errors();
+
+function reduceURLList($db, $urls) {
+    $stored = $db->hopper->checked_urls->find(
+            array('_id' => array('$in' => $urls))
+    );
+    foreach($stored as $url) {
+        $index = array_search($url['_id'], $urls);
+        if ($index !== false) {
+            $urls = array_slice($urls, $index);
+        }
+    }
+    return $urls;
+}
 
 function relativeToAbsolute($rel, $base) {
     if (parse_url($rel, PHP_URL_SCHEME) != '')

@@ -8,13 +8,12 @@ use Mongo\Silex\Provider\MongoServiceProvider;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Carbon\Carbon;
 
 date_default_timezone_set('Europe/London');
 
 define("ROOT_PATH", __DIR__ . "/..");
 
-$app->before(function (Request $request) use ($app) {
+$app->before(function (Request $request) {
     if ($request->getMethod() === "OPTIONS") {
         $response = new Response();
         $response->headers->set("Access-Control-Allow-Origin", "*");
@@ -22,16 +21,13 @@ $app->before(function (Request $request) use ($app) {
         $response->headers->set("Access-Control-Allow-Headers", "Content-Type");
         $response->setStatusCode(200);
         $response->send();
-    }
-    $app['monolog']->addInfo($request->getContent());
-    
+    }    
 }, Application::EARLY_EVENT);
 
 //handling CORS respons with right headers
-$app->after(function (Request $request, Response $response) use ($app) {
+$app->after(function (Request $request, Response $response) {
     $response->headers->set("Access-Control-Allow-Origin", "*");
     $response->headers->set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-    $app['monolog']->addInfo($response->getContent());
 });
 
 //accepting JSON

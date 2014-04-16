@@ -41,11 +41,17 @@ class ApiController {
     
     public function main(Request $request) {
 
+        $content = $request->getContent();
+        
+        if (0 === strpos($request->headers->get('Content-Encoding'), 'gzip')) {
+            $content = gzinflate(substr($content, 10, -8));
+        }
+        
         if ($this->isUserFlooding($request)) {
             return new JsonResponse(array());
         }
 
-        $data = json_decode(mb_convert_encoding($request->getContent(), 'UTF-8', 'auto'), true);
+        $data = json_decode(mb_convert_encoding($content, 'UTF-8', 'auto'), true);
 
         if (!is_array($data)) {
             throw new \Exception('Array expected');
