@@ -1,0 +1,52 @@
+<div class="modal-header">
+	<a class="close" data-dismiss="modal">&times;</a>
+	<h3>{{ file.filenames|first }}</h3>
+</div>
+<div class="modal-body">
+  <div class="row" style="clear:both;">
+    <div class="col-md-3"><strong>Signature:</strong></div>
+    <div class="col-md-9">{{ file._id }}</div>
+  </div>                    
+  {% if file.classTransformers|length > 0 %}
+  <div class="row">
+    <div class="col-md-3"><strong>Class transformers:</strong></div>
+    <div class="col-md-9">
+      {% for transformer in file.classTransformers %}
+          {{ transformer }}<br/>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif%}
+
+  <div class="row">
+    <div class="col-md-3"><strong>Known filenames:</strong></div>
+    <div class="col-md-9">
+      {% for filename in file.filenames %}
+          {{ filename }}<br />
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3"><strong>Contains mods:</strong></div>
+    <div class="col-md-9">
+      {% for mod in file.mods %}
+          {{ mod.name }} <small>({{ mod.version }})</small><br />
+      {% endfor %}
+    </div>
+  </div>
+  
+  {% if file.packages|length > 0 %}
+  <div class="row">
+    <div class="col-md-3"><strong>Packages:</strong></div>
+    <div class="col-md-9">
+      {% for package in file.packages|sort %}
+          <a href="{{ relative('package/' ~ package) }}">{{ package }}</a><br />
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+<div class="modal-footer">
+    <a class="btn" data-dismiss="modal">Close</a>
+</div>

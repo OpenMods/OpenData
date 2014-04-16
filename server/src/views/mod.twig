@@ -14,24 +14,6 @@
             <p class="lead">{{ modInfo.description }}</p>
         {% endif %}
 
-        <div style="padding: 30px 0">
-            <ul class="nav nav-tabs">
-                <li class="active"><a href="#hour" data-toggle="tab">Runs per hour</a></li>
-                <li><a href="#day" data-toggle="tab">Runs per day</a></li>
-                <li><a href="#week" data-toggle="tab">Runs per month</a></li>
-            </ul>
-            <div class="tab-content">
-                <div class="tab-pane fade active in" id="hour">
-                    <div id="stats_hour" style="height: 200px;margin: 30px 0;"></div>
-                </div>
-                <div class="tab-pane fade" id="day">
-                </div>
-                <div class="tab-pane fade" id="week">
-                </div>
-            </div>
-        </div>
-            
-
         {% if modInfo.credits is not empty %}
             <p><strong>Credits:</strong> {{ modInfo.credits }}</p>
         {% endif %}
@@ -39,80 +21,96 @@
             <p><strong>Url:</strong> <a href="{{ modInfo.url|fullurl }}" target="_blank">{{ modInfo.url|fullurl }}</a></p>
         {% endif %}
             
-
-        <h3>Files:</h3>
-
-        <table class="table">
-            {% for version, files in versions %}
-            <tr>
-                <th>{{ version }}</th>
-                <td>
-                {% for file in files %}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">{{ file.filenames|first }} ({{ file.size }} bytes)
-                            <div class="btn-group btn-group-xs pull-right">
-                              {% if file._id in downloads|keys %}
-                                <a href="{{ downloads[file._id].url }}" class="btn btn-success"><span class="glyphicon glyphicon-download"></span>&nbsp;&nbsp;Download</a>
-                              {% endif %}
-                              <button type="button" class="btn btn-primary show_packages"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View packages</button>
-                              <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;View crashes</button>
-                            </div></div>
-                        <div class="panel-body">
-
-
-                            <div class="row" style="clear:both;">
-                              <div class="col-md-3"><strong>Signature:</strong></div>
-                              <div class="col-md-9">{{ file._id }}</div>
-                            </div>                    
-                            {% if file.classTransformers|length > 0 %}
-                            <div class="row">
-                              <div class="col-md-3"><strong>Class transformers:</strong></div>
-                              <div class="col-md-9">
-                                {% for transformer in file.classTransformers %}
-                                    {{ transformer }}<br/>
-                                {% endfor %}
-                              </div>
-                            </div>
-                            {% endif%}
-
-                            <div class="row">
-                              <div class="col-md-3"><strong>Known filenames:</strong></div>
-                              <div class="col-md-9">
-                                {% for filename in file.filenames %}
-                                    {{ filename }}<br />
-                                {% endfor %}
-                              </div>
-                            </div>
-
-                            <div class="row">
-                              <div class="col-md-3"><strong>Contains mods:</strong></div>
-                              <div class="col-md-9">
-                                {% for mod in file.mods %}
-                                    {{ mod.name }} <small>({{ mod.version }})</small><br />
-                                {% endfor %}
-                              </div>
-                            </div>
-
-                            <div class="row packages_list" style="display: none;">
-                              <div class="col-md-3"><strong>Packages:</strong></div>
-                              <div class="col-md-9">
-                                {% for package in file.packages|sort %}
-                                    <a href="{{ relative('package/' ~ package) }}">{{ package }}</a><br />
-                                {% endfor %}
-                              </div>
-                            </div>
-
-                        </div>
-                    </div>
-                  {% endfor %}
-                </td>         
-            </tr>
-            {% endfor %}   
-        </table>
     </div>
 </div>
 
+<div class="row" style="padding-top: 40px;">
 
+    <div class="col-md-12">   
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#files" data-toggle="tab">Files</a></li>
+          <li><a href="#analytics" data-toggle="tab">Analytics</a></li>
+          <li><a href="#crashes" data-toggle="tab">Crashes</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+                <div class="tab-pane active" id="files">
+                {% for version, files in versions %}
+                    <h3>{{ version }}</h3>
+                    <ul class="list-group">
+                    {% for file in files %}
+                        <li class="list-group-item">
+                            {{ file.filenames|first }} ({{ file.size }} bytes)
+                            <span class="btn-group btn-group-xs pull-right">
+                              {% if file._id in downloads|keys %}
+                                <a href="{{ downloads[file._id].url }}" class="btn btn-success"><span class="glyphicon glyphicon-download"></span>&nbsp;&nbsp;Download</a>
+                              {% endif %}
+                              <a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal" class="btn btn-primary"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View details</a>
+                              <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;View crashes</button>
+                            </span>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endfor %}   
+            </div>
+            <div class="tab-pane" id="analytics" style="padding-top:20px;">
+                <div class="well">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label for="inputEmail3" class="col-sm-1 control-label">File</label>
+                            <div class="col-sm-11">
+                                <select class="form-control">
+                                    <option>All files</option>
+                                    {% for files in versions %}
+                                        {% for file in files %}
+                                            <option>{{ file.filenames|first }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <h3>Runs per hour</h3>
+                <div id="stats_hour" style="height: 200px;margin: 30px 0;"></div>
+                <h3>Runs per day (weekly)</h3>
+                <div id="stats_weekly" style="height: 200px;margin: 30px 0;"></div>
+                <h3>Runs per day (monthly)</h3>
+                <div id="stats_monthly" style="height: 200px;margin: 30px 0;"></div>
+                <h3>Runs per day (yearly)</h3>
+                <div id="stats_yearly" style="height: 200px;margin: 30px 0;"></div>
+            </div>
+            <div class="tab-pane" id="crashes" style="padding-top:20px;">
+                <div class="well">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label for="inputEmail3" class="col-sm-1 control-label">File</label>
+                            <div class="col-sm-11">
+                                <select class="form-control">
+                                    <option>All files</option>
+                                    {% for files in versions %}
+                                        {% for file in files %}
+                                            <option>{{ file.filenames|first }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content"> 
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
@@ -122,17 +120,31 @@
 <script src="{{ relative('js/jquery.flot.time.js') }}"></script>
 <script type="text/javascript">
     $(function() {
-        $('.show_packages').click(function(e) {
-           $(this).parents('.panel').find('.packages_list').toggle();
+        $('a[href="#analytics"]').on('shown.bs.tab', function (e) {
+            $.plot("#stats_hour", {{ hourly|json_encode()|raw }}, {
+                xaxis: {
+                    minTickSize: [1, "hour"],
+                    twelveHourClock: true,
+                    mode: "time",
+                    timezone: "browser"
+                }
+            });
         });
-        
-        $.plot("#stats_hour", {{ hourly|json_encode()|raw }}, {
-            xaxis: {
-                minTickSize: [1, "hour"],
-		twelveHourClock: true,
-                mode: "time",
-                timezone: "browser"
-            }
+        $("a[data-target=#myModal]").click(function(ev) {
+            ev.preventDefault();
+            var target = $(this).attr("href");
+            $("#myModal .modal-content").load(target, function() { 
+                 $("#myModal").modal("show"); 
+            });
+        });
+        var hash = window.location.hash;
+        hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+
+        $('.nav-tabs a').click(function (e) {
+          $(this).tab('show');
+          var scrollmem = $('body').scrollTop();
+          window.location.hash = this.hash;
+          $('html,body').scrollTop(scrollmem);
         });
     });
 </script>

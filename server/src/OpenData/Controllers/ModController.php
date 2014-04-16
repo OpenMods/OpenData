@@ -86,4 +86,17 @@ class ModController {
         ));
     }
 
+    public function fileinfo($fileId) {
+        
+        $file = $this->serviceFiles->findOne($fileId);
+        
+        if ($file == null) {
+            throw new \Exception();
+        }
+        
+        return $this->twig->render('file.twig', array(
+            'file' => $file
+        ));
+    }
+    
 }

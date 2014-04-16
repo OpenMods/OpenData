@@ -8,11 +8,7 @@
             "type": "string",
             "required": true
         },
-        "exception_cause": {
-            "type": "string",
-            "required": true
-        },
-        "exception_type": {
+        "exception": {
             "type": "string",
             "required": true
         },
@@ -20,7 +16,7 @@
             "type": "integer",
             "required": true
         },
-        "stacktrace": {
+        "stack": {
             "type": "array",
             "required": true,
             "items": {
@@ -32,7 +28,7 @@
                         "type": "string",
                         "required": true
                     },
-                    "file": {
+                    "method": {
                         "type": "string",
                         "required": true
                     },
@@ -40,43 +36,64 @@
                         "type": "integer",
                         "required": true
                     },
-                    "package": {
-                        "type": "string",
-                        "required": true
+                    "signatures": {
+                        "type": "array",
+                        "required": true,
+                        "items": {
+                            "type": "string",
+                            "required": false
+                        }
                     }
                 }
             }
         },
-        "mod_states": {
+        "states": {
             "type": "array",
             "required": true,
-            "items": {
-                "type": "object",
-                "required": false,
-                "additionalProperties": true,
-                "properties": {
-                    "filename": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "modId": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "signature": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "state": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "version": {
-                        "type": "string",
-                        "required": true
+            "items": [
+                {
+                    "type": "object",
+                    "required": false,
+                    "properties": {
+                        "mods": {
+                            "type": "array",
+                            "required": false
+                        },
+                        "signature": {
+                            "type": "string",
+                            "required": false
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": false,
+                    "properties": {
+                        "mods": {
+                            "type": "array",
+                            "required": false,
+                            "items": {
+                                "type": "object",
+                                "required": false,
+                                "properties": {
+                                    "modId": {
+                                        "type": "string",
+                                        "required": false
+                                    },
+                                    "state": {
+                                        "type": "string",
+                                        "required": false
+                                    }
+                                }
+                            }
+                        },
+                        "signature": {
+                            "type": "string",
+                            "required": false
+                        }
                     }
                 }
-            }
+            ]
         }
     }
 }

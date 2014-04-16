@@ -5,7 +5,22 @@ namespace OpenData\Services;
 class CrashesService extends BaseService {
 
     public function add($packet) {
-        $packet['stackhash'] = md5(serialize($packet['stacktrace']));
+        $packet['stackhash'] = md5(serialize($packet['stack']));
+        
+        $this->db->unique_crashes->update(
+            array('stackhash' => $packet['stackhash']),
+            array(
+                '$set' => array(
+                    'exception' => $packet['exception'],
+                    'stackhash' => $packet['stackhash'],
+                    'message'   => $packet['message'],
+                    'stack'     => $packet['stack']
+                ),
+                '$inc' => array('count' => 1)
+            ),
+            array('upsert' => true)
+        );
+        
         $this->db->crashes->insert($packet);
     }
     

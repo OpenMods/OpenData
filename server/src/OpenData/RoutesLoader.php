@@ -97,6 +97,7 @@ class RoutesLoader {
          * Mods
          */
         $site->get('/mod/{modId}', "mod.controller:modinfo");
+        $site->get('/file/{fileId}', "mod.controller:fileinfo");
         
         /**
          * Crashes

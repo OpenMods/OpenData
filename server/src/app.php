@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-date_default_timezone_set('Europe/London');
+date_default_timezone_set('Etc/UTC');
 
 define("ROOT_PATH", __DIR__ . "/..");
 
@@ -33,8 +33,13 @@ $app->after(function (Request $request, Response $response) {
 //accepting JSON
 $app->before(function (Request $request) {
     if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
-        $data = json_decode($request->getContent(), true);
+        $content = $request->getContent();
+        if (0 === strpos($request->headers->get('Content-Encoding'), 'gzip')) {
+            $content = gzinflate(substr($content, 10, -8));
+        }
+        $data = json_decode($content, true);
         $request->request->replace(is_array($data) ? $data : array());
+        $request->request->set('api_request', $content);
     }
 });
 
