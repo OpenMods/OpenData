@@ -85,15 +85,17 @@ try {
             for ($i = 0; $i < $nodes->length; $i++) {
                 $node = $nodes->item($i);
                 $href = $node->attributes->item(0)->nodeValue;
+                echo $href."\n";
                 $files[] = $href;
             }
         }
 
         foreach ($files as $file) {
             $ctx = stream_context_create(array('http'=>array('timeout' => 120)));
+            echo "Downloading ".$file."\n";
             $contents = @file_get_contents($file, false, $ctx);
             if ($contents != null) {
-                $signature = 'sha256:' . hash('sha256', $$contents);
+                $signature = 'sha256:' . hash('sha256', $contents);
                 $modUrls[$signature] = array(
                     'jarUrl' => $file,
                     'url' => $file
@@ -139,7 +141,11 @@ try {
                         $node = $nodes->item($i);
                         $href = $node->attributes->item(0)->nodeValue;
                         if (strlen($href) > 0) {
-                            if (endsWith($href, '.jar') || endsWith($href, '.zip')) {
+                            if ((endsWith($href, '.jar') || endsWith($href, '.zip')) &&
+                                substr_count(strtolower($href), '-api') == 0 &&
+                                substr_count(strtolower($href), '-deobf') == 0 &&
+                                substr_count(strtolower($href), '-src') == 0
+                                ) {
                                 $absolute = relativeToAbsolute($href, $page);
                                 echo $absolute."\n";
                                 $files[] = $absolute;
@@ -153,7 +159,6 @@ try {
                 $ctx = stream_context_create(array('http'=>array('timeout' => 120)));
                 $contents = @file_get_contents($file, false, $ctx);
                 if ($contents != null) {
-                    echo $file."\n";
                     $signature = 'sha256:' . hash('sha256', $contents);
                     $modUrls[$signature] = array(
                         'jarUrl' => $file,
@@ -200,7 +205,9 @@ try {
                 // resolve the adfly link (if it is one!)
                 $jarUrl = resolveAdfly($match);
 
-                $isProbablyAMod = (
+                $isProbablyAMod =  substr_count(strtolower($jarUrl), '-api') == 0 &&
+                        substr_count(strtolower($jarUrl), '-deobf') == 0 &&
+                        substr_count(strtolower($jarUrl), '-src') == 0 && (
                         endsWith($jarUrl, '.jar') ||
                         endsWith($jarUrl, '.zip') ||
                         strpos($jarUrl, 'file=') !== false ||
@@ -228,6 +235,7 @@ try {
                     $validMod = false;
 
                     if (preg_match("@https?:\/\/www\.dropbox\.com@i", $jarUrl)) {
+                        echo "Dropbox link..\n";
                         $dom = new DOMDocument('1.0');
                         $contents = file_get_contents($jarUrl);
                         $dom->loadHTML($contents);
@@ -235,6 +243,7 @@ try {
                         $nodes = $finder->query("//a[@id=\"default_content_download_button\"]");
                         if ($nodes->length > 0) {
                             $href = $nodes->item(0)->attributes->getNamedItem('href');
+                            echo "Found button link..\n";
                             if ($href != null) {
                                 $jarUrl = $href->nodeValue;
                                 $ch = curl_init();
@@ -291,6 +300,7 @@ foreach ($modUrls as $k => $mod) {
 }
 
 foreach ($allModFiles as $modToInsert) {
+    echo "inserting ".$modToInsert['_id']."\n";
     $db->hopper->urls->update(
         array('_id' => $modToInsert['_id']),
         $modToInsert,
@@ -318,13 +328,20 @@ function reduceURLList($db, $urls) {
     $stored = $db->hopper->checked_urls->find(
             array('_id' => array('$in' => $urls))
     );
-    foreach($stored as $url) {
-        $index = array_search($url['_id'], $urls);
-        if ($index !== false) {
-            $urls = array_slice($urls, $index);
+    $new = array();
+    foreach($urls as $url) {
+        $found = false;
+        foreach ($stored as $storedUrl) {
+            if ($storedUrl['_id'] == $url) {
+                $found = true;
+                break;
+            }            
+        }
+        if (!$found) {
+             $new[] = $url;
         }
     }
-    return $urls;
+    return $new;
 }
 
 function relativeToAbsolute($rel, $base) {

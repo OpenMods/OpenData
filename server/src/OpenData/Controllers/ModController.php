@@ -81,7 +81,8 @@ class ModController {
             'hourly' => array(
                 array('label' => '&nbsp;&nbsp;Past 24 hours', 'data' => $hourlyStats['today']),
                 array('color' => '#cccccc', 'label' => '&nbsp;&nbsp;Previous 24 hours', 'data' => $hourlyStats['yesterday'])
-            )
+            ),
+            'downloads' => $this->serviceFiles->findDownloadsForSignatures($signatures)
         ));
     }
 

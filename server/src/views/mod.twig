@@ -51,6 +51,9 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">{{ file.filenames|first }} ({{ file.size }} bytes)
                             <div class="btn-group btn-group-xs pull-right">
+                              {% if file._id in downloads|keys %}
+                                <a href="{{ downloads[file._id].url }}" class="btn btn-success"><span class="glyphicon glyphicon-download"></span>&nbsp;&nbsp;Download</a>
+                              {% endif %}
                               <button type="button" class="btn btn-primary show_packages"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View packages</button>
                               <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;View crashes</button>
                             </div></div>

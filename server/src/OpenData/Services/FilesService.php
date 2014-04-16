@@ -112,4 +112,17 @@ class FilesService extends BaseService {
         return $this->db->files->distinct('packages');
     }
 
+    public function findDownloadsForSignatures($signatures) {
+        if (count($signatures) == 0) {
+            return array();
+        }
+        $downloads = array();
+        foreach ($this->db->urls->find(
+                array('_id' => array('$in' => $signatures))
+        ) as $download) {
+            $downloads[$download['_id']] = $download;
+        }
+        return $downloads;
+    }
+
 }
