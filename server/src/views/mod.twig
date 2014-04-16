@@ -1,18 +1,23 @@
 {% extends 'base.twig' %}
+{% block first %}
+<img src="/ironchest.jpg" id="mod_image">
+{% endblock %}
 {% block main %}
 <div class="row">
 
     <div class="col-md-12">
-        <div class="page-header">
-            <h1>{{ modInfo.name }}
+        <div class="page-header" id="modheader">
+            <div class="inner">
+            <h1><span class="wrapped">{{ modInfo.name }}
             {% if modInfo.authors|length > 0 %}
                 <small>by {{ modInfo.authors|join(', ') }}</small>
-            {% endif %}</h1>
+            {% endif %}</span></h1>
+            {% if modInfo.description is not empty %}
+                <p class="lead" style="width: 85%;"><span class="wrapped">{{ modInfo.description }}</span></p>
+            {% endif %}
+            </div>
         </div>
 
-        {% if modInfo.description is not empty %}
-            <p class="lead">{{ modInfo.description }}</p>
-        {% endif %}
 
         {% if modInfo.credits is not empty %}
             <p><strong>Credits:</strong> {{ modInfo.credits }}</p>
@@ -37,21 +42,28 @@
         <div class="tab-content">
                 <div class="tab-pane active" id="files">
                 {% for version, files in versions %}
-                    <h3>{{ version }}</h3>
-                    <ul class="list-group">
+                    <h3 style="padding-top: 30px">{{ version }}</h3>
+                    <table class="table table-striped">
                     {% for file in files %}
-                        <li class="list-group-item">
-                            {{ file.filenames|first }} ({{ file.size }} bytes)
-                            <span class="btn-group btn-group-xs pull-right">
-                              {% if file._id in downloads|keys %}
-                                <a href="{{ downloads[file._id].url }}" class="btn btn-success"><span class="glyphicon glyphicon-download"></span>&nbsp;&nbsp;Download</a>
-                              {% endif %}
-                              <a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal" class="btn btn-primary"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View details</a>
-                              <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;View crashes</button>
-                            </span>
-                        </li>
+                        <tr>
+                            <td>
+                                <div style="padding-top: 7px;">
+                                    {{ file.filenames|first }} ({{ file.size }} bytes)
+                                    
+                                    {% if file._id in downloads|keys %}
+                                       &nbsp;&nbsp;&nbsp; <a href="{{ downloads[file._id].url }}" style="text-decoration: none!important;"><span class="glyphicon glyphicon-download"></span>&nbsp;Download</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group pull-right">
+                                    <a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal" class="btn btn-default"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View details</a>
+                                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;View crashes</button>
+                                </div>
+                            </td>
+                        </tr>
                     {% endfor %}
-                    </ul>
+                    </table>
                 {% endfor %}   
             </div>
             <div class="tab-pane" id="analytics" style="padding-top:20px;">
@@ -62,10 +74,12 @@
                             <div class="col-sm-11">
                                 <select class="form-control">
                                     <option>All files</option>
-                                    {% for files in versions %}
+                                    {% for version, files in versions %}
+                                        <optgroup label="{{ version }}">
                                         {% for file in files %}
                                             <option>{{ file.filenames|first }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
                                         {% endfor %}
+                                        </optgroup>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -90,10 +104,12 @@
                             <div class="col-sm-11">
                                 <select class="form-control">
                                     <option>All files</option>
-                                    {% for files in versions %}
+                                    {% for version, files in versions %}
+                                        <optgroup label="{{ version }}">
                                         {% for file in files %}
                                             <option>{{ file.filenames|first }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
                                         {% endfor %}
+                                        </optgroup>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -146,6 +162,7 @@
           window.location.hash = this.hash;
           $('html,body').scrollTop(scrollmem);
         });
+
     });
 </script>
 {% endblock %}

@@ -25,7 +25,7 @@ class FilesService extends BaseService {
     public function findByModId($modId) {
         return $this->db->files->find(
             array('mods.modId' => strtolower($modId))
-        );
+        )->sort(array('days.launches' => -1));
     }
 
     public function findByPackage($package) {

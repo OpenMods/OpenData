@@ -20,7 +20,7 @@ public class Mod extends DummyModContainer {
 
 	private LoadController controller;
 
-	public static boolean I_LIKE_MY_MINECRAFT_UNCRASHED = true;
+	public static boolean I_LIKE_MY_MINECRAFT_UNCRASHED = false;
 
 	public Mod() {
 		super(new ModMetadata());
