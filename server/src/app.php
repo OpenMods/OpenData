@@ -66,24 +66,27 @@ if (class_exists('\Memcache')) {
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/views',
 ));
-
-$app['twig']->addFunction(new \Twig_SimpleFunction('relative', function ($string) use ($app) {
-    if (preg_match("@https?:\/\/@i", $string)) {
-        return $string;
-    }
-    return $app['request']->getBasePath() . '/' . $string;
-}));
-$app['twig']->addFilter(new \Twig_SimpleFilter('id', function ($string) {
-    return substr(md5($string), 0, 5);
-}));
-$app['twig']->addFilter(new \Twig_SimpleFilter('fullurl', function ($string) {
-    if (!empty($string)) {
-        if(!preg_match("/^https?:\/\//", $string)) {
-            $string = 'http://'.$string;
+$app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+    $twig->addFunction(new \Twig_SimpleFunction('relative', function ($string) use ($app) {
+        if (preg_match("@https?:\/\/@i", $string)) {
+            return $string;
         }
-    }
-    return $string;
+        return $app['request']->getBasePath() . '/' . $string;
+    }));
+    $twig->addFilter(new \Twig_SimpleFilter('id', function ($string) {
+        return substr(md5($string), 0, 5);
+    }));
+    $twig->addFilter(new \Twig_SimpleFilter('fullurl', function ($string) {
+        if (!empty($string)) {
+            if(!preg_match("/^https?:\/\//", $string)) {
+                $string = 'http://'.$string;
+            }
+        }
+        return $string;
+    }));
+    return $twig;
 }));
+
 
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 

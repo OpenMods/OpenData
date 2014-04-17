@@ -2,6 +2,8 @@
 
 namespace OpenData\Services;
 
+use OpenData\Services\ModsService;
+
 class FilesService extends BaseService {
 
     public function findIn($signatures = array()) {
@@ -91,7 +93,7 @@ class FilesService extends BaseService {
 
         if (isset($file['mods'])) {
             for ($i = 0; $i < count($file['mods']); $i++) {
-                    $file['mods'][$i]['modId'] = strtolower($file['mods'][$i]['modId']);
+                    $file['mods'][$i]['modId'] = ModsService::sanitizeModId($file['mods'][$i]['modId']);
             }
         }
 

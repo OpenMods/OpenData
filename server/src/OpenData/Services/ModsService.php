@@ -67,5 +67,10 @@ class ModsService extends BaseService {
             )
         )->sort(array('hours.launches' => -1))->limit($limit);*/
     }
+    
+    
+    public static function sanitizeModId($modId) {
+        return strtolower(preg_replace("@[^a-z0-9_ ]+@i", '', $modId));
+    }
 
 }

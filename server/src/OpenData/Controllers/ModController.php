@@ -114,4 +114,10 @@ class ModController {
         ));
         
     }
+    
+    public function crashes($modId) {
+        
+        return $this->twig->render('mod_crashes.twig', array(
+        ));
+    }
 }

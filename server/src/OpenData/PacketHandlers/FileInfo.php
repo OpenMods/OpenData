@@ -1,7 +1,8 @@
 <?php
 
-
 namespace OpenData\PacketHandlers;
+
+use OpenData\Services\ModsService;
 
 class FileInfo implements IPacketHandler {
     
@@ -28,7 +29,7 @@ class FileInfo implements IPacketHandler {
         if (isset($packet['mods'])) {
             foreach ($packet['mods'] as $mod) {
                 if (empty($mod['parent'])) {
-                    $this->serviceMods->upsert(strtolower($mod['modId']), array(
+                    $this->serviceMods->upsert(ModsService::sanitizeModId($mod['modId']), array(
                         'authors' => $mod['authors'],
                         'credits' => $mod['credits'],
                         'description' => $mod['description'],
@@ -42,4 +43,5 @@ class FileInfo implements IPacketHandler {
         }
     }
 
+    
 }
