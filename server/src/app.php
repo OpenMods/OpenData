@@ -68,6 +68,9 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 ));
 
 $app['twig']->addFunction(new \Twig_SimpleFunction('relative', function ($string) use ($app) {
+    if (preg_match("@https?:\/\/@i", $string)) {
+        return $string;
+    }
     return $app['request']->getBasePath() . '/' . $string;
 }));
 $app['twig']->addFilter(new \Twig_SimpleFilter('id', function ($string) {

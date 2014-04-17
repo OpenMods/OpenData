@@ -1,6 +1,6 @@
 {% extends 'base.twig' %}
 {% block first %}
-<img src="/ironchest.jpg" id="mod_image">
+<img src="{% if modInfo.largeImage is not empty %}{{ relative(modInfo.largeImage) }}{% else %}{{ relative('largemodimages/default.jpg') }}{% endif %}" id="mod_image">
 {% endblock %}
 {% block main %}
 <div class="row">
