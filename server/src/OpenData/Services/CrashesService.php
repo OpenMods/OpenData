@@ -14,7 +14,8 @@ class CrashesService extends BaseService {
                     'exception' => $packet['exception'],
                     'stackhash' => $packet['stackhash'],
                     'message'   => $packet['message'],
-                    'stack'     => $packet['stack']
+                    'stack'     => $packet['stack'],
+                    'latest'    => time()
                 ),
                 '$inc' => array('count' => 1)
             ),
@@ -31,6 +32,13 @@ class CrashesService extends BaseService {
                 ->skip($skip)
                 ->limit($limit);
            
+    }
+    
+    public function findUniqueBySignatures($signatures = array()) {
+        if (count($signatures) == 0) return array();
+        return $this->db->unique_crashes->find(array('stack.signatures' => 
+                array('$in' => $signatures)
+            ))->sort(array('latest' => -1));
     }
     
     public function findLatest($skip = 0, $limit = 40) {

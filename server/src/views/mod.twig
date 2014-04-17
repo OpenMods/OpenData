@@ -73,7 +73,7 @@
                             <label for="inputEmail3" class="col-sm-1 control-label">File</label>
                             <div class="col-sm-11">
                                 <select class="form-control" id="select_hourly_file">
-                                    <option value="">All files</option>
+                                    <option value="{{ relative('mod/' ~ modInfo._id ~ '/analytics') }}">All files</option>
                                     {% for version, files in versions %}
                                         <optgroup label="{{ version }}">
                                         {% for file in files %}
@@ -87,14 +87,9 @@
                     </form>
                 </div>
                 
-                <h3>Runs per hour</h3>
-                <div id="stats_hour" style="height: 200px;margin: 30px 0;"></div>
-                <h3>Runs per day (weekly)</h3>
-                <div id="stats_weekly" style="height: 200px;margin: 30px 0;"></div>
-                <h3>Runs per day (monthly)</h3>
-                <div id="stats_monthly" style="height: 200px;margin: 30px 0;"></div>
-                <h3>Runs per day (yearly)</h3>
-                <div id="stats_yearly" style="height: 200px;margin: 30px 0;"></div>
+                <div id="analytics_content">
+                    {{ render(relative('mod/'~modInfo._id~'/analytics')) }}
+                </div>
             </div>
             <div class="tab-pane" id="crashes" style="padding-top:20px;">
                 <div class="well">
@@ -117,6 +112,9 @@
                     </form>
                 </div>
                 
+                <div id="crashes_content">
+                    {{ render(relative('mod/'~modInfo._id~'/crashes')) }}
+                </div>
             </div>
         </div>
     </div>
@@ -131,16 +129,12 @@
 
 {% endblock %}
 
-
 {% block javascript %}
 <script src="{{ relative('js/jquery.flot.js') }}"></script>
 <script src="{{ relative('js/jquery.flot.time.js') }}"></script>
 <script type="text/javascript">
-    var analyticsData = null;
-    var baseAnalyticsUrl = '{{ relative('mod/' ~ modInfo._id ~'/analytics') }}';
-    
     function plotHourly() {
-        $.plot("#stats_hour", analyticsData.hourly, {
+        $.plot("#stats_hour", hourly, {
             xaxis: {
                 minTickSize: [1, "hour"],
                 twelveHourClock: true,
@@ -149,28 +143,14 @@
             }
         });
     }
-    function getAnalyticsData(url) {
-        if (analyticsData == null) {
-            $.get(url == '' ? baseAnalyticsUrl : url, function(data) {
-                analyticsData = data;
-                plotHourly();
-            });
-            return;
-        }
-        plotHourly();
-    }
-    function clearAnalyticsData() {
-         analyticsData = null;
-    }
     $(function() {
         $('#select_hourly_file').change(function() {
-            clearAnalyticsData();
-            getAnalyticsData($(this).val());
+            $( "#analytics_content" ).load($(this).val(), function() {
+                plotHourly();
+            });
         });
         $('a[href="#analytics"]').on('shown.bs.tab', function (e) {
-            $('#select_hourly_file').val('');
-            clearAnalyticsData();
-            getAnalyticsData('');
+           plotHourly(); 
         });
         $("a[data-target=#myModal]").click(function(ev) {
             ev.preventDefault();
@@ -188,7 +168,6 @@
           window.location.hash = this.hash;
           $('html,body').scrollTop(scrollmem);
         });
-
     });
 </script>
 {% endblock %}

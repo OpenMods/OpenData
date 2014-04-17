@@ -1,15 +1,46 @@
-<table class="table table-striped">
+<table class="table table-condensed" style="border-collapse:collapse;">
     <thead>
         <tr>
-            <th>Date</th><th>Class</th><th>Exception</th><th>File</th><th>Method</th><th>Line</th>            
+            <th>Amount</th>
+            <th>Exception</th>
+            <th>Message</th>
+            <th>Class</th>
+            <th>Method</th>
+            <th>File</th>
+            <th>Line</th>  
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>1970-01-17 04:14:34</td><td>openeye.Mod</td><td>java.lang.RuntimeException</td><td>Mod.java</td><td>onInit</td><td>60</td>            
-        </tr>
-        <tr>
-            <td>1970-01-17 04:14:34</td><td>openeye.Mod</td><td>java.lang.RuntimeException</td><td>Mod.java</td><td>onInit</td><td>60</td>            
-        </tr>
+        {% for crash in crashes %}
+            {% set firstStack = crash.stack|first %}
+            <tr data-toggle="collapse" data-target="#{{ crash.stackhash }}" class="accordion-toggle" style="cursor: pointer">
+                <td>{{ crash.count }}</td>
+                <td>{{ crash.exception }}</td>
+                <td>{{ crash.message }}</td>
+                <td>{{ firstStack.class }}</td>
+                <td>{{ firstStack.method }}</td>
+                <td>{{ firstStack.file }}</td>
+                <td>{{ firstStack.line }}</td>
+            </tr>
+            <tr>
+                <td colspan="7" class="hiddenRow">
+                    <div class="accordian-body collapse" id="{{ crash.stackhash }}">
+<pre>{% if crash.message %}
+{{ crash.message }}
+
+{% endif %}{{ crash.exception }}
+{% for trace in crash.stack %}
+	at {{ trace.class }}.{{ trace.method }}({{ trace.file }}:{{ trace.line }})
+{% endfor %}
+</pre>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
     </tbody>
 </table>
+<style type="text/css">
+.hiddenRow {
+    padding: 0 !important;
+}
+</style>

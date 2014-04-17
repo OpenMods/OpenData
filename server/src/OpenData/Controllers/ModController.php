@@ -2,19 +2,18 @@
 
 namespace OpenData\Controllers;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-
 class ModController {
 
     private $serviceFiles;
     private $serviceMods;
-    private $serviceAnalytics;
+    private $serviceCrashes;
     private $twig;
 
-    public function __construct($twig, $files, $mods) {
+    public function __construct($twig, $files, $mods, $crashes) {
         $this->twig = $twig;
         $this->serviceFiles = $files;
         $this->serviceMods = $mods;
+        $this->serviceCrashes = $crashes;
     }
 
     public function modinfo($modId) {
@@ -70,21 +69,23 @@ class ModController {
     }
     
     public function analytics($modId, $fileId = null) {
+
+        $document = $fileId == null ?
+                    $this->serviceMods->findById($modId) :
+                    $this->serviceFiles->findOne($fileId);
         
-        $info = null;
-        if ($fileId == null) {
-            $info = $this->serviceMods->findById($modId);
-        } else {
-            $info = $this->serviceFiles->findOne($fileId);
+        if ($document == null) {
+            throw new \Exception();
         }
         
         $hourly = array();
-        if (isset($info['hours'])) {
-            foreach ($info['hours'] as $hour) {
+        
+        if (isset($document['hours'])) {
+            foreach ($document['hours'] as $hour) {
                 $hourly[$hour['time']->sec * 1000] = $hour['launches'];
             }
         }
- 
+        
         $lastHour = strtotime(date("Y-m-d H:00:00"));
         
         $hourlyStats = array(
@@ -106,18 +107,28 @@ class ModController {
             }
         }
         
-        return new JsonResponse(array(
+        return $this->twig->render('mod_analytics.twig', array(
             'hourly' => array(
                 array('label' => '&nbsp;&nbsp;Past 24 hours', 'data' => $hourlyStats['today']),
                 array('color' => '#cccccc', 'label' => '&nbsp;&nbsp;Previous 24 hours', 'data' => $hourlyStats['yesterday'])
             )
         ));
-        
     }
     
-    public function crashes($modId) {
+    public function crashes($modId, $fileId = null) {
+        $signatures = array();
+        if ($fileId == null) {
+            foreach($this->serviceFiles->findByModId($modId) as $file) {
+                $signatures[] = $file['_id'];
+            }
+        } else {
+            $signatures[] = $fileId;
+        }
+        
+        $crashes = $this->serviceCrashes->findUniqueBySignatures($signatures);
         
         return $this->twig->render('mod_crashes.twig', array(
+            'crashes' => $crashes
         ));
     }
 }

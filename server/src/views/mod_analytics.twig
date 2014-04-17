@@ -1,0 +1,11 @@
+<h3>Runs per hour</h3>
+<div id="stats_hour" style="height: 200px;margin: 30px 0;"></div>
+<h3>Runs per day (weekly)</h3>
+<div id="stats_weekly" style="height: 200px;margin: 30px 0;"></div>
+<h3>Runs per day (monthly)</h3>
+<div id="stats_monthly" style="height: 200px;margin: 30px 0;"></div>
+<h3>Runs per day (yearly)</h3>
+<div id="stats_yearly" style="height: 200px;margin: 30px 0;"></div>
+<script type="text/javascript">
+    var hourly = {{ hourly|json_encode()|raw }};
+</script>
