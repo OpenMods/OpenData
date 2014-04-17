@@ -72,12 +72,12 @@
                         <div class="form-group" style="margin-bottom:0">
                             <label for="inputEmail3" class="col-sm-1 control-label">File</label>
                             <div class="col-sm-11">
-                                <select class="form-control">
-                                    <option>All files</option>
+                                <select class="form-control" id="select_hourly_file">
+                                    <option value="">All files</option>
                                     {% for version, files in versions %}
                                         <optgroup label="{{ version }}">
                                         {% for file in files %}
-                                            <option>{{ file.filenames|first }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
+                                            <option value="{{ relative('mod/' ~ modInfo._id ~ '/analytics/' ~ file._id) }}">{{ file.filenames|first }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
                                         {% endfor %}
                                         </optgroup>
                                     {% endfor %}
@@ -135,16 +135,41 @@
 <script src="{{ relative('js/jquery.flot.js') }}"></script>
 <script src="{{ relative('js/jquery.flot.time.js') }}"></script>
 <script type="text/javascript">
-    $(function() {
-        $('a[href="#analytics"]').on('shown.bs.tab', function (e) {
-            $.plot("#stats_hour", {{ hourly|json_encode()|raw }}, {
-                xaxis: {
-                    minTickSize: [1, "hour"],
-                    twelveHourClock: true,
-                    mode: "time",
-                    timezone: "browser"
-                }
+    var analyticsData = null;
+    var baseAnalyticsUrl = '{{ relative('mod/' ~ modInfo._id ~'/analytics') }}';
+    
+    function plotHourly() {
+        $.plot("#stats_hour", analyticsData.hourly, {
+            xaxis: {
+                minTickSize: [1, "hour"],
+                twelveHourClock: true,
+                mode: "time",
+                timezone: "browser"
+            }
+        });
+    }
+    function getAnalyticsData(url) {
+        if (analyticsData == null) {
+            $.get(url == '' ? baseAnalyticsUrl : url, function(data) {
+                analyticsData = data;
+                plotHourly();
             });
+            return;
+        }
+        plotHourly();
+    }
+    function clearAnalyticsData() {
+         analyticsData = null;
+    }
+    $(function() {
+        $('#select_hourly_file').change(function() {
+            clearAnalyticsData();
+            getAnalyticsData($(this).val());
+        });
+        $('a[href="#analytics"]').on('shown.bs.tab', function (e) {
+            $('#select_hourly_file').val('');
+            clearAnalyticsData();
+            getAnalyticsData('');
         });
         $("a[data-target=#myModal]").click(function(ev) {
             ev.preventDefault();

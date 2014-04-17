@@ -2,6 +2,8 @@
 
 namespace OpenData\Controllers;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 class ModController {
 
     private $serviceFiles;
@@ -47,9 +49,38 @@ class ModController {
             }
         }
         
+        return $this->twig->render('mod.twig', array(
+            'versions' => $versions,
+            'modInfo' => $modInfo,
+            'downloads' => $this->serviceFiles->findDownloadsForSignatures($signatures)
+        ));
+    }
+
+    public function fileinfo($fileId) {
+        
+        $file = $this->serviceFiles->findOne($fileId);
+        
+        if ($file == null) {
+            throw new \Exception();
+        }
+        
+        return $this->twig->render('file.twig', array(
+            'file' => $file
+        ));
+    }
+    
+    public function analytics($modId, $fileId = null) {
+        
+        $info = null;
+        if ($fileId == null) {
+            $info = $this->serviceMods->findById($modId);
+        } else {
+            $info = $this->serviceFiles->findOne($fileId);
+        }
+        
         $hourly = array();
-        if (isset($modInfo['hours'])) {
-            foreach ($modInfo['hours'] as $hour) {
+        if (isset($info['hours'])) {
+            foreach ($info['hours'] as $hour) {
                 $hourly[$hour['time']->sec * 1000] = $hour['launches'];
             }
         }
@@ -75,28 +106,12 @@ class ModController {
             }
         }
         
-        return $this->twig->render('mod.twig', array(
-            'versions' => $versions,
-            'modInfo' => $modInfo,
+        return new JsonResponse(array(
             'hourly' => array(
                 array('label' => '&nbsp;&nbsp;Past 24 hours', 'data' => $hourlyStats['today']),
                 array('color' => '#cccccc', 'label' => '&nbsp;&nbsp;Previous 24 hours', 'data' => $hourlyStats['yesterday'])
-            ),
-            'downloads' => $this->serviceFiles->findDownloadsForSignatures($signatures)
+            )
         ));
+        
     }
-
-    public function fileinfo($fileId) {
-        
-        $file = $this->serviceFiles->findOne($fileId);
-        
-        if ($file == null) {
-            throw new \Exception();
-        }
-        
-        return $this->twig->render('file.twig', array(
-            'file' => $file
-        ));
-    }
-    
 }
