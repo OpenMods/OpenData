@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
+import java.util.zip.GZIPOutputStream;
 
 import openeye.Log;
 
@@ -25,7 +26,7 @@ public abstract class GenericSender<I, O> {
 
 	private int retries = 3;
 
-	private int timeout = 500;
+	private int timeout = 1000;
 
 	protected GenericSender(URL url) {
 		this.url = url;
@@ -57,14 +58,14 @@ public abstract class GenericSender<I, O> {
 				connection.setConnectTimeout(timeout);
 				connection.setReadTimeout(timeout);
 				connection.setRequestProperty("Accept", "application/json");
-				// connection.setRequestProperty("Content-Encoding", "gzip");
+				connection.setRequestProperty("Content-Encoding", "gzip");
 				connection.setRequestProperty("Content-Type", "application/json");
 				connection.setRequestProperty("User-Agent", "Die Fledermaus/11");
 				connection.setRequestProperty("Host", url.getHost() + ":" + url.getPort());
 				connection.setInstanceFollowRedirects(true);
 
 				OutputStream requestStream = connection.getOutputStream();
-				// requestStream = new GZIPOutputStream(requestStream);
+				requestStream = new GZIPOutputStream(requestStream);
 				encodeRequest(requestStream, request);
 				requestStream.flush();
 				requestStream.close();
