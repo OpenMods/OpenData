@@ -30,9 +30,15 @@ public final class MainWorker {
 
 	private Storages storages;
 
-	private CountDownLatch initialMsgReceived = new CountDownLatch(1);
+	private CountDownLatch canContinueLoading = new CountDownLatch(1);
 
 	private static Throwable lethalException;
+
+	private final boolean sendReports;
+
+	public MainWorker(boolean sendReports) {
+		this.sendReports = sendReports;
+	}
 
 	public static void storeThrowableForReport(Throwable throwable) {
 		if (lethalException == null) lethalException = throwable;
@@ -135,7 +141,7 @@ public final class MainWorker {
 				}
 
 				ResponseList response = sender.sendAndReceive(currentReport);
-				initialMsgReceived.countDown();
+				canContinueLoading.countDown(); // early release - notes send in next packets are ignored
 
 				if (response == null || response.isEmpty()) break;
 
@@ -160,7 +166,6 @@ public final class MainWorker {
 		} catch (Exception e) {
 			Log.warn(e, "Failed to send report to %s", url);
 		}
-		initialMsgReceived.countDown();
 	}
 
 	protected static void loadConfig(InjectedDataStore dataStore) {
@@ -189,7 +194,9 @@ public final class MainWorker {
 				collectData(dataStore, table);
 
 				loadConfig(dataStore);
-				sendReports();
+
+				if (sendReports) sendReports();
+				canContinueLoading.countDown();
 			}
 		};
 
@@ -236,7 +243,7 @@ public final class MainWorker {
 
 	public void waitForFirstMsg() {
 		try {
-			initialMsgReceived.await();
+			canContinueLoading.await();
 		} catch (InterruptedException e) {
 			Log.warn("Thread interrupted while waiting for msg");
 		}
