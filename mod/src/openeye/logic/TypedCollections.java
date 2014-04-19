@@ -6,9 +6,7 @@ import java.util.Collection;
 
 import openeye.Log;
 import openeye.reports.*;
-import openeye.responses.IResponse;
-import openeye.responses.ResponseFileInfo;
-import openeye.responses.ResponsePong;
+import openeye.responses.*;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -97,9 +95,13 @@ public class TypedCollections {
 		REPORTS_TYPES.put("file_info", ReportFileInfo.class);
 		REPORTS_TYPES.put("crashlog", ReportCrash.class);
 		REPORTS_TYPES.put("ping", ReportPing.class);
+		REPORTS_TYPES.put("known_files", ReportKnownFiles.class);
+		REPORTS_TYPES.put("file_contents", ReportFileContents.class);
 
 		RESPONSE_TYPES.put("file_info", ResponseFileInfo.class);
 		RESPONSE_TYPES.put("pong", ResponsePong.class);
+		RESPONSE_TYPES.put("file_contents", ResponseFileContents.class);
+		RESPONSE_TYPES.put("dangerous_file", ResponseDangerousFile.class);
 	}
 
 }

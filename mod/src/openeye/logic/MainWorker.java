@@ -1,22 +1,25 @@
 package openeye.logic;
 
+import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import openeye.Log;
+import openeye.config.ConfigProcessing;
 import openeye.logic.TypedCollections.ReportsList;
 import openeye.logic.TypedCollections.ResponseList;
 import openeye.net.GenericSender.FailedToSend;
 import openeye.net.ReportSender;
-import openeye.reports.IReport;
-import openeye.reports.ReportCrash;
-import openeye.reports.ReportPing;
+import openeye.reports.*;
 import openeye.responses.IResponse;
 import openeye.storage.IDataSource;
 import openeye.storage.Storages;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import cpw.mods.fml.common.discovery.ASMDataTable;
@@ -28,9 +31,17 @@ public final class MainWorker {
 
 	private Storages storages;
 
-	private CountDownLatch initialMsgReceived = new CountDownLatch(1);
+	private CountDownLatch canContinueLoading = new CountDownLatch(1);
 
 	private static Throwable lethalException;
+
+	private final boolean sendReports;
+
+	private final Set<String> dangerousSignatures = Sets.newHashSet();
+
+	public MainWorker(boolean sendReports) {
+		this.sendReports = sendReports;
+	}
 
 	public static void storeThrowableForReport(Throwable throwable) {
 		if (lethalException == null) lethalException = throwable;
@@ -59,7 +70,8 @@ public final class MainWorker {
 		final ReportsList result = new ReportsList();
 
 		final IContext context = new IContext() {
-			private final Set<String> alreadyAddedSignatures = Sets.newHashSet();
+			private final Set<String> addedFileInfos = Sets.newHashSet();
+			private final Set<String> addedFileContents = Sets.newHashSet();
 
 			@Override
 			public Set<String> getModsForSignature(String signature) {
@@ -73,10 +85,23 @@ public final class MainWorker {
 
 			@Override
 			public void queueFileReport(String signature) {
-				if (!alreadyAddedSignatures.contains(signature)) {
+				if (!addedFileInfos.contains(signature)) {
 					result.add(collector.generateFileReport(signature));
-					alreadyAddedSignatures.add(signature);
+					addedFileInfos.add(signature);
 				}
+			}
+
+			@Override
+			public void queueFileContents(String signature) {
+				if (!addedFileContents.contains(signature)) {
+					result.add(collector.generateFileContentsReport(signature));
+					addedFileContents.add(signature);
+				}
+			}
+
+			@Override
+			public void markDangerousSignature(String signature) {
+				dangerousSignatures.add(signature);
 			}
 		};
 
@@ -86,12 +111,17 @@ public final class MainWorker {
 		return result;
 	}
 
-	private void sendReports(Config config) {
+	private void sendReports() {
 		final ReportsList initialReport = new ReportsList();
 
 		try {
-			initialReport.add(ReportBuilders.buildAnalyticsReport(config, collector));
-			initialReport.add(new ReportPing());
+			if (Config.scanOnly) {
+				initialReport.add(ReportBuilders.buildKnownFilesReport(collector));
+			} else {
+				initialReport.add(ReportBuilders.buildAnalyticsReport(collector));
+			}
+
+			if (Config.pingOnInitialReport) initialReport.add(new ReportPing());
 
 		} catch (Exception e) {
 			Log.warn(e, "Failed to create initial report");
@@ -119,7 +149,6 @@ public final class MainWorker {
 				}
 
 				ResponseList response = sender.sendAndReceive(currentReport);
-				initialMsgReceived.countDown();
 
 				if (response == null || response.isEmpty()) break;
 
@@ -134,6 +163,8 @@ public final class MainWorker {
 				} catch (Exception e) {
 					Log.warn(e, "Failed to create response");
 				}
+
+				canContinueLoading.countDown(); // early release - notes send in next packets are ignored
 			}
 
 			for (IDataSource<ReportCrash> crash : storages.pendingCrashes.listAll())
@@ -144,17 +175,17 @@ public final class MainWorker {
 		} catch (Exception e) {
 			Log.warn(e, "Failed to send report to %s", url);
 		}
-		initialMsgReceived.countDown();
 	}
 
-	protected Config loadConfig() {
+	protected static void loadConfig(InjectedDataStore dataStore) {
 		try {
-			IDataSource<Config> configSource = storages.config.getById(Storages.CONFIG_ID);
-			Config config = configSource.retrieve();
-			return config != null? config : new Config();
-		} catch (Throwable t) {
-			Log.warn(t, "Failed to parse config file");
-			return new Config();
+			File configFolder = new File(dataStore.getMcLocation(), "config");
+			configFolder.mkdir();
+			File configFile = new File(configFolder, "OpenEye.json");
+
+			ConfigProcessing.processConfig(configFile, Config.class, ConfigProcessing.GSON);
+		} catch (Exception e) {
+			Log.warn(e, "Failed to load config");
 		}
 	}
 
@@ -171,8 +202,10 @@ public final class MainWorker {
 				initStorage(dataStore);
 				collectData(dataStore, table);
 
-				Config config = loadConfig();
-				sendReports(config);
+				loadConfig(dataStore);
+
+				if (sendReports) sendReports();
+				canContinueLoading.countDown();
 			}
 		};
 
@@ -191,7 +224,7 @@ public final class MainWorker {
 		Thread crashDumperThread = new Thread() {
 			@Override
 			public void run() {
-				if (lethalException != null) {
+				if (lethalException != null && !(lethalException instanceof INotStoredCrash)) {
 					if (storages != null) {
 						storeCrash(lethalException);
 					} else {
@@ -219,9 +252,20 @@ public final class MainWorker {
 
 	public void waitForFirstMsg() {
 		try {
-			initialMsgReceived.await();
+			canContinueLoading.await();
 		} catch (InterruptedException e) {
 			Log.warn("Thread interrupted while waiting for msg");
 		}
+	}
+
+	public Collection<FileSignature> listDangerousFiles() {
+		List<FileSignature> result = Lists.newArrayList();
+
+		for (String signature : dangerousSignatures) {
+			FileSignature file = collector.getFileForSignature(signature);
+			if (signature != null) result.add(file);
+		}
+
+		return result;
 	}
 }

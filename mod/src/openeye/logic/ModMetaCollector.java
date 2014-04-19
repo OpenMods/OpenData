@@ -9,10 +9,9 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import openeye.Log;
-import openeye.reports.ReportAnalytics.SerializableSignature;
+import openeye.reports.*;
 import openeye.reports.ReportCrash.FileState;
 import openeye.reports.ReportCrash.ModState;
-import openeye.reports.*;
 import openeye.reports.ReportFileInfo.SerializableMod;
 import openeye.reports.ReportFileInfo.SerializableTweak;
 
@@ -27,6 +26,7 @@ import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.discovery.ASMDataTable;
 import cpw.mods.fml.common.discovery.ContainerType;
 import cpw.mods.fml.common.discovery.ModCandidate;
+import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
@@ -74,6 +74,10 @@ public class ModMetaCollector {
 			result.modId = modId;
 			result.name = name;
 			result.version = version;
+
+			VersionRange mcVersionRange = container.acceptableMinecraftVersionRange();
+			if (mcVersionRange != null) result.mcVersion = Strings.nullToEmpty(mcVersionRange.toString());
+
 			result.description = Strings.nullToEmpty(metadata.description);
 			result.url = Strings.nullToEmpty(metadata.url);
 			result.updateUrl = Strings.nullToEmpty(metadata.updateUrl);
@@ -109,7 +113,7 @@ public class ModMetaCollector {
 
 		public String signature() {
 			if (signature == null) {
-				signature = createSignature(container);
+				signature = calculateSignature(container);
 			}
 			return signature;
 		}
@@ -160,6 +164,20 @@ public class ModMetaCollector {
 
 			return report;
 		}
+
+		public ReportFileContents generateFileContentsReport() {
+			ReportFileContents report = new ReportFileContents();
+			report.signature = signature();
+			ReportBuilders.fillFileContents(container, report);
+			return report;
+		}
+
+		public FileSignature createSignature() {
+			FileSignature result = new FileSignature();
+			result.signature = signature();
+			result.filename = container.getName();
+			return result;
+		}
 	}
 
 	private final Map<File, FileMeta> files = Maps.newHashMap();
@@ -190,7 +208,7 @@ public class ModMetaCollector {
 		return fileMeta;
 	}
 
-	private static String createSignature(File file) {
+	private static String calculateSignature(File file) {
 		try {
 			return "sha256:" + Files.hash(file, Hashing.sha256()).toString();
 		} catch (Throwable t) {
@@ -348,13 +366,13 @@ public class ModMetaCollector {
 		return result;
 	}
 
-	public List<SerializableSignature> getAllSignatures() {
-		List<SerializableSignature> result = Lists.newArrayList();
+	public List<FileSignature> getAllSignatures() {
+		List<FileSignature> result = Lists.newArrayList();
 		for (FileMeta meta : files.values()) {
-			SerializableSignature tmp = new SerializableSignature();
+			FileSignature tmp = new FileSignature();
 			tmp.signature = meta.signature();
 			tmp.filename = meta.container.getName();
-			result.add(tmp);
+			result.add(meta.createSignature());
 		}
 
 		return result;
@@ -369,10 +387,20 @@ public class ModMetaCollector {
 		return meta != null? meta.generateReport() : null;
 	}
 
+	public ReportFileContents generateFileContentsReport(String signature) {
+		FileMeta meta = signatures.get(signature);
+		return meta != null? meta.generateFileContentsReport() : null;
+	}
+
 	public Set<String> getModsForSignature(String signature) {
 		FileMeta meta = signatures.get(signature);
 		if (meta != null) return ImmutableSet.copyOf(meta.mods.keySet());
 		else return ImmutableSet.of();
+	}
+
+	public FileSignature getFileForSignature(String signature) {
+		FileMeta meta = signatures.get(signature);
+		return meta != null? meta.createSignature() : null;
 	}
 
 	public Set<String> identifyClassSource(String className) {

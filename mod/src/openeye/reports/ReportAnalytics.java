@@ -9,14 +9,6 @@ import com.google.gson.annotations.SerializedName;
 public class ReportAnalytics implements IReport {
 	public interface RuntimeMeta {}
 
-	public static class SerializableSignature {
-		@SerializedName("signature")
-		public String signature;
-
-		@SerializedName("filename")
-		public String filename;
-	}
-
 	public static class FmlForgeRuntime implements RuntimeMeta {
 		@SerializedName("fml")
 		public String fmlVersion;
@@ -47,7 +39,7 @@ public class ReportAnalytics implements IReport {
 	public String timezone;
 
 	@SerializedName("signatures")
-	public List<SerializableSignature> signatures = ImmutableList.of();
+	public List<FileSignature> signatures = ImmutableList.of();
 
 	@SerializedName("workTime")
 	public float workTime;
