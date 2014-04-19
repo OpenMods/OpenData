@@ -12,4 +12,6 @@ public interface IContext {
 	public void queueFileReport(String signature);
 
 	public void queueFileContents(String signature);
+
+	public void markDangerousSignature(String signature);
 }

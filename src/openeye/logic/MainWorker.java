@@ -2,6 +2,8 @@ package openeye.logic;
 
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
@@ -11,14 +13,13 @@ import openeye.logic.TypedCollections.ReportsList;
 import openeye.logic.TypedCollections.ResponseList;
 import openeye.net.GenericSender.FailedToSend;
 import openeye.net.ReportSender;
-import openeye.reports.IReport;
-import openeye.reports.ReportCrash;
-import openeye.reports.ReportPing;
+import openeye.reports.*;
 import openeye.responses.IResponse;
 import openeye.storage.IDataSource;
 import openeye.storage.Storages;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import cpw.mods.fml.common.discovery.ASMDataTable;
@@ -35,6 +36,8 @@ public final class MainWorker {
 	private static Throwable lethalException;
 
 	private final boolean sendReports;
+
+	private final Set<String> dangerousSignatures = Sets.newHashSet();
 
 	public MainWorker(boolean sendReports) {
 		this.sendReports = sendReports;
@@ -95,6 +98,11 @@ public final class MainWorker {
 					addedFileContents.add(signature);
 				}
 			}
+
+			@Override
+			public void markDangerousSignature(String signature) {
+				dangerousSignatures.add(signature);
+			}
 		};
 
 		for (IResponse request : requests)
@@ -141,7 +149,6 @@ public final class MainWorker {
 				}
 
 				ResponseList response = sender.sendAndReceive(currentReport);
-				canContinueLoading.countDown(); // early release - notes send in next packets are ignored
 
 				if (response == null || response.isEmpty()) break;
 
@@ -156,6 +163,8 @@ public final class MainWorker {
 				} catch (Exception e) {
 					Log.warn(e, "Failed to create response");
 				}
+
+				canContinueLoading.countDown(); // early release - notes send in next packets are ignored
 			}
 
 			for (IDataSource<ReportCrash> crash : storages.pendingCrashes.listAll())
@@ -215,7 +224,7 @@ public final class MainWorker {
 		Thread crashDumperThread = new Thread() {
 			@Override
 			public void run() {
-				if (lethalException != null) {
+				if (lethalException != null && !(lethalException instanceof INotStoredCrash)) {
 					if (storages != null) {
 						storeCrash(lethalException);
 					} else {
@@ -247,5 +256,16 @@ public final class MainWorker {
 		} catch (InterruptedException e) {
 			Log.warn("Thread interrupted while waiting for msg");
 		}
+	}
+
+	public Collection<FileSignature> listDangerousFiles() {
+		List<FileSignature> result = Lists.newArrayList();
+
+		for (String signature : dangerousSignatures) {
+			FileSignature file = collector.getFileForSignature(signature);
+			if (signature != null) result.add(file);
+		}
+
+		return result;
 	}
 }
