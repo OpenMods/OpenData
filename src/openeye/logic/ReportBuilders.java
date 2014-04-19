@@ -1,11 +1,21 @@
 package openeye.logic;
 
+import java.io.File;
+import java.io.InputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import net.minecraftforge.common.ForgeVersion;
+import openeye.Log;
 import openeye.reports.*;
 import openeye.reports.ReportAnalytics.FmlForgeRuntime;
 import openeye.reports.ReportCrash.StackTrace;
+import openeye.reports.ReportFileContents.ArchiveDirEntry;
+import openeye.reports.ReportFileContents.ArchiveEntry;
+import openeye.reports.ReportFileContents.ArchiveFileEntry;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -90,4 +100,71 @@ public class ReportBuilders {
 		return crash;
 	}
 
+	public static void fillFileContents(File container, ReportFileContents report) {
+		try {
+			ZipFile jarFile = new ZipFile(container);
+
+			report.comment = jarFile.getComment();
+
+			List<ArchiveDirEntry> dirs = Lists.newArrayList();
+			List<ArchiveFileEntry> files = Lists.newArrayList();
+
+			try {
+				Enumeration<? extends ZipEntry> entries = jarFile.entries();
+
+				while (entries.hasMoreElements()) {
+					ZipEntry zipEntry = entries.nextElement();
+
+					if (zipEntry.isDirectory()) {
+						ArchiveDirEntry resultEntry = new ArchiveDirEntry();
+						fillCommonFields(zipEntry, resultEntry);
+						dirs.add(resultEntry);
+					} else {
+						ArchiveFileEntry resultEntry = new ArchiveFileEntry();
+						fillCommonFields(zipEntry, resultEntry);
+						resultEntry.size = zipEntry.getSize();
+						resultEntry.crc = Long.toHexString(zipEntry.getCrc());
+						resultEntry.signature = createSignature(jarFile.getInputStream(zipEntry));
+						files.add(resultEntry);
+					}
+				}
+			} finally {
+				jarFile.close();
+			}
+
+			report.dirs = dirs;
+			report.files = files;
+		} catch (Exception e) {
+			Log.warn(e, "Failed to get contents of file %s", container);
+		}
+	}
+
+	private static void fillCommonFields(ZipEntry zipEntry, ArchiveEntry resultEntry) {
+		resultEntry.filename = zipEntry.getName();
+		resultEntry.timestamp = zipEntry.getTime();
+		resultEntry.comment = zipEntry.getComment();
+	}
+
+	private static String createSignature(InputStream is) throws Exception {
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		DigestInputStream dis = new DigestInputStream(is, md);
+
+		byte[] buffer = new byte[1024];
+
+		while (dis.read(buffer) != -1);
+
+		dis.close();
+
+		byte[] digest = md.digest();
+		return "sha256:" + bytesToHex(digest);
+	}
+
+	private static String bytesToHex(byte[] bytes) {
+		StringBuilder sb = new StringBuilder(2 * bytes.length);
+		for (byte b : bytes)
+			sb.append(HEX[(b >> 4) & 0xf]).append(HEX[b & 0xf]);
+		return sb.toString();
+	}
+
+	private static final char[] HEX = "0123456789abcdef".toCharArray();
 }
