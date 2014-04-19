@@ -91,9 +91,9 @@ class FilesService extends BaseService {
             }
         }
 
-        if (isset($file['mods'])) {
-            for ($i = 0; $i < count($file['mods']); $i++) {
-                    $file['mods'][$i]['modId'] = ModsService::sanitizeModId($file['mods'][$i]['modId']);
+        if (isset($currentEntry['mods'])) {
+            for ($i = 0; $i < count($currentEntry['mods']); $i++) {
+                    $currentEntry['mods'][$i]['modId'] = ModsService::sanitizeModId($currentEntry['mods'][$i]['modId']);
             }
         }
 
@@ -108,6 +108,24 @@ class FilesService extends BaseService {
 
     public function findOne($signature) {
         return $this->db->files->findOne(array('_id' => $signature));
+    }
+    
+    public function findHoursByVersion($modId, $version) {
+        $result = $this->db->files->aggregate(
+            array('$match' => array(
+                'mods' => array(
+                    '$elemMatch' => array(
+                        'modId' => $modId,
+                        'version' => new \MongoRegex('/^'.preg_quote($version).'/i')
+                    )
+                )
+            )),
+            array('$project' => array('hours' => 1)),
+            array('$unwind' => '$hours'),
+            array('$group' => array('_id' => '$hours.time', 'time' => array('$first' => '$hours.time'), 'launches' => array('$sum' => '$hours.launches')))
+        );
+        
+        return $result['result'];
     }
 
     public function findUniquePackages() {

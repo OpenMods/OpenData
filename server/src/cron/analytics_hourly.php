@@ -119,9 +119,7 @@ if ((int)date('G', $currentHour) == 0) {
 	    if (isset($document['days'])) {
 		$days = $document['days'];
 	    }
-	    if (count($days) >= 14) {
-		array_shift($days);
-	    }
+            
 	    $days[] = array(
 		'time' => new \MongoDate($yesterday),
 		'launches' => $launches

@@ -4,23 +4,40 @@ namespace OpenData\Services;
 
 class CrashesService extends BaseService {
 
-    public function add($packet) {
+    public function add($packet, $fileIds, $modIds) {
         $packet['stackhash'] = md5(serialize($packet['stack']));
         
-        $this->db->unique_crashes->update(
-            array('stackhash' => $packet['stackhash']),
-            array(
-                '$set' => array(
-                    'exception' => $packet['exception'],
-                    'stackhash' => $packet['stackhash'],
-                    'message'   => $packet['message'],
-                    'stack'     => $packet['stack'],
-                    'latest'    => time()
+        $uniqueCrash = $this->db->unique_crashes->findOne(
+                array('stackhash' => $packet['stackhash'])
+        );
+        
+        if ($uniqueCrash != null) {
+            
+            $uniqueCrash['mods'] = array_intersect($uniqueCrash['mods'], $modIds);
+            $uniqueCrash['files'] = array_intersect($uniqueCrash['files'], $fileIds);
+            
+            $this->db->unique_crashes->update(
+                array('stackhash' => $packet['stackhash']),
+                array('$set' => array(
+                    'latest'    => time(),
+                    'mods'      => array_values($uniqueCrash['mods']),
+                    'files'     => array_values($uniqueCrash['files'])                   
                 ),
                 '$inc' => array('count' => 1)
-            ),
-            array('upsert' => true)
-        );
+            ));
+            
+        } else {
+            $this->db->unique_crashes->insert(array(
+                'exception' => $packet['exception'],
+                'stackhash' => $packet['stackhash'],
+                'message'   => $packet['message'],
+                'stack'     => $packet['stack'],
+                'latest'    => time(),
+                'count'     => 1,
+                'mods'      => $modIds,
+                'files'     => $fileIds
+            ));
+        }
         
         $this->db->crashes->insert($packet);
     }

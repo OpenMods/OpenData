@@ -8,7 +8,7 @@
     <div class="col-md-12">
         <div class="page-header" id="modheader">
             <div class="inner">
-            <h1><span class="wrapped">{{ modInfo.name }}
+            <h1><span class="wrapped"><img style="width: 32px;height:32px;margin-top:-8px;" src="{% if modInfo.image %}{{ relative(modInfo.image) }}{% else %}http://placehold.it/64x64{% endif %}" alt=""> {{ modInfo.name }}
             {% if modInfo.authors|length > 0 %}
                 <small>by {{ modInfo.authors|join(', ') }}</small>
             {% endif %}</span></h1>
@@ -42,13 +42,15 @@
         <div class="tab-content">
                 <div class="tab-pane active" id="files">
                 {% for version, files in versions %}
-                    <h3 style="padding-top: 30px">{{ version }}</h3>
+                    <div class="row" style="padding-top: 20px">
+                    <h3 class="col-md-2" style="margin-top: 10px;text-align:right;">{{ version }}</h3>
+                    <div class="col-md-10">
                     <table class="table table-striped">
                     {% for file in files %}
                         <tr>
                             <td>
                                 <div style="padding-top: 7px;">
-                                    {{ file.filenames|first }} ({{ file.size }} bytes)
+                                    {{ file.filenames|first|lower }} ({{ file.size }} bytes)
                                     
                                     {% if file._id in downloads|keys %}
                                        &nbsp;&nbsp;&nbsp; <a href="{{ downloads[file._id].url }}" style="text-decoration: none!important;"><span class="glyphicon glyphicon-download"></span>&nbsp;Download</a>
@@ -58,12 +60,13 @@
                             <td>
                                 <div class="btn-group pull-right">
                                     <a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal" class="btn btn-default"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View details</a>
-                                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;View crashes</button>
                                 </div>
                             </td>
                         </tr>
                     {% endfor %}
                     </table>
+                    </div>
+                    </div>
                 {% endfor %}   
             </div>
             <div class="tab-pane" id="analytics" style="padding-top:20px;">
@@ -75,11 +78,10 @@
                                 <select class="form-control" id="select_hourly_file">
                                     <option value="{{ relative('mod/' ~ modInfo._id ~ '/analytics') }}">All files</option>
                                     {% for version, files in versions %}
-                                        <optgroup label="{{ version }}">
+                                        <option value="{{ relative('mod/' ~ modInfo._id ~ '/analytics/' ~ version) }}">{{ version }}</option>
                                         {% for file in files %}
-                                            <option value="{{ relative('mod/' ~ modInfo._id ~ '/analytics/' ~ file._id) }}">{{ file.filenames|first }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
+                                            <option value="{{ relative('mod/' ~ modInfo._id ~ '/analytics/' ~ file._id) }}">&nbsp;&nbsp;&nbsp;- {{ file.filenames|first|lower }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
                                         {% endfor %}
-                                        </optgroup>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -97,14 +99,13 @@
                         <div class="form-group" style="margin-bottom:0">
                             <label for="inputEmail3" class="col-sm-1 control-label">File</label>
                             <div class="col-sm-11">
-                                <select class="form-control">
-                                    <option>All files</option>
+                                <select class="form-control" id="select_crashes_file">
+                                    <option value="{{ relative('mod/' ~ modInfo._id ~ '/crashes') }}">All files</option>
                                     {% for version, files in versions %}
-                                        <optgroup label="{{ version }}">
+                                        <option value="{{ relative('mod/' ~ modInfo._id ~ '/crashes/' ~ version) }}">{{ version }}</option>
                                         {% for file in files %}
-                                            <option>{{ file.filenames|first }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
+                                            <option value="{{ relative('mod/' ~ modInfo._id ~ '/crashes/' ~ file._id) }}">&nbsp;&nbsp;&nbsp;- {{ file.filenames|first|lower }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
                                         {% endfor %}
-                                        </optgroup>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -148,6 +149,9 @@
             $( "#analytics_content" ).load($(this).val(), function() {
                 plotHourly();
             });
+        });
+        $('#select_crashes_file').change(function() {
+            $( "#crashes_content" ).load($(this).val())
         });
         $('a[href="#analytics"]').on('shown.bs.tab', function (e) {
            plotHourly(); 

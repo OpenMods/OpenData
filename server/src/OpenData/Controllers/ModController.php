@@ -48,8 +48,25 @@ class ModController {
             }
         }
         
+        uksort($versions, 'version_compare');
+        $versions = array_reverse($versions, true);
+        
+        $versionGroup = "(^[0-9]+\.[0-9]+\.[0-9]+)(.*)";
+        if (isset($modInfo['versionGroup'])) {
+            $versionGroup = $modInfo['versionGroup'];
+        }
+        
+        $groupedVersions = array();
+        foreach ($versions as $version => $files) {
+            $version = preg_replace("@".$versionGroup."@", "$1", $version);
+            if (!isset($groupedVersions[$version])) {
+                $groupedVersions[$version] = array();
+            }
+            $groupedVersions[$version] = array_merge($groupedVersions[$version], $files);
+        }
+        
         return $this->twig->render('mod.twig', array(
-            'versions' => $versions,
+            'versions' => $groupedVersions,
             'modInfo' => $modInfo,
             'downloads' => $this->serviceFiles->findDownloadsForSignatures($signatures)
         ));
@@ -70,9 +87,18 @@ class ModController {
     
     public function analytics($modId, $fileId = null) {
 
-        $document = $fileId == null ?
-                    $this->serviceMods->findById($modId) :
-                    $this->serviceFiles->findOne($fileId);
+        $document = null;
+        
+        if ($fileId == null) {
+            $document = $this->serviceMods->findById($modId);
+        } else {
+            $document = $this->serviceFiles->findOne($fileId);
+            if ($document == null) {
+                $document = array(
+                    'hours' => $this->serviceFiles->findHoursByVersion($modId, $fileId)
+                );
+            }
+        }
         
         if ($document == null) {
             throw new \Exception();

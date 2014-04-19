@@ -50,7 +50,9 @@ class ServicesLoader {
         
         $this->app['handler.crashlog'] = $this->app->share(function () use ($loader) {
             return new PacketHandlers\CrashLog(
-                $loader->app["crashes.service"]
+                $loader->app["crashes.service"],
+                $loader->app["files.service"],
+                $loader->app["mods.service"]
             );
         });
         

@@ -15,7 +15,7 @@
     {% for crash in crashes %}
     {% set trace = crash.stack|first %}
         <tr>
-            <td>{{ (crash.timestamp/1000)|round|date("Y-m-d h:i:s") }}</td><td>{{ trace.class }}</td><td>{{ crash.exception }}</td><td>{{ trace.file }}</td><td>{{ trace.method }}</td><td>{{ trace.line }}</td>            
+            <td>{{ crash.timestamp|round|date("Y-m-d H:i:s") }}</td><td>{{ trace.class }}</td><td>{{ crash.exception }}</td><td>{{ trace.file }}</td><td>{{ trace.method }}</td><td>{{ trace.line }}</td>            
         </tr>
     {% endfor %}
     </tbody>
