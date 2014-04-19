@@ -1,10 +1,12 @@
 package openeye.logic;
 
+import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import openeye.Log;
+import openeye.config.ConfigProcessing;
 import openeye.logic.TypedCollections.ReportsList;
 import openeye.logic.TypedCollections.ResponseList;
 import openeye.net.GenericSender.FailedToSend;
@@ -86,11 +88,11 @@ public final class MainWorker {
 		return result;
 	}
 
-	private void sendReports(Config config) {
+	private void sendReports() {
 		final ReportsList initialReport = new ReportsList();
 
 		try {
-			initialReport.add(ReportBuilders.buildAnalyticsReport(config, collector));
+			initialReport.add(ReportBuilders.buildAnalyticsReport(collector));
 			initialReport.add(new ReportPing());
 
 		} catch (Exception e) {
@@ -147,14 +149,15 @@ public final class MainWorker {
 		initialMsgReceived.countDown();
 	}
 
-	protected Config loadConfig() {
+	protected static void loadConfig(InjectedDataStore dataStore) {
 		try {
-			IDataSource<Config> configSource = storages.config.getById(Storages.CONFIG_ID);
-			Config config = configSource.retrieve();
-			return config != null? config : new Config();
-		} catch (Throwable t) {
-			Log.warn(t, "Failed to parse config file");
-			return new Config();
+			File configFolder = new File(dataStore.getMcLocation(), "config");
+			configFolder.mkdir();
+			File configFile = new File(configFolder, "OpenEye.json");
+
+			ConfigProcessing.processConfig(configFile, Config.class, ConfigProcessing.GSON);
+		} catch (Exception e) {
+			Log.warn(e, "Failed to load config");
 		}
 	}
 
@@ -171,8 +174,8 @@ public final class MainWorker {
 				initStorage(dataStore);
 				collectData(dataStore, table);
 
-				Config config = loadConfig();
-				sendReports(config);
+				loadConfig(dataStore);
+				sendReports();
 			}
 		};
 
