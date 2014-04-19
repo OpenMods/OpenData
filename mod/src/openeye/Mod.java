@@ -2,10 +2,12 @@ package openeye;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
 
 import openeye.logic.Config;
 import openeye.logic.InjectedDataStore;
 import openeye.logic.MainWorker;
+import openeye.reports.FileSignature;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -50,7 +52,20 @@ public class Mod extends DummyModContainer {
 	@Subscribe
 	public void onInit(FMLInitializationEvent evt) {
 		// give thread enough time to receive IMC
-		if (worker != null) worker.waitForFirstMsg();
+		if (worker != null) {
+			worker.waitForFirstMsg();
+			handleDangerousFiles();
+		}
+	}
+
+	private void handleDangerousFiles() {
+		Collection<FileSignature> dangerousMods = worker.listDangerousFiles();
+
+		if (!dangerousMods.isEmpty()) {
+			for (FileSignature signature : dangerousMods)
+				Log.warn("Dangerous file detected: %s (%s)", signature.filename, signature.signature);
+			controller.errorOccurred(this, Proxy.instance().signalDangerousFiles(dangerousMods));
+		}
 	}
 
 	@Subscribe

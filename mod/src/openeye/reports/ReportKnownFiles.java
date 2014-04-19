@@ -7,5 +7,5 @@ import com.google.gson.annotations.SerializedName;
 
 public class ReportKnownFiles implements IReport {
 	@SerializedName("signatures")
-	public List<SerializableSignature> signatures = ImmutableList.of();
+	public List<FileSignature> signatures = ImmutableList.of();
 }

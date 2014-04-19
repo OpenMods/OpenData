@@ -2,7 +2,7 @@ package openeye.reports;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SerializableSignature {
+public class FileSignature {
 	@SerializedName("signature")
 	public String signature;
 

@@ -101,6 +101,7 @@ public class TypedCollections {
 		RESPONSE_TYPES.put("file_info", ResponseFileInfo.class);
 		RESPONSE_TYPES.put("pong", ResponsePong.class);
 		RESPONSE_TYPES.put("file_contents", ResponseFileContents.class);
+		RESPONSE_TYPES.put("dangerous_file", ResponseDangerousFile.class);
 	}
 
 }

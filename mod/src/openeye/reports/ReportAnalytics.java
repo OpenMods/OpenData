@@ -39,7 +39,7 @@ public class ReportAnalytics implements IReport {
 	public String timezone;
 
 	@SerializedName("signatures")
-	public List<SerializableSignature> signatures = ImmutableList.of();
+	public List<FileSignature> signatures = ImmutableList.of();
 
 	@SerializedName("workTime")
 	public float workTime;
