@@ -15,6 +15,14 @@ import cpw.mods.fml.common.Loader;
 
 public class ReportBuilders {
 
+	public static ReportKnownFiles buildKnownFilesReport(ModMetaCollector data) {
+		ReportKnownFiles result = new ReportKnownFiles();
+
+		result.signatures = data.getAllSignatures();
+
+		return result;
+	}
+
 	public static ReportAnalytics buildAnalyticsReport(ModMetaCollector data) {
 		ReportAnalytics analytics = new ReportAnalytics();
 

@@ -9,7 +9,6 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import openeye.Log;
-import openeye.reports.ReportAnalytics.SerializableSignature;
 import openeye.reports.ReportCrash.FileState;
 import openeye.reports.ReportCrash.ModState;
 import openeye.reports.*;
