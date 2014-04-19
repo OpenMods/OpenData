@@ -159,6 +159,13 @@ public class ModMetaCollector {
 
 			return report;
 		}
+
+		public ReportFileContents generateFileContentsReport() {
+			ReportFileContents report = new ReportFileContents();
+			report.signature = signature();
+			ReportBuilders.fillFileContents(container, report);
+			return report;
+		}
 	}
 
 	private final Map<File, FileMeta> files = Maps.newHashMap();
@@ -366,6 +373,11 @@ public class ModMetaCollector {
 	public ReportFileInfo generateFileReport(String signature) {
 		FileMeta meta = signatures.get(signature);
 		return meta != null? meta.generateReport() : null;
+	}
+
+	public ReportFileContents generateFileContentsReport(String signature) {
+		FileMeta meta = signatures.get(signature);
+		return meta != null? meta.generateFileContentsReport() : null;
 	}
 
 	public Set<String> getModsForSignature(String signature) {

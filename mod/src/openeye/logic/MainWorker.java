@@ -61,7 +61,8 @@ public final class MainWorker {
 		final ReportsList result = new ReportsList();
 
 		final IContext context = new IContext() {
-			private final Set<String> alreadyAddedSignatures = Sets.newHashSet();
+			private final Set<String> addedFileInfos = Sets.newHashSet();
+			private final Set<String> addedFileContents = Sets.newHashSet();
 
 			@Override
 			public Set<String> getModsForSignature(String signature) {
@@ -75,9 +76,17 @@ public final class MainWorker {
 
 			@Override
 			public void queueFileReport(String signature) {
-				if (!alreadyAddedSignatures.contains(signature)) {
+				if (!addedFileInfos.contains(signature)) {
 					result.add(collector.generateFileReport(signature));
-					alreadyAddedSignatures.add(signature);
+					addedFileInfos.add(signature);
+				}
+			}
+
+			@Override
+			public void queueFileContents(String signature) {
+				if (!addedFileContents.contains(signature)) {
+					result.add(collector.generateFileContentsReport(signature));
+					addedFileContents.add(signature);
 				}
 			}
 		};

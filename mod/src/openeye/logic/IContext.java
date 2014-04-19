@@ -10,4 +10,6 @@ public interface IContext {
 	public void queueReport(IReport report);
 
 	public void queueFileReport(String signature);
+
+	public void queueFileContents(String signature);
 }
