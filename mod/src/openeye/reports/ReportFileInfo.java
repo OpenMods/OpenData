@@ -47,6 +47,9 @@ public class ReportFileInfo implements IReport {
 		@SerializedName("authors")
 		public Collection<String> authors = ImmutableList.of();
 
+		@SerializedName("mcVersion")
+		public String mcVersion;;
+
 		@SerializedName("requiredMods")
 		public Collection<ArtifactVersion> requiredMods = ImmutableList.of();
 

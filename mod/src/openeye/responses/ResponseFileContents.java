@@ -8,7 +8,7 @@ public class ResponseFileContents implements IResponse {
 
 	@Override
 	public void execute(IContext context) {
-
+		context.queueFileContents(signature);
 	}
 
 }

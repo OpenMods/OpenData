@@ -26,6 +26,7 @@ import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.discovery.ASMDataTable;
 import cpw.mods.fml.common.discovery.ContainerType;
 import cpw.mods.fml.common.discovery.ModCandidate;
+import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
@@ -73,6 +74,10 @@ public class ModMetaCollector {
 			result.modId = modId;
 			result.name = name;
 			result.version = version;
+
+			VersionRange mcVersionRange = container.acceptableMinecraftVersionRange();
+			if (mcVersionRange != null) result.mcVersion = Strings.nullToEmpty(mcVersionRange.toString());
+
 			result.description = Strings.nullToEmpty(metadata.description);
 			result.url = Strings.nullToEmpty(metadata.url);
 			result.updateUrl = Strings.nullToEmpty(metadata.updateUrl);
