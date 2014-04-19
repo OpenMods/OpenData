@@ -12,7 +12,8 @@
         	"moriony/silex-mongo-provider": "*",
         	"justinrainbow/json-schema": "~1.3",
         	"mheap/Silex-Memcache": "*@dev",
-                "symfony/twig-bridge": "~2.3"
+                "symfony/twig-bridge": "~2.3",
+                "symfony/console": "2.5.*@dev"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~3.7",
@@ -20,7 +21,8 @@
 	},
 	"autoload": {
 		"psr-0": {
-			"OpenData": "src/"
+			"OpenData": "src/",
+			"OpenDataBot": "src/"
 		}
 	}
 }

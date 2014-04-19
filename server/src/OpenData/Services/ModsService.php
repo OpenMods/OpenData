@@ -8,6 +8,25 @@ class ModsService extends BaseService {
         return $this->db->mods->findOne(array('_id' => $modId));
     }
 
+    public function findByRegex($search) {
+        //{ $or: [ { qty: { $lt: 20 } }, { sale: true } ] } 
+        $regex = new \MongoRegex('/'.$search.'/i');
+        return $this->db->mods->find(array(
+            '$or' => array(
+                array('_id' => $regex),
+                array('name' => $regex)
+            )));
+    }
+    
+    public function updateMod($modId, $data) {
+        $this->db->mods->update(
+            array('_id' => $modId),
+            array(
+                '$set' => $data
+            )
+        );
+    }
+    
     public function findAll() {
         return $this->db->mods->find(array('hide' => array('$ne' => true)))->sort(array('name' => 1));
     }
