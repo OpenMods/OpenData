@@ -3,6 +3,7 @@ package openeye;
 import java.io.File;
 import java.util.Arrays;
 
+import openeye.logic.Config;
 import openeye.logic.InjectedDataStore;
 import openeye.logic.MainWorker;
 
@@ -19,8 +20,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 public class Mod extends DummyModContainer {
 
 	private LoadController controller;
-
-	public static boolean I_LIKE_MY_MINECRAFT_UNCRASHED = false;
 
 	public Mod() {
 		super(new ModMetadata());
@@ -57,7 +56,7 @@ public class Mod extends DummyModContainer {
 
 	@Subscribe
 	public void onInit(FMLPostInitializationEvent evt) {
-		if (!I_LIKE_MY_MINECRAFT_UNCRASHED) controller.errorOccurred(this, new RuntimeException("derp"));
+		if (Config.crashOnStartup) controller.errorOccurred(this, new RuntimeException("derp"));
 	}
 
 	@Override

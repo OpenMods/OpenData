@@ -15,7 +15,7 @@ import cpw.mods.fml.common.Loader;
 
 public class ReportBuilders {
 
-	public static ReportAnalytics buildAnalyticsReport(Config config, ModMetaCollector data) {
+	public static ReportAnalytics buildAnalyticsReport(ModMetaCollector data) {
 		ReportAnalytics analytics = new ReportAnalytics();
 
 		analytics.branding = FMLCommonHandler.instance().getBrandings();
@@ -42,7 +42,7 @@ public class ReportBuilders {
 
 		Set<String> tags = Sets.newHashSet();
 
-		Set<String> configTags = config.tags;
+		Set<String> configTags = Config.tags;
 		if (configTags != null) tags.addAll(configTags);
 
 		Set<String> envTags = TagsCollector.collectSystemTags();
