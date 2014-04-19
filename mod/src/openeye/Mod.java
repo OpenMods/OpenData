@@ -43,9 +43,8 @@ public class Mod extends DummyModContainer {
 
 	@Subscribe
 	public void onModConstruct(FMLConstructionEvent evt) {
-		worker = new MainWorker();
+		worker = new MainWorker(Proxy.instance().isSnooperEnabled());
 		worker.start(InjectedDataStore.instance, evt.getASMHarvestedData());
-
 	}
 
 	@Subscribe
