@@ -92,8 +92,13 @@ public final class MainWorker {
 		final ReportsList initialReport = new ReportsList();
 
 		try {
-			initialReport.add(ReportBuilders.buildAnalyticsReport(collector));
-			initialReport.add(new ReportPing());
+			if (Config.scanOnly) {
+				initialReport.add(ReportBuilders.buildKnownFilesReport(collector));
+			} else {
+				initialReport.add(ReportBuilders.buildAnalyticsReport(collector));
+			}
+
+			if (Config.pingOnInitialReport) initialReport.add(new ReportPing());
 
 		} catch (Exception e) {
 			Log.warn(e, "Failed to create initial report");

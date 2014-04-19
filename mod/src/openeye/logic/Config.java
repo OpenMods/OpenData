@@ -13,4 +13,10 @@ public class Config {
 
 	@ConfigProperty(category = "data")
 	public static Set<String> tags = ImmutableSet.of();
+
+	@ConfigProperty(category = "data")
+	public static boolean scanOnly = false;
+
+	@ConfigProperty(category = "debug")
+	public static boolean pingOnInitialReport = false;
 }

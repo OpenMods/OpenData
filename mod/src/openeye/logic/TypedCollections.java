@@ -97,6 +97,7 @@ public class TypedCollections {
 		REPORTS_TYPES.put("file_info", ReportFileInfo.class);
 		REPORTS_TYPES.put("crashlog", ReportCrash.class);
 		REPORTS_TYPES.put("ping", ReportPing.class);
+		REPORTS_TYPES.put("known_files", ReportKnownFiles.class);
 
 		RESPONSE_TYPES.put("file_info", ResponseFileInfo.class);
 		RESPONSE_TYPES.put("pong", ResponsePong.class);
