@@ -23,11 +23,55 @@ import com.google.common.collect.Sets;
 import cpw.mods.fml.common.discovery.ASMDataTable;
 
 public final class MainWorker {
+
+	private final class Context implements IContext {
+		private final ReportsList result = new ReportsList();
+		private final Set<String> addedFileInfos = Sets.newHashSet();
+		private final Set<String> addedFileContents = Sets.newHashSet();
+
+		@Override
+		public Set<String> getModsForSignature(String signature) {
+			return collector.getModsForSignature(signature);
+		}
+
+		@Override
+		public void queueReport(IReport report) {
+			result.add(report);
+		}
+
+		@Override
+		public void queueFileReport(String signature) {
+			if (!addedFileInfos.contains(signature)) {
+				result.add(collector.generateFileReport(signature));
+				addedFileInfos.add(signature);
+			}
+		}
+
+		@Override
+		public void queueFileContents(String signature) {
+			if (!addedFileContents.contains(signature)) {
+				result.add(collector.generateFileContentsReport(signature));
+				addedFileContents.add(signature);
+			}
+		}
+
+		@Override
+		public void markDangerousSignature(String signature) {
+			dangerousSignatures.add(signature);
+		}
+
+		public ReportsList reports() {
+			return result;
+		}
+	}
+
 	private final String url = "http://openeye.openmods.info/api/v1/data";
 
 	private ModMetaCollector collector;
 
 	private Storages storages;
+
+	private ModState state;
 
 	private CountDownLatch canContinueLoading = new CountDownLatch(1);
 
@@ -45,10 +89,6 @@ public final class MainWorker {
 		if (lethalException == null) lethalException = throwable;
 	}
 
-	private void initStorage(InjectedDataStore dataStore) {
-		storages = new Storages(dataStore.getMcLocation());
-	}
-
 	private void storeReport(ReportsList report) {
 		IDataSource<Object> list = storages.sessionArchive.createNew("report");
 		list.store(report);
@@ -57,10 +97,6 @@ public final class MainWorker {
 	private void storeRequest(ResponseList report) {
 		IDataSource<Object> list = storages.sessionArchive.createNew("request");
 		list.store(report);
-	}
-
-	private void collectData(InjectedDataStore dataStore, ASMDataTable table) {
-		collector = new ModMetaCollector(dataStore, table);
 	}
 
 	private static void filterStructs(Collection<? extends ITypedStruct> structs, Set<String> blacklist) {
@@ -79,48 +115,12 @@ public final class MainWorker {
 	public ReportsList executeResponses(ResponseList requests) {
 		Preconditions.checkState(!requests.isEmpty());
 
-		final ReportsList result = new ReportsList();
-
-		final IContext context = new IContext() {
-			private final Set<String> addedFileInfos = Sets.newHashSet();
-			private final Set<String> addedFileContents = Sets.newHashSet();
-
-			@Override
-			public Set<String> getModsForSignature(String signature) {
-				return collector.getModsForSignature(signature);
-			}
-
-			@Override
-			public void queueReport(IReport report) {
-				result.add(report);
-			}
-
-			@Override
-			public void queueFileReport(String signature) {
-				if (!addedFileInfos.contains(signature)) {
-					result.add(collector.generateFileReport(signature));
-					addedFileInfos.add(signature);
-				}
-			}
-
-			@Override
-			public void queueFileContents(String signature) {
-				if (!addedFileContents.contains(signature)) {
-					result.add(collector.generateFileContentsReport(signature));
-					addedFileContents.add(signature);
-				}
-			}
-
-			@Override
-			public void markDangerousSignature(String signature) {
-				dangerousSignatures.add(signature);
-			}
-		};
+		final Context context = new Context();
 
 		for (IResponse request : requests)
 			request.execute(context);
 
-		return result;
+		return context.reports();
 	}
 
 	private void sendReports() {
@@ -130,7 +130,7 @@ public final class MainWorker {
 			if (Config.scanOnly) {
 				initialReports.add(ReportBuilders.buildKnownFilesReport(collector));
 			} else {
-				initialReports.add(ReportBuilders.buildAnalyticsReport(collector));
+				initialReports.add(ReportBuilders.buildAnalyticsReport(collector, state.installedMods));
 			}
 
 			if (Config.pingOnInitialReport) initialReports.add(new ReportPing());
@@ -203,22 +203,46 @@ public final class MainWorker {
 		}
 	}
 
-	private void storeCrash(Throwable throwable) {
+	private static void storeCrash(ModMetaCollector collector, Throwable throwable, Storages storages) {
 		ReportCrash crashReport = ReportBuilders.buildCrashReport(throwable, collector);
 		IDataSource<ReportCrash> crashStorage = storages.pendingCrashes.createNew();
 		crashStorage.store(crashReport);
+	}
+
+	private static void storeState(ModState state, Storages storages) {
+		IDataSource<ModState> stateStorage = storages.state.getById(Storages.STATE_FILE_ID);
+		stateStorage.store(state);
+	}
+
+	private static ModState getModState(Storages storages) {
+		try {
+			IDataSource<ModState> stateStorage = storages.state.getById(Storages.STATE_FILE_ID);
+			ModState state = stateStorage.retrieve();
+			if (state != null) return state;
+		} catch (Throwable t) {
+			Log.warn(t, "Failed to get mod state, reinitializing");
+		}
+		return new ModState();
+	}
+
+	private void updateState() {
+		state.installedMods = collector.getAllSignatures();
 	}
 
 	private void startDataCollection(final InjectedDataStore dataStore, final ASMDataTable table) {
 		Thread senderThread = new Thread() {
 			@Override
 			public void run() {
-				initStorage(dataStore);
-				collectData(dataStore, table);
-
 				loadConfig(dataStore);
 
+				storages = new Storages(dataStore.getMcLocation());
+				state = getModState(storages);
+				collector = new ModMetaCollector(dataStore, table);
+
 				if (sendReports) sendReports();
+
+				updateState();
+
 				canContinueLoading.countDown();
 			}
 		};
@@ -238,12 +262,33 @@ public final class MainWorker {
 		Thread crashDumperThread = new Thread() {
 			@Override
 			public void run() {
-				if (lethalException != null && !(lethalException instanceof INotStoredCrash)) {
-					if (storages != null) {
-						storeCrash(lethalException);
-					} else {
-						System.err.println("[OpenEye] Can't store crash report, since storage is not initialized");
+				tryStoreState();
+				if (lethalException != null && !(lethalException instanceof INotStoredCrash)) tryStoreCrash();
+			}
+
+			private void tryStoreCrash() {
+				if (storages != null) {
+					try {
+						storeCrash(collector, lethalException, storages);
+					} catch (Throwable t) {
+						System.err.println("[OpenEye] Failed to store crash report");
+						t.printStackTrace();
 					}
+				} else {
+					System.err.println("[OpenEye] Can't store crash report, since storage is not initialized");
+				}
+			}
+
+			private void tryStoreState() {
+				if (storages != null) {
+					try {
+						storeState(state, storages);
+					} catch (Throwable t) {
+						System.err.println("[OpenEye] Failed to store state");
+						t.printStackTrace();
+					}
+				} else {
+					System.err.println("[OpenEye] Can't store state, since storage is not initalized");
 				}
 			}
 		};

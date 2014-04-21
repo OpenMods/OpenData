@@ -366,7 +366,7 @@ public class ModMetaCollector {
 		return result;
 	}
 
-	public List<FileSignature> getAllSignatures() {
+	public List<FileSignature> getAllFiles() {
 		List<FileSignature> result = Lists.newArrayList();
 		for (FileMeta meta : files.values()) {
 			FileSignature tmp = new FileSignature();
@@ -374,6 +374,15 @@ public class ModMetaCollector {
 			tmp.filename = meta.container.getName();
 			result.add(meta.createSignature());
 		}
+
+		return result;
+	}
+
+	public Set<String> getAllSignatures() {
+		Set<String> result = Sets.newHashSet();
+
+		for (FileMeta meta : files.values())
+			result.add(meta.signature());
 
 		return result;
 	}
