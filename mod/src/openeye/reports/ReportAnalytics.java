@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.annotations.SerializedName;
 
 public class ReportAnalytics implements IReport {
@@ -47,6 +48,12 @@ public class ReportAnalytics implements IReport {
 
 	@SerializedName("signatures")
 	public List<FileSignature> signatures = ImmutableList.of();
+
+	@SerializedName("addedSignatures")
+	public Set<String> addedSignatures = ImmutableSet.of();
+
+	@SerializedName("removedSignatures")
+	public Set<String> removedSignatures = ImmutableSet.of();
 
 	@SerializedName("workTime")
 	public float workTime;
