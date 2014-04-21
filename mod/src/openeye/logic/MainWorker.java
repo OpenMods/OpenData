@@ -2,9 +2,7 @@ package openeye.logic;
 
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 import openeye.Log;
@@ -25,7 +23,7 @@ import com.google.common.collect.Sets;
 import cpw.mods.fml.common.discovery.ASMDataTable;
 
 public final class MainWorker {
-	private final String url = "http://37.139.27.100/api/v1/data";
+	private final String url = "http://openeye.openmods.info/api/v1/data";
 
 	private ModMetaCollector collector;
 
@@ -65,8 +63,22 @@ public final class MainWorker {
 		collector = new ModMetaCollector(dataStore, table);
 	}
 
+	private static void filterStructs(Collection<? extends ITypedStruct> structs, Set<String> blacklist) {
+		Iterator<? extends ITypedStruct> it = structs.iterator();
+
+		while (it.hasNext()) {
+			final ITypedStruct struct = it.next();
+			final String type = struct.getType();
+			if (blacklist.contains(type)) {
+				Log.info("Filtered type %s(%s) from list, since it's on blacklist", type, struct);
+				it.remove();
+			}
+		}
+	}
+
 	public ReportsList executeResponses(ResponseList requests) {
 		Preconditions.checkState(!requests.isEmpty());
+
 		final ReportsList result = new ReportsList();
 
 		final IContext context = new IContext() {
@@ -112,16 +124,16 @@ public final class MainWorker {
 	}
 
 	private void sendReports() {
-		final ReportsList initialReport = new ReportsList();
+		final ReportsList initialReports = new ReportsList();
 
 		try {
 			if (Config.scanOnly) {
-				initialReport.add(ReportBuilders.buildKnownFilesReport(collector));
+				initialReports.add(ReportBuilders.buildKnownFilesReport(collector));
 			} else {
-				initialReport.add(ReportBuilders.buildAnalyticsReport(collector));
+				initialReports.add(ReportBuilders.buildAnalyticsReport(collector));
 			}
 
-			if (Config.pingOnInitialReport) initialReport.add(new ReportPing());
+			if (Config.pingOnInitialReport) initialReports.add(new ReportPing());
 
 		} catch (Exception e) {
 			Log.warn(e, "Failed to create initial report");
@@ -130,7 +142,7 @@ public final class MainWorker {
 
 		for (IDataSource<ReportCrash> crash : storages.pendingCrashes.listAll()) {
 			try {
-				initialReport.add(crash.retrieve());
+				initialReports.add(crash.retrieve());
 			} catch (Exception e) {
 				Log.warn(e, "Failed to add crash report %s", crash.getId());
 			}
@@ -139,16 +151,18 @@ public final class MainWorker {
 		try {
 			ReportSender sender = new ReportSender(url);
 
-			ReportsList currentReport = initialReport;
+			ReportsList currentReports = initialReports;
 
-			while (!currentReport.isEmpty()) {
+			while (!currentReports.isEmpty()) {
 				try {
-					storeReport(currentReport);
+					storeReport(currentReports);
 				} catch (Exception e) {
 					Log.warn(e, "Failed to store report");
 				}
 
-				ResponseList response = sender.sendAndReceive(currentReport);
+				filterStructs(currentReports, Config.reportsBlacklist);
+				ResponseList response = sender.sendAndReceive(currentReports);
+				filterStructs(response, Config.responseBlacklist);
 
 				if (response == null || response.isEmpty()) break;
 
@@ -159,7 +173,7 @@ public final class MainWorker {
 				}
 
 				try {
-					currentReport = executeResponses(response);
+					currentReports = executeResponses(response);
 				} catch (Exception e) {
 					Log.warn(e, "Failed to create response");
 				}

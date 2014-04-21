@@ -19,4 +19,13 @@ public class Config {
 
 	@ConfigProperty(category = "debug")
 	public static boolean pingOnInitialReport = false;
+
+	@ConfigProperty(category = "features")
+	public static boolean haltOnDangerousFiles = false;
+
+	@ConfigProperty(category = "features")
+	public static Set<String> reportsBlacklist = ImmutableSet.of();
+
+	@ConfigProperty(category = "features")
+	public static Set<String> responseBlacklist = ImmutableSet.of();
 }
