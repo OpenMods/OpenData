@@ -56,14 +56,14 @@ class ModsService extends BaseService {
         ))->sort(array('name' => 1));
     }
     
-    public function findModsWithoutField($field, $limit = 20) {
+    public function findModsWithoutField($field, $skip = 0, $limit = 20) {
         return $this->db->mods->find(array(
            'hide' => array('$ne' => true),
            '$or' => array(
                array( $field =>  array('$exists' => false)),
                array( $field => '')
            )
-        ))->limit($limit);
+        ))->skip($skip)->limit($limit);
     }
     
     public function findByTag($tag) {

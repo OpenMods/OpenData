@@ -87,7 +87,6 @@ class RunConsoleCommand extends Command
         $this->sendData('USER '.$this->nickname.' 8 * :'.$this->nickname);
         $outputStream = new IrcOutputStream($this->socket);
         
-        $expectingUserList = false;
         $outputStream->setBot($this);
         
         do {
@@ -216,14 +215,6 @@ class RunConsoleCommand extends Command
                                     $user = $nameMatches[0];
                                 }
                             }
-                            
-                            $outputStream->setTarget(
-                                $channel == $this->nickname ?
-                                IrcOutputStream::USER :
-                                IrcOutputStream::CHANNEL
-                            );
-                            
-                            $outputStream->setChannel($channel);
                             $outputStream->setUser($user);
                             preg_match_all('#(?<!\\\\)("|\')(?<escaped>(?:[^\\\\]|\\\\.)*?)\1|(?<unescaped>\S+)#s', trim($matches[4]), $args, PREG_SET_ORDER);
                             
@@ -243,15 +234,6 @@ class RunConsoleCommand extends Command
                                 $message[1] = substr($message[1], 1);
                                 $superNamespace = current(explode(':', $message[1]));
                                 
-                                
-                                if (!$this->bot->has($message[1])) {
-
-                                    if ($outputStream->getTarget() == IrcOutputStream::CHANNEL) {
-                                        $outputStream->write('Command not found. Sending help information privately');
-                                        $outputStream->setTarget(IrcOutputStream::USER);   
-                                    }
-                                }
-                                    
                                 try {
                                     
                                     if($this->bot->findNamespace($superNamespace)) {
@@ -262,7 +244,6 @@ class RunConsoleCommand extends Command
                                         }
                                     }
                                 }catch (\Exception $e) {
-                                    $outputStream->setTarget(IrcOutputStream::CHANNEL);
                                     $outputStream->write('Command not found');
                                 }
                             }

@@ -8,6 +8,10 @@
             "type": "string",
             "required": true
         },
+        "onFailure": {
+            "type": "string",
+            "required": false
+        },
         "exception": {
             "type": "string",
             "required": true

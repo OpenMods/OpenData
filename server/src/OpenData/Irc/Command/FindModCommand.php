@@ -47,10 +47,6 @@ class FindModCommand extends ModCommand {
         $chunks = array_chunk($response, 10);
         foreach ($chunks as $chunk) {
             
-            if (count($chunks) > 1 && $i == 1 && $output->getTarget() == IrcOutputStream::CHANNEL) {
-                $output->write('Sending the rest via PM');
-                $output->setTarget(IrcOutputStream::USER);
-            }
             $output->write(implode(', ', $chunk));
            
             $i++;

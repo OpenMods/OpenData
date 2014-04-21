@@ -7,6 +7,10 @@
             "type": "string",
             "required": true
         },
+        "onFailure": {
+            "type": "string",
+            "required": false
+        },
         "signature": {
             "type": "string",
             "required": true

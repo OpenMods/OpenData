@@ -10,11 +10,9 @@ use OpenData\Irc\IrcOutputStream;
 class ModGetWithoutFieldCommand extends ModCommand
 {
     private $app;
-    private $field;
     
-    public function __construct($app, $field) {
+    public function __construct($app) {
         $this->app = $app;
-        $this->field = $field;
         parent::__construct();
     }
     
@@ -26,6 +24,11 @@ class ModGetWithoutFieldCommand extends ModCommand
                 'field',
                 InputArgument::REQUIRED,
                 'The field you want'
+            )->addArgument(
+                'skip',
+                InputArgument::OPTIONAL,
+                'The how many to skip',
+                0
             );
         
     }
@@ -38,11 +41,13 @@ class ModGetWithoutFieldCommand extends ModCommand
             return;
         }
         
-        $mods = $this->app['mods.service']->findModsWithoutField(strtolower($field));
+        $mods = $this->app['mods.service']->findModsWithoutField(strtolower($field), $input->getArgument('skip'));
         
-        $output->setTarget(IrcOutputStream::USER);
+        $modIds = array();
         foreach ($mods as $mod) {
-            $output->write($mod['_id']);
+            $modIds[] = $mod['_id'];
         }
+        $output->write(implode(', ', $modIds));
+        
     }
 }

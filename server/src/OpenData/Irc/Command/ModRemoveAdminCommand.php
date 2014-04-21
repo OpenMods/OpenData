@@ -32,7 +32,7 @@ class ModRemoveAdminCommand extends ModCommand {
     
     protected function execute(InputInterface $input, OutputInterface $output) {
         
-        if ($this->isUserAdmin($output)) {
+        if (!$this->isUserAdmin($output)) {
             $output->write('Insufficient permissions'); 
             return;
         }

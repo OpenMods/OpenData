@@ -54,34 +54,54 @@ class ApiController {
         }
 
         $responses = array();
+        
+        $index = 0;
 
         foreach ($data as $packet) {
+            
+            $type = isset($packet['type']) && is_string($packet['type']) ?
+                    $packet['type'] : null;
+            
+            try {
+                
+                if ($type == null) {
+                    throw new \Exception('Packet type not defined');
+                }
 
-            if (!isset($packet['type']) || !is_string($packet['type'])) {
-                throw new \Exception('Packet type not defined');
+                $response = null;
+
+                if (!isset($this->packetHandlers[$type])) {
+                    throw new \Exception('Invalid packet type '.$type);
+                }
+
+                $handler = $this->packetHandlers[$type];
+
+                $errors = $this->getErrors($packet, $handler->getJsonSchema());
+
+                unset($packet['type']);
+
+                if ($errors != null) {
+                    throw new \Exception(implode("\n", $errors));
+                }
+
+                if ($response = $handler->execute($packet)) {
+                    $responses = array_merge($responses, $response);
+                }
+                
+            }catch (\Exception $e) {
+                $responses = array_merge($responses, array(
+                    'type' => 'error',
+                    'report_type' => $type == null ? 'unknown' : $type,
+                    'report_index' => $index,
+                    'debug' => array(
+                        'statusCode' => $e->getCode(),
+                        'message' => $e->getMessage(),
+                        'stacktrace' => $e->getTraceAsString()
+                    )
+                ));
             }
             
-            $type = $packet['type'];
-
-            $response = null;
-
-            if (!isset($this->packetHandlers[$type])) {
-                throw new \Exception('Invalid packet type '.$type);
-            }
-            
-            $handler = $this->packetHandlers[$type];
-
-            $errors = $this->getErrors($packet, $handler->getJsonSchema());
-
-            unset($packet['type']);
-
-            if ($errors != null) {
-                throw new \Exception(implode("\n", $errors));
-            }
-
-            if ($response = $handler->execute($packet)) {
-                $responses = array_merge($responses, $response);
-            }
+            $index++;
         }
 
         return new JsonResponse($responses);

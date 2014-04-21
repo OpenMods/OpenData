@@ -104,6 +104,7 @@ $servicesLoader->bindServicesIntoContainer();
 $routesLoader = new OpenData\RoutesLoader($app);
 $routesLoader->bindRoutesToControllers();
 
+/*
 $app->error(function (\Exception $e, $code) use ($app) {
     $app['monolog']->addError($e->getMessage());
     $app['monolog']->addError($e->getTraceAsString());
@@ -111,5 +112,7 @@ $app->error(function (\Exception $e, $code) use ($app) {
         return new JsonResponse(array("statusCode" => $code, "message" => $e->getMessage(), "stacktrace" => $e->getTraceAsString()));
     //}
 });
+
+ */
 
 return $app;

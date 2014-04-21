@@ -65,7 +65,7 @@ class HomeController {
         ));
     }
     
-    private function getPagination($iterator, $page = 1, $perPage = 25) {
+    private function getPagination($iterator, $page = 1, $perPage = 20) {
         
         $skip = ($page - 1) * $perPage;
         $total = $iterator->count();
