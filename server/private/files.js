@@ -1,269 +1,268 @@
 
 function addNote(context) {
 
-	var args = context.args;
+    var args = context.args;
 
-	if (args.length < 3 || args.length > 4) {
-		context.bot.say(
-			context.bot.channel,
-			'Expected 3 or 4 arguments: signature, level, description, payload (optional)'		
-		);
-		return;
-	}
-	
-	var signature = args[0];
-	var level = parseInt(args[1]);
-	var description = args[2];
-	var payload = null;
-	if (args.length > 3) {
-		payload = args[3];
-	}
-	context.db.collection('files').findOne(
-		{_id : signature},
-		function(err, file){ 
-			if (file == null) {
-				context.bot.say(
-					context.channel,
-					'File not found'
-				);
-				return;
-			}
-			
-			var modIds = [];
-			
-			file.mods.forEach(function(mod) {
-				modIds.push(mod.modId);
-			});
-			
-			if (modIds.length == 0) {
-			
-				context.bot.say(
-					context.channel,
-					'Some kind of issue. Mod not found? weeird!'
-				);
-				return;
-			}
-			
-			context.db.collection('mods').find(
-				{_id : {'$in': modIds}}
-			).toArray(function(err, results) {
-				
-				var allowed = context.isOp;
-				
-				results.forEach(function(mod) {
-					if (mod['admins'] != null) {
-						if (mod['admins'].indexOf(context.username) > -1) {
-							allowed = true;
-						}
-					}
-				});
-				
-				if (allowed) {
-					
-					var notes = [];
-					if (file['notes'] != null) {
-						notes = file['notes'];
-					}
-					var note = {
-						'level' : level,
-						'description' : description
-					};
-					
-					if (payload != null) {
-						note['payload'] = payload;
-					}
-					
-					notes.push(note);
-					
-					context.db.collection('files').update(
-						{_id: signature },
-						{
-							'$set' : {
-								'notes' : notes
-							}
-						},
-						{},
-						function(err) {
-							context.bot.say(
-								context.channel,
-								'Added note'
-							);
-						}
-					);
-					
-				} else {
-					context.bot.say(
-						context.channel,
-						'Insufficient permissions'
-					);
-				}
-				
-			});
-			
-		}
-	);
-	
-	
+    if (args.length < 3 || args.length > 4) {
+        context.bot.say(
+                context.bot.channel,
+                'Expected 3 or 4 arguments: signature, level, description, payload (optional)'
+                );
+        return;
+    }
+
+    var signature = args[0];
+    var level = parseInt(args[1]);
+    var description = args[2];
+    var payload = null;
+    if (args.length > 3) {
+        payload = args[3];
+    }
+    context.db.collection('files').findOne(
+            {_id: signature},
+    function(err, file) {
+        if (file == null) {
+            context.bot.say(
+                    context.channel,
+                    'File not found'
+                    );
+            return;
+        }
+
+        var modIds = [];
+
+        file.mods.forEach(function(mod) {
+            modIds.push(mod.modId);
+        });
+
+        if (modIds.length == 0) {
+
+            context.bot.say(
+                    context.channel,
+                    'Some kind of issue. Mod not found? weeird!'
+                    );
+            return;
+        }
+
+        context.db.collection('mods').find(
+                {_id: {'$in': modIds}}
+        ).toArray(function(err, results) {
+
+            var allowed = context.isOp;
+
+            results.forEach(function(mod) {
+                if (mod['admins'] != null) {
+                    if (mod['admins'].indexOf(context.username) > -1) {
+                        allowed = true;
+                    }
+                }
+            });
+
+            if (allowed) {
+
+                var notes = [];
+                if (file['notes'] != null) {
+                    notes = file['notes'];
+                }
+                var note = {
+                    'level': level,
+                    'description': description
+                };
+
+                if (payload != null) {
+                    note['payload'] = payload;
+                }
+
+                notes.push(note);
+
+                context.db.collection('files').update(
+                        {_id: signature},
+                {
+                    '$set': {
+                        'notes': notes
+                    }
+                },
+                {},
+                        function(err) {
+                            context.bot.say(
+                                    context.channel,
+                                    'Added note'
+                                    );
+                        }
+                );
+
+            } else {
+                context.bot.say(
+                        context.channel,
+                        'Insufficient permissions'
+                        );
+            }
+
+        });
+
+    }
+    );
+
+
 }
 
 function listNotes(context) {
 
-	if (context.args.length != 1) {
-		context.bot.say(
-			context.bot.channel,
-			'Please specify the file signature'		
-		);
-		return;
-	}
-		
-	var signature = context.args[0];
-	
-	context.db.collection('files').findOne(
-		{_id : signature},
-		function(err, file){ 
-			if (file == null) {
-				context.bot.say(
-					context.channel,
-					'File not found'
-				);
-				return;
-			}
-			
-			if (file['notes'] === undefined || file['notes'] === null || file['notes'].length == 0) {
-				context.bot.say(
-					context.channel,
-					'No notes found'
-				);
-				return;
-			}
-			
-			var notes = file['notes'];
-			
-			var index = 1;
-			notes.forEach(function(note) {
-				
-				var msg = '[' + index + '] ';
-				msg += 'Level: ' + note['level'];
-				msg += '    Description: ' + note['description'];
-				if (note['payload'] != null) {
-					msg += '    Payload: '+ note['payload'] 
-				}
-				
-				context.bot.say(
-					context.channel,
-					msg
-				);
-				
-				index++;
-			
-			});
-			
-		}
-	);
+    if (context.args.length != 1) {
+        context.bot.say(
+                context.bot.channel,
+                'Please specify the file signature'
+                );
+        return;
+    }
+
+    var signature = context.args[0];
+
+    context.db.collection('files').findOne(
+            {_id: signature},
+    function(err, file) {
+        if (file == null) {
+            context.bot.say(
+                    context.channel,
+                    'File not found'
+                    );
+            return;
+        }
+
+        if (file['notes'] === undefined || file['notes'] === null || file['notes'].length == 0) {
+            context.bot.say(
+                    context.channel,
+                    'No notes found'
+                    );
+            return;
+        }
+
+        var notes = file['notes'];
+
+        var index = 1;
+        notes.forEach(function(note) {
+
+            var msg = '[' + index + '] ';
+            msg += 'Level: ' + note['level'];
+            msg += '    Description: ' + note['description'];
+            if (note['payload'] != null) {
+                msg += '    Payload: ' + note['payload']
+            }
+
+            context.bot.say(
+                    context.channel,
+                    msg
+                    );
+
+            index++;
+
+        });
+
+    }
+    );
 
 }
 
 function removeNote(context) {
 
-	var args = context.args;
+    var args = context.args;
 
-	if (args.length != 2) {
-		context.bot.say(
-			context.bot.channel,
-			'Expected two arguments. Signature and index'		
-		);
-		return;
-	}
-	
-	var signature = args[0];
-	var index = parseInt(args[1]);
+    if (args.length != 2) {
+        context.bot.say(
+                context.bot.channel,
+                'Expected two arguments. Signature and index'
+                );
+        return;
+    }
 
-	context.db.collection('files').findOne(
-		{_id : signature},
-		function(err, file){ 
-			if (file == null) {
-				context.bot.say(
-					context.channel,
-					'File not found'
-				);
-				return;
-			}
-			
-			var modIds = [];
-			
-			file.mods.forEach(function(mod) {
-				modIds.push(mod.modId);
-			});
-			
-			if (modIds.length == 0) {
-			
-				context.bot.say(
-					context.channel,
-					'Some kind of issue. Mod not found? weeird!'
-				);
-				return;
-			}
-			
-			context.db.collection('mods').find(
-				{_id : {'$in': modIds}}
-			).toArray(function(err, results) {
-				
-				var allowed = context.isOp;
-				
-				results.forEach(function(mod) {
-					if (mod['admins'] != null) {
-						if (mod['admins'].indexOf(context.username) > -1) {
-							allowed = true;
-						}
-					}
-				});
-				
-				if (allowed) {
-					
-					var notes = [];
-					if (file['notes'] != null) {
-						notes = file['notes'];
-					}
-					
-					index--;
-					
-					if (notes[index] == null) {
-						context.bot.say(
-							context.channel,
-							'No note at index ' + index
-						);
-						return;
-					}
-					notes.splice(index, 1);
-					
-					context.db.collection('files').update(
-						{_id: signature },
-						{
-							'$set' : {
-								'notes' : notes
-							}
-						},
-						{},
-						function(err) {
-							context.bot.say(
-								context.channel,
-								'Removed note'
-							);
-						}
-					);
-					
-				} else {
-					context.bot.say(
-						context.channel,
-						'Insufficient permissions'
-					);
-				}
-				
-			});
-			
-		}
-	);
-	
+    var signature = args[0];
+    var index = parseInt(args[1]);
+
+    context.db.collection('files').findOne(
+            {_id: signature},
+    function(err, file) {
+        if (file == null) {
+            context.bot.say(
+                    context.channel,
+                    'File not found'
+                    );
+            return;
+        }
+
+        var modIds = [];
+
+        file.mods.forEach(function(mod) {
+            modIds.push(mod.modId);
+        });
+
+        if (modIds.length == 0) {
+
+            context.bot.say(
+                    context.channel,
+                    'Some kind of issue. Mod not found? weeird!'
+                    );
+            return;
+        }
+
+        context.db.collection('mods').find(
+                {_id: {'$in': modIds}}
+        ).toArray(function(err, results) {
+
+            var allowed = context.isOp;
+
+            results.forEach(function(mod) {
+                if (mod['admins'] != null) {
+                    if (mod['admins'].indexOf(context.username) > -1) {
+                        allowed = true;
+                    }
+                }
+            });
+
+            if (allowed) {
+
+                var notes = [];
+                if (file['notes'] != null) {
+                    notes = file['notes'];
+                }
+
+                index--;
+
+                if (notes[index] == null) {
+                    context.bot.say(
+                            context.channel,
+                            'No note at index ' + index
+                            );
+                    return;
+                }
+                notes.splice(index, 1);
+
+                context.db.collection('files').update(
+                        {_id: signature},
+                {
+                    '$set': {
+                        'notes': notes
+                    }
+                },
+                {},
+                        function(err) {
+                            context.bot.say(
+                                    context.channel,
+                                    'Removed note'
+                                    );
+                        }
+                );
+
+            } else {
+                context.bot.say(
+                        context.channel,
+                        'Insufficient permissions'
+                        );
+            }
+
+        });
+
+    });
+
 }
 
 module.exports.addNote = addNote;
