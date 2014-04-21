@@ -89,16 +89,16 @@ class ApiController {
                 }
                 
             }catch (\Exception $e) {
-                $responses = array_merge($responses, array(
+                $responses = array_merge($responses, array(array(
                     'type' => 'error',
-                    'report_type' => $type == null ? 'unknown' : $type,
-                    'report_index' => $index,
+                    'reportType' => $type == null ? 'unknown' : $type,
+                    'reportIndex' => $index,
                     'debug' => array(
                         'statusCode' => $e->getCode(),
                         'message' => $e->getMessage(),
                         'stacktrace' => $e->getTraceAsString()
                     )
-                ));
+                )));
             }
             
             $index++;

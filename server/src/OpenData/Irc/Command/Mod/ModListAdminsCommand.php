@@ -1,10 +1,11 @@
 <?php
 
-namespace OpenData\Irc\Command;
+namespace OpenData\Irc\Command\Mod;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use OpenData\Irc\Command\ModCommand;
 
 class ModListAdminsCommand extends ModCommand {
     
@@ -32,6 +33,8 @@ class ModListAdminsCommand extends ModCommand {
         
         $mod = $this->app['mods.service']->findById(strtolower($modId));
                 
+        $output->setOutputType(\OpenData\Irc\IrcOutputStream::OUTPUT_NOTICE);
+        
         if ($mod != null) {
                         
             if (isset($mod['admins']) && count($mod['admins']) > 0) {

@@ -16,45 +16,44 @@ $console = new Application();
 
 $bot = new Application();
 
-$bot->addCommands(array(
-    new Command\FindModCommand($app),
-    new Command\AdminsListCommand($app)
-));
+$bot->add(new Command\Admin\AdminsListCommand($app));
 
-$bot->add(new Command\ModGetCommand($app, 'name'));
-$bot->add(new Command\ModGetCommand($app, 'description'));
-$bot->add(new Command\ModGetCommand($app, 'authors'));
-$bot->add(new Command\ModGetCommand($app, 'parent'));
-$bot->add(new Command\ModGetCommand($app, 'url'));
-$bot->add(new Command\ModGetCommand($app, 'releasesPage'));
-$bot->add(new Command\ModGetCommand($app, 'credits'));
-$bot->add(new Command\ModGetCommand($app, 'tags'));
-$bot->add(new Command\ModGetCommand($app, 'jsonUrl'));
-$bot->add(new Command\ModGetCommand($app, 'repository'));
-$bot->add(new Command\ModGetCommand($app, 'irc'));
-$bot->add(new Command\ModGetCommand($app, 'donation'));
+$bot->add(new Command\Mod\FindModCommand($app));
+$bot->add(new Command\Mod\ModGetCommand($app, 'name'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'description'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'authors'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'parent'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'url'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'releasesPage'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'credits'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'tags'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'jsonUrl'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'repository'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'irc'));
+$bot->add(new Command\Mod\ModGetCommand($app, 'donation'));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'name'));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'description'));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'authors', true));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'parent'));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'url'));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'repository'));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'releasesPage'));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'credits'));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'tags', true));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'jsonUrl'));
+$bot->add(new Command\Mod\ModUpdateCommand($app, 'donation'));
+$bot->add(new Command\Mod\ModUpdateIrcCommand($app));
+$bot->add(new Command\Mod\ModGetWithoutFieldCommand($app));
+$bot->add(new Command\Mod\ModListAdminsCommand($app));
+$bot->add(new Command\Mod\ModRemoveAdminCommand($app));
+$bot->add(new Command\Mod\ModAddAdminCommand($app));
+$bot->add(new Command\Mod\ModUpdateImageCommand($app, 'image', IMAGETYPE_PNG, 64, 64, 'modimages'));
+$bot->add(new Command\Mod\ModUpdateImageCommand($app, 'largeImage', IMAGETYPE_JPEG, 1920, 500, 'largemodimages'));
 
-$bot->add(new Command\ModUpdateCommand($app, 'name'));
-$bot->add(new Command\ModUpdateCommand($app, 'description'));
-$bot->add(new Command\ModUpdateCommand($app, 'authors', true));
-$bot->add(new Command\ModUpdateCommand($app, 'parent'));
-$bot->add(new Command\ModUpdateCommand($app, 'url'));
-$bot->add(new Command\ModUpdateCommand($app, 'repository'));
-$bot->add(new Command\ModUpdateCommand($app, 'releasesPage'));
-$bot->add(new Command\ModUpdateCommand($app, 'credits'));
-$bot->add(new Command\ModUpdateCommand($app, 'tags', true));
-$bot->add(new Command\ModUpdateCommand($app, 'jsonUrl'));
-$bot->add(new Command\ModUpdateCommand($app, 'donation'));
-$bot->add(new Command\ModUpdateIrcCommand($app));
+$bot->add(new Command\File\FileAddNoteCommand($app));
+$bot->add(new Command\File\FileListNotesCommand($app));
+$bot->add(new Command\File\FileRemoveNoteCommand($app));
 
-$bot->add(new Command\ModGetWithoutFieldCommand($app));
-
-$bot->add(new Command\ModListAdminsCommand($app));
-$bot->add(new Command\ModRemoveAdminCommand($app));
-$bot->add(new Command\ModAddAdminCommand($app));
-
-$bot->add(new Command\ModUpdateImageCommand($app, 'image', IMAGETYPE_PNG, 64, 64, 'modimages'));
-$bot->add(new Command\ModUpdateImageCommand($app, 'largeImage', IMAGETYPE_JPEG, 1920, 500, 'largemodimages'));
 
 $console->add(new OpenData\Irc\RunConsoleCommand($bot));
 $console->run();

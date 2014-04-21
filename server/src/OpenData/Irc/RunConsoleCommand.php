@@ -26,7 +26,7 @@ class RunConsoleCommand extends Command
         
         $this->bot = $bot;
         $this->bot->setAutoExit(false);
-        //$this->bot->setCatchExceptions(false);
+        $this->bot->setCatchExceptions(false);
         
         $this->bot->setDefinition(new InputDefinition(array(
             new InputArgument('command', InputArgument::REQUIRED, 'The command to execute'),
@@ -215,7 +215,9 @@ class RunConsoleCommand extends Command
                                     $user = $nameMatches[0];
                                 }
                             }
+                            $outputStream->setChannel($channel);
                             $outputStream->setUser($user);
+                            $outputStream->setOutputType(IrcOutputStream::OUTPUT_PRIVMSG);
                             preg_match_all('#(?<!\\\\)("|\')(?<escaped>(?:[^\\\\]|\\\\.)*?)\1|(?<unescaped>\S+)#s', trim($matches[4]), $args, PREG_SET_ORDER);
                             
                             $message = array();
@@ -240,7 +242,16 @@ class RunConsoleCommand extends Command
                                         try {
                                             $this->bot->run(new ArgvInput($message), $outputStream);
                                         } catch(\Exception $e) {
-
+                                            $outputStream->write('Command not found. Sending help as notice');
+                                            
+                                            $outputStream->setOutputType(IrcOutputStream::OUTPUT_NOTICE);
+                                            $list = array();
+                                            foreach ($this->bot->all() as $cmd => $c) {
+                                                $list[] = $cmd;
+                                            }
+                                            foreach (array_chunk($list, 10) as $chunk) {
+                                                $outputStream->write(implode(', ', $chunk));
+                                            }
                                         }
                                     }
                                 }catch (\Exception $e) {

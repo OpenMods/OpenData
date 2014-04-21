@@ -7,10 +7,6 @@
             "type": "string",
             "required": true
         },
-        "onFailure": {
-            "type": "string",
-            "required": false
-        },
         "branding": {
             "type": "array",
             "required": false,

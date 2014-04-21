@@ -117,6 +117,15 @@ class FilesService extends BaseService {
 
         return true;
     }
+    
+    public function update($fileId, $query) {
+        $this->db->files->update(
+            array('_id' => $fileId),
+            array(
+                '$set' => $query                    
+            )
+        );
+    }
 
     public function findOne($signature) {
         return $this->db->files->findOne(array('_id' => $signature));

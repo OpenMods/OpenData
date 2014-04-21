@@ -48,7 +48,7 @@ $app->register(new ServiceControllerServiceProvider());
 $app->register(new MongoServiceProvider(), array(
     'mongo.connections' => array(
         'default' => array(
-            'server' => "mongodb://localhost:27017",
+            'server' => 'mongodb://'.$app['dbuser'].':'.$app['dbpass'].'@localhost:27017/hopper',
             'options' => array("connect" => true)
         )
     ),
@@ -91,7 +91,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 $app->register(new HttpCacheServiceProvider(), array("http_cache.cache_dir" => ROOT_PATH . "/storage/cache",));
 
 $app->register(new MonologServiceProvider(), array(
-    "monolog.logfile" => ROOT_PATH . "/storage/logs/" . time() . ".log",
+    "monolog.logfile" => ROOT_PATH . "/storage/logs/" . date('Y-m-d') . ".log",
     "monolog.level" => $app["log.level"],
     "monolog.name" => "application"
 ));

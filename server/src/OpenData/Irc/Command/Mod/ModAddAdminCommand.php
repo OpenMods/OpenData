@@ -1,10 +1,11 @@
 <?php
 
-namespace OpenData\Irc\Command;
+namespace OpenData\Irc\Command\Mod;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use OpenData\Irc\Command\ModCommand;
 
 class ModAddAdminCommand extends ModCommand {
     

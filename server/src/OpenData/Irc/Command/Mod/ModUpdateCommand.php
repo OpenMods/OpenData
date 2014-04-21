@@ -1,37 +1,41 @@
 <?php
 
-namespace OpenData\Irc\Command;
+namespace OpenData\Irc\Command\Mod;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use OpenData\Irc\Command\ModCommand;
 
-class ModUpdateIrcCommand extends ModCommand {
+class ModUpdateCommand extends ModCommand {
     
+    private $field;
     private $app;
+    private $requirement;
     
-    public function __construct($app) {
+    public function __construct($app, $field, $isArray = false) {
         $this->app = $app;
+        $this->field = $field;
+        $this->requirement = InputArgument::REQUIRED;
+        if ($isArray) {
+            $this->requirement |= InputArgument::IS_ARRAY;
+        }
         parent::__construct();
     }
+    
 
     protected function configure() {
         $this
-            ->setName('mod:update:irc')
-            ->setDescription('Update the irc field')
+            ->setName('mod:update:'.$this->field)
+            ->setDescription('Update the '.$this->field.' field')
             ->addArgument(
                 'modId',
                 InputArgument::REQUIRED,
                 'The mod id used on the website'
             )->addArgument(
-                'host',
-                InputArgument::REQUIRED,
-                'The IRC host'
-            )->addArgument(
-                'channel',
-                InputArgument::REQUIRED,
-                'The IRC channel'
+                'value',
+                $this->requirement,
+                'Value of you wish to set'
             );
     }
 
@@ -45,7 +49,7 @@ class ModUpdateIrcCommand extends ModCommand {
         $modId = $input->getArgument('modId');
         
         $mod = $this->app['mods.service']->findById(strtolower($modId));
-        
+              
         if ($mod != null) {
             
             if (!$this->userHasModPermissions($output, $mod)) { 
@@ -53,13 +57,9 @@ class ModUpdateIrcCommand extends ModCommand {
                 return;
             }
             
-            $host = $input->getArgument('host');
-            $channel = $input->getArgument('channel');
+            $value = $input->getArgument('value');
             $this->app['mods.service']->updateMod($modId, array(
-                'irc' => array(
-                    'host' => $host,
-                    'channel' => $channel
-                )
+                $this->field => $value
             ));
             $output->write('Update successful'); 
         } else {

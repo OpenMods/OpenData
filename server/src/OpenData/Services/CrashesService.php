@@ -5,6 +5,11 @@ namespace OpenData\Services;
 class CrashesService extends BaseService {
 
     public function add($packet, $fileIds, $modIds) {
+        
+        if (isset($packet['timestamp'])) {
+            $packet['timestamp'] = new \MongoInt64($packet['files'][$i]['timestamp']);
+        }
+        
         $packet['stackhash'] = md5(serialize($packet['stack']));
         
         $uniqueCrash = $this->db->unique_crashes->findOne(
