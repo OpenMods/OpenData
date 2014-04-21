@@ -10,6 +10,12 @@ import cpw.mods.fml.common.versioning.ArtifactVersion;
 
 /* I'm marking all fields with serializable, just to prevent screwups. Yeah, I know about FieldNamingPolicy */
 public class ReportFileInfo implements IReport {
+	public static final String TYPE = "file_info";
+
+	@Override
+	public String getType() {
+		return TYPE;
+	}
 
 	public static class SerializableTweak {
 		@SerializedName("plugin")

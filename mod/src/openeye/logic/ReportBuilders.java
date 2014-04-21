@@ -74,7 +74,7 @@ public class ReportBuilders {
 	public static ReportCrash buildCrashReport(Throwable throwable, ModMetaCollector collector) {
 		ReportCrash crash = new ReportCrash();
 
-		crash.timestamp = new Date().getTime() / 1000; // bleh
+		crash.timestamp = new Date().getTime();
 
 		crash.exceptionCls = throwable.getClass().getName();
 

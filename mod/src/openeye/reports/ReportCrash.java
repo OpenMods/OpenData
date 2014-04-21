@@ -6,6 +6,12 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 public class ReportCrash implements IReport {
+	public static final String TYPE = "crashlog";
+
+	@Override
+	public String getType() {
+		return TYPE;
+	}
 
 	public static class StackTrace {
 		@SerializedName("class")

@@ -7,6 +7,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 
 public class ReportAnalytics implements IReport {
+	public static final String TYPE = "analytics";
+
+	@Override
+	public String getType() {
+		return TYPE;
+	}
+
 	public interface RuntimeMeta {}
 
 	public static class FmlForgeRuntime implements RuntimeMeta {

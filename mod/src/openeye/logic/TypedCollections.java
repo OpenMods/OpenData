@@ -91,17 +91,19 @@ public class TypedCollections {
 	};
 
 	static {
-		REPORTS_TYPES.put("analytics", ReportAnalytics.class);
-		REPORTS_TYPES.put("file_info", ReportFileInfo.class);
-		REPORTS_TYPES.put("crashlog", ReportCrash.class);
-		REPORTS_TYPES.put("ping", ReportPing.class);
-		REPORTS_TYPES.put("known_files", ReportKnownFiles.class);
-		REPORTS_TYPES.put("file_contents", ReportFileContents.class);
+		REPORTS_TYPES.put(ReportAnalytics.TYPE, ReportAnalytics.class);
+		REPORTS_TYPES.put(ReportFileInfo.TYPE, ReportFileInfo.class);
+		REPORTS_TYPES.put(ReportCrash.TYPE, ReportCrash.class);
+		REPORTS_TYPES.put(ReportPing.TYPE, ReportPing.class);
+		REPORTS_TYPES.put(ReportKnownFiles.TYPE, ReportKnownFiles.class);
+		REPORTS_TYPES.put(ReportFileContents.TYPE, ReportFileContents.class);
 
-		RESPONSE_TYPES.put("file_info", ResponseFileInfo.class);
-		RESPONSE_TYPES.put("pong", ResponsePong.class);
-		RESPONSE_TYPES.put("file_contents", ResponseFileContents.class);
-		RESPONSE_TYPES.put("dangerous_file", ResponseDangerousFile.class);
+		RESPONSE_TYPES.put(ResponseFileInfo.TYPE, ResponseFileInfo.class);
+		RESPONSE_TYPES.put(ResponsePong.TYPE, ResponsePong.class);
+		RESPONSE_TYPES.put(ResponseFileContents.TYPE, ResponseFileContents.class);
+		RESPONSE_TYPES.put(ResponseDangerousFile.TYPE, ResponseDangerousFile.class);
+		RESPONSE_TYPES.put(ResponseModMsg.TYPE, ResponseModMsg.class);
+		RESPONSE_TYPES.put(ResponseError.TYPE, ResponseError.class);
 	}
 
 }
