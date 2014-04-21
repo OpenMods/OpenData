@@ -28,12 +28,12 @@ public class ReportBuilders {
 	public static ReportKnownFiles buildKnownFilesReport(ModMetaCollector data) {
 		ReportKnownFiles result = new ReportKnownFiles();
 
-		result.signatures = data.getAllSignatures();
+		result.signatures = data.getAllFiles();
 
 		return result;
 	}
 
-	public static ReportAnalytics buildAnalyticsReport(ModMetaCollector data) {
+	public static ReportAnalytics buildAnalyticsReport(ModMetaCollector data, Set<String> prevSignatures) {
 		ReportAnalytics analytics = new ReportAnalytics();
 
 		analytics.branding = FMLCommonHandler.instance().getBrandings();
@@ -56,7 +56,7 @@ public class ReportBuilders {
 
 		analytics.minecraft = Loader.instance().getMCVersionString();
 
-		analytics.signatures = data.getAllSignatures();
+		analytics.signatures = data.getAllFiles();
 
 		Set<String> tags = Sets.newHashSet();
 
@@ -67,6 +67,12 @@ public class ReportBuilders {
 		tags.addAll(envTags);
 
 		if (!tags.isEmpty()) analytics.tags = tags;
+
+		Set<String> currentSignatures = data.getAllSignatures();
+
+		analytics.addedSignatures = Sets.difference(currentSignatures, prevSignatures);
+
+		analytics.removedSignatures = Sets.difference(prevSignatures, currentSignatures);
 
 		return analytics;
 	}
