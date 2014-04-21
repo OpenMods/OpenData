@@ -26,9 +26,18 @@ function findMods(context) {
         context.bot.say(context.channel, 'Invalid number of arguments. Expected 1');
         return;
     }
+    
+    var regex = null;
+    
+    try {
+        regex = new RegExp(args[0], 'i');
+    }catch (e) {
+        context.bot.say(context.channel, 'Bad regular expression.. noob.');
+        return;
+    }
 
     context.db.collection('mods').find(
-            {_id: new RegExp(args[0], 'i')}
+            {_id: regex}
     ).toArray(function(err, results) {
         var response = [];
         var i = 0;
