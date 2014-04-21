@@ -71,7 +71,7 @@ class Analytics implements IPacketHandler {
 
             if ($this->shouldRequestFiles($fileData)) {
                 $responses[] = array_merge($fileNode, array(
-                    'type' => 'filelist'
+                    'type' => 'file_contents'
                 ));
             }
 
@@ -81,10 +81,9 @@ class Analytics implements IPacketHandler {
                 ));
             }
 
-            if (isset($fileData['security_warning']) && is_string($fileData['security_warning'])) {
+            if (isset($fileData['dangerous_file']) && $fileData['dangerous_file'] == true) {
                 $responses[] = array_merge($fileNode, array(
-                    'type' => 'security_warning',
-                    'message' => $fileData['security_warning']
+                    'type' => 'dangerous_file'
                 ));
             }
 
@@ -118,8 +117,8 @@ class Analytics implements IPacketHandler {
     }
     
     private function shouldRequestFiles($fileData) {
-        return isset($fileData['list_files']) &&
-                $fileData['list_files'] &&
+        return isset($fileData['request_files']) &&
+                $fileData['request_files'] &&
                 !isset($fileData['files']);
     }
 

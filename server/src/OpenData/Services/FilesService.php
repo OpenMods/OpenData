@@ -85,6 +85,18 @@ class FilesService extends BaseService {
 
         unset($file['signature']);
 
+        if (isset($file['files'])) {
+            for ($i = 0; $i < count($file['files']); $i++) {
+                $file['files'][$i]['timestamp'] = new \MongoInt64($file['files'][$i]['timestamp']);
+            }
+        }
+
+        if (isset($file['dirs'])) {
+            for ($i = 0; $i < count($file['dirs']); $i++) {
+                $file['dirs'][$i]['timestamp'] = new \MongoInt64($file['dirs'][$i]['timestamp']);
+            }
+        }
+        
         foreach ($file as $k => $v) {
             if ($overwrite || (!$overwrite && !isset($currentEntry[$k]))) {
                 $currentEntry[$k] = $v;
@@ -93,7 +105,7 @@ class FilesService extends BaseService {
 
         if (isset($currentEntry['mods'])) {
             for ($i = 0; $i < count($currentEntry['mods']); $i++) {
-                    $currentEntry['mods'][$i]['modId'] = ModsService::sanitizeModId($currentEntry['mods'][$i]['modId']);
+                $currentEntry['mods'][$i]['modId'] = ModsService::sanitizeModId($currentEntry['mods'][$i]['modId']);
             }
         }
 

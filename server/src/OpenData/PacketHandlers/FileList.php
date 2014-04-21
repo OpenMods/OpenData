@@ -11,11 +11,11 @@ class FileList implements IPacketHandler {
     }
     
     public function getJsonSchema() {
-        return 'filelist.json';
+        return 'files.json';
     }
 
     public function getPacketType() {
-        return 'filelist';
+        return 'file_contents';
     }
     
     public function execute($packet) {

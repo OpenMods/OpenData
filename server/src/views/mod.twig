@@ -19,13 +19,22 @@
         </div>
 
 
-        {% if modInfo.credits is not empty %}
+        {% if modInfo.credits|trim is not empty %}
             <p><strong>Credits:</strong> {{ modInfo.credits }}</p>
         {% endif %}
-        {% if modInfo.url is not empty %}
+        {% if modInfo.url|trim is not empty%}
             <p><strong>Url:</strong> <a href="{{ modInfo.url|fullurl }}" target="_blank">{{ modInfo.url|fullurl }}</a></p>
         {% endif %}
-            
+        {% if modInfo.repository|trim is not empty %}
+            <p><strong>Source code:</strong> <a href="{{ modInfo.repository|fullurl }}" target="_blank">{{ modInfo.repository|fullurl }}</a></p>
+        {% endif %}
+        {% if modInfo.irc is not empty %}
+            <p><strong>IRC Chat:</strong> <a href="http://mibbit.com/?channel={{ modInfo.irc.channel|url_encode }}&server={{ modInfo.irc.host }}" target="_blank">{{ modInfo.irc.host }} {{ modInfo.irc.channel }}</a></p>
+        {% endif %}
+        {% if modInfo.donation|trim is not empty %}
+            <p><strong>Donations:</strong> <a href="{{ modInfo.donation|fullurl }}" target="_blank">{{ modInfo.donation|fullurl }}</a></p>
+        {% endif %}
+        
     </div>
 </div>
 

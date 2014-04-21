@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
-class AdminsListCommand extends Command {
+class AdminsListCommand extends ModCommand {
     
     private $app;
     

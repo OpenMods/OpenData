@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use OpenData\Irc\IrcOutputStream;
 
-class FindModCommand extends Command {
+class FindModCommand extends ModCommand {
     
     private $app;
     

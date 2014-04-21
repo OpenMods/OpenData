@@ -55,7 +55,6 @@ class IrcOutputStream extends StreamOutput {
             $target = $this->user;
         }
         
-        
         $message = 'PRIVMSG '.$target.' :'.$message;
         echo "Sending ".$message."\n";
         
