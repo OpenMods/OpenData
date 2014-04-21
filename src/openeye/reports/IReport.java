@@ -1,5 +1,5 @@
 package openeye.reports;
 
-public interface IReport {
+import openeye.logic.ITypedStruct;
 
-}
+public interface IReport extends ITypedStruct {}

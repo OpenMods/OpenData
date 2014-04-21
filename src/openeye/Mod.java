@@ -64,7 +64,8 @@ public class Mod extends DummyModContainer {
 		if (!dangerousMods.isEmpty()) {
 			for (FileSignature signature : dangerousMods)
 				Log.warn("Dangerous file detected: %s (%s)", signature.filename, signature.signature);
-			controller.errorOccurred(this, Proxy.instance().signalDangerousFiles(dangerousMods));
+
+			if (Config.haltOnDangerousFiles) controller.errorOccurred(this, Proxy.instance().signalDangerousFiles(dangerousMods));
 		}
 	}
 

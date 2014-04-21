@@ -5,6 +5,13 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 public class ReportFileContents implements IReport {
+	public static final String TYPE = "file_contents";
+
+	@Override
+	public String getType() {
+		return TYPE;
+	}
+
 	@SerializedName("signature")
 	public String signature;
 

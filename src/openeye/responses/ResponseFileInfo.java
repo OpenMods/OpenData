@@ -2,8 +2,17 @@ package openeye.responses;
 
 import openeye.logic.IContext;
 
-public class ResponseFileInfo implements IResponse {
+import com.google.gson.annotations.SerializedName;
 
+public class ResponseFileInfo implements IResponse {
+	public static final String TYPE = "file_info";
+
+	@Override
+	public String getType() {
+		return TYPE;
+	}
+
+	@SerializedName("signature")
 	public String signature;
 
 	@Override
