@@ -1,12 +1,20 @@
 <?php
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+$app = new Silex\Application();
+
+require __DIR__ . '/../../resources/config/prod.php';
+require __DIR__ . '/../app.php';
+
+$mongo = $app['mongo'];
+$conn = $mongo['default'];
+$db = $conn->hopper;
+
 libxml_use_internal_errors(true);
 
-$db = new MongoClient();
-$collection = $db->hopper->mods;
-
 // find a mod with a releases page that's never been checked before
-$modDocument = $collection->findOne(
+$modDocument = $db->mods->findOne(
     array(
         'releasesPage' => array(
             '$ne' => '',
@@ -20,7 +28,7 @@ $modDocument = $collection->findOne(
 
 // cant find one, lets get the one checked longest ago
 if ($modDocument == null) {
-    $modDocuments = $collection->find(
+    $modDocuments = $db->mods->find(
         array(
             'releasesPage' => array(
                 '$ne' => '',
@@ -72,7 +80,7 @@ try {
                 }
             }
         }
-        
+
         $newlyChecked = reduceURLList($db, $newlyChecked);
 
         $files = array();
@@ -106,9 +114,9 @@ try {
 
         // get the page
         $contents = file_get_contents($updateUrl);
-        
+
         $isJenkins = preg_match("@buildHistory@Ui", $contents);
-        
+
         if ($isJenkins) {
             $dom = new DOMDocument('1.0');
             $dom->loadHTML($contents);
@@ -124,13 +132,13 @@ try {
                     }
                 }
             }
-            
+
             $newlyChecked = reduceURLList($db, $newlyChecked);
-            
+
             $files = array();
             foreach ($newlyChecked as $page) {
                 $dom = new DOMDocument('1.0');
-                
+
                 $ctx = stream_context_create(array('http'=>array('timeout' => 40)));
                 $html = @file_get_contents($page, false, $ctx);
                 if ($html != null) {
@@ -197,11 +205,11 @@ try {
                     }
                 }
             }
-            
+
             $newlyChecked = reduceURLList($db, $newlyChecked);
 
             foreach ($newlyChecked as $match) {
-                
+
                 // resolve the adfly link (if it is one!)
                 $jarUrl = resolveAdfly($match);
 
@@ -301,20 +309,20 @@ foreach ($modUrls as $k => $mod) {
 
 foreach ($allModFiles as $modToInsert) {
     echo "inserting ".$modToInsert['_id']."\n";
-    $db->hopper->urls->update(
+    $db->urls->update(
         array('_id' => $modToInsert['_id']),
         $modToInsert,
         array('upsert' => true)
     );
 }
 
-$db->hopper->mods->update(
+$db->mods->update(
     array('_id' => $modDocument['_id']),
     array('$set' => array('lastChecked' => time()))
 );
 
 foreach ($newlyChecked as $url) {
-    $db->hopper->checked_urls->update(
+    $db->checked_urls->update(
         array('_id' => $url),
         array('_id' => $url),
         array('upsert' => true)
@@ -325,7 +333,7 @@ foreach ($newlyChecked as $url) {
 libxml_clear_errors();
 
 function reduceURLList($db, $urls) {
-    $stored = $db->hopper->checked_urls->find(
+    $stored = $db->checked_urls->find(
             array('_id' => array('$in' => $urls))
     );
     $new = array();
@@ -335,7 +343,7 @@ function reduceURLList($db, $urls) {
             if ($storedUrl['_id'] == $url) {
                 $found = true;
                 break;
-            }            
+            }
         }
         if (!$found) {
              $new[] = $url;

@@ -1,11 +1,18 @@
 <?php
 
 $rustart = getrusage();
-$time_start = microtime(true); 
+$time_start = microtime(true);
 
-$mongo = new MongoClient();
+require_once __DIR__ . '/../../vendor/autoload.php';
 
-$db = $mongo->hopper;
+$app = new Silex\Application();
+
+require __DIR__ . '/../../resources/config/prod.php';
+require __DIR__ . '/../app.php';
+
+$mongo = $app['mongo'];
+$conn = $mongo['default'];
+$db = $conn->hopper;
 
 /*************************************************
  * Hourly stats
@@ -34,29 +41,29 @@ $files = $db->files->find(
 );
 
 foreach ($files as $file) {
-    
+
     $fileId = $file['_id'];
-    
+
     $launchesOfThisFile = $fileLaunches[$fileId];
-    
+
     $hours = isset($file['hours']) ? $file['hours'] : array();
 
     if (count($hours) >= 48) {
         array_shift($hours);
     }
-    
+
     $hours[] = array(
         'time' => new MongoDate($currentHour),
         'launches' => $launchesOfThisFile
     );
-    
+
     $db->files->update(
         array('_id' => $fileId),
         array('$set' => array(
-            'hours' => $hours            
+            'hours' => $hours
         ))
     );
-    
+
     foreach ($file['mods'] as $mod) {
         $modId = $mod['modId'];
         if (!isset($modLaunches[$modId])) {
@@ -73,13 +80,13 @@ $modDocuments = $db->mods->find(
 
 foreach ($modDocuments as $mod) {
     $modId = $mod['_id'];
-    
+
     $hours = isset($mod['hours']) ? $mod['hours'] : array();
-    
+
     if (count($hours) == 48) {
         array_shift($hours);
     }
-    
+
     if (isset($modLaunches[$modId])) {
         $hours[] = array(
             'time' => new MongoDate($currentHour),
@@ -89,7 +96,7 @@ foreach ($modDocuments as $mod) {
         $db->mods->update(
             array('_id' => $modId),
             array('$set' => array(
-                'hours' => $hours            
+                'hours' => $hours
             ))
         );
     }
@@ -119,7 +126,7 @@ if ((int)date('G', $currentHour) == 0) {
 	    if (isset($document['days'])) {
 		$days = $document['days'];
 	    }
-            
+
 	    $days[] = array(
 		'time' => new \MongoDate($yesterday),
 		'launches' => $launches
@@ -149,4 +156,3 @@ echo "[".$date."] Computations: " . rutime($ru, $rustart, "utime")."\n";
 echo "[".$date."] System calls: " . rutime($ru, $rustart, "stime")."\n";
 echo "[".$date."] Memory: " . memory_get_peak_usage()."\n";
 echo "[".$date."] Clock time: " . $timeTaken."\n";
- 

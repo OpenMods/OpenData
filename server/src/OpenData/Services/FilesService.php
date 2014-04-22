@@ -85,18 +85,6 @@ class FilesService extends BaseService {
 
         unset($file['signature']);
 
-        if (isset($file['files'])) {
-            for ($i = 0; $i < count($file['files']); $i++) {
-                $file['files'][$i]['timestamp'] = new \MongoInt64($file['files'][$i]['timestamp']);
-            }
-        }
-
-        if (isset($file['dirs'])) {
-            for ($i = 0; $i < count($file['dirs']); $i++) {
-                $file['dirs'][$i]['timestamp'] = new \MongoInt64($file['dirs'][$i]['timestamp']);
-            }
-        }
-        
         foreach ($file as $k => $v) {
             if ($overwrite || (!$overwrite && !isset($currentEntry[$k]))) {
                 $currentEntry[$k] = $v;
@@ -117,12 +105,12 @@ class FilesService extends BaseService {
 
         return true;
     }
-    
+
     public function update($fileId, $query) {
         $this->db->files->update(
             array('_id' => $fileId),
             array(
-                '$set' => $query                    
+                '$set' => $query
             )
         );
     }
@@ -130,7 +118,7 @@ class FilesService extends BaseService {
     public function findOne($signature) {
         return $this->db->files->findOne(array('_id' => $signature));
     }
-    
+
     public function findHoursByVersion($modId, $version) {
         $result = $this->db->files->aggregate(
             array('$match' => array(
@@ -145,7 +133,7 @@ class FilesService extends BaseService {
             array('$unwind' => '$hours'),
             array('$group' => array('_id' => '$hours.time', 'time' => array('$first' => '$hours.time'), 'launches' => array('$sum' => '$hours.launches')))
         );
-        
+
         return $result['result'];
     }
 

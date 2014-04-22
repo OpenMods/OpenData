@@ -29,12 +29,12 @@ Array.prototype.remove = function() {
     return this;
 };
 
-if (process.args.length != 4) {
+if (process.argv.length != 4) {
     process.exit();
 }
 
-var dbUser = process.args[2];
-var dbPass = process.args[3];
+var dbUser = process.argv[2];
+var dbPass = process.argv[3];
 
 
 var myNick = 'OpenEye2';
@@ -155,6 +155,8 @@ MongoClient.connect(connectionString, function(err, db) {
 
                             var isOp = info['channels'].indexOf('@#OpenEye') > -1 ||
                                     info['channels'].indexOf('@+#OpenEye') > -1;
+
+                            console.log(info);
 
                             action['func']({
                                 bot: bot,

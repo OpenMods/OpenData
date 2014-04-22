@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 date_default_timezone_set('Etc/UTC');
 
+ini_set('mongo.native_long', 0);
+
 define("ROOT_PATH", __DIR__ . "/..");
 
 $app->before(function (Request $request) {
@@ -21,7 +23,7 @@ $app->before(function (Request $request) {
         $response->headers->set("Access-Control-Allow-Headers", "Content-Type");
         $response->setStatusCode(200);
         $response->send();
-    }    
+    }
 }, Application::EARLY_EVENT);
 
 //handling CORS respons with right headers

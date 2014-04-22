@@ -26,9 +26,9 @@ function findMods(context) {
         context.bot.say(context.channel, 'Invalid number of arguments. Expected 1');
         return;
     }
-    
+
     var regex = null;
-    
+
     try {
         regex = new RegExp(args[0], 'i');
     }catch (e) {
@@ -53,8 +53,10 @@ function findMods(context) {
                 msg = msg + ' Limiting to 50!';
             }
             context.bot.say(context.channel, msg);
-        }
-        context.bot.say(context.channel, response.join(', '));
+        	context.bot.say(context.channel, response.join(', '));
+        } else {
+            context.bot.say(context.channel, 'No results found');
+		}
     });
 }
 
@@ -254,19 +256,21 @@ function setField(context) {
 
 }
 
-function unsetField(bot, db, username, nickname, isOp, channel, args) {
+function unsetField(context) {
 
-    if (context.args.length == 2) {
+	var args = context.args;
 
-        var modId = context.args[0];
-        var field = context.args[1];
+    if (args.length == 2) {
+
+        var modId = args[0];
+        var field = args[1];
 
 
         if (validFields.indexOf(field) == -1) {
             context.bot.say(
                     context.channel,
                     'Invalid field'
-                    );
+            );
             return;
         }
 
@@ -289,7 +293,7 @@ function unsetField(bot, db, username, nickname, isOp, channel, args) {
 
             context.db.collection('mods').update(
                     {'_id': modId},
-            action,
+            		action,
                     {},
                     function(err) {
                         if (err) {
