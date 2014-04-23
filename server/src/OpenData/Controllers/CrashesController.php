@@ -21,7 +21,7 @@ class CrashesController {
     
     public function search() {
         return $this->twig->render('crashes.twig', array(
-            'crashes' => $this->serviceCrashes->findLatest()
+            'crashes' => $this->serviceCrashes->findLatestUnique()
         ));
     }
     

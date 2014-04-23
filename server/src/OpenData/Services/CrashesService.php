@@ -59,11 +59,22 @@ class CrashesService extends BaseService {
             ))->sort(array('latest' => -1));
     }
 
+    public function findLatestUnique($query = array(), $skip = 0, $limit = 40) {
+        return $this->findUnique($query)
+                ->sort(array('latest' => -1))
+                ->skip($skip)
+                ->limit($limit);
+    }
+
     public function findLatest($skip = 0, $limit = 40) {
         return $this->find()
                 ->sort(array('timestamp' => -1))
                 ->skip($skip)
                 ->limit($limit);
+    }
+
+    private function findUnique($query = array()) {
+        return $this->db->unique_crashes->find($query);
     }
 
     private function find($query = array()) {

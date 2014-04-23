@@ -46,6 +46,7 @@ var irc = require('irc');
 var mods = require('./mods.js');
 var files = require('./files.js');
 var redis = require("redis"), redisClient = redis.createClient();
+var Levenshtein = require('levenshtein');
 
 
 var actions = {
@@ -132,6 +133,21 @@ MongoClient.connect(connectionString, function(err, db) {
             if (matches.length > 0) {
 
                 var action = actions[matches[1]];
+                
+                if (action == null) {
+                    var sorted = [];
+                    for (cmd in actions) {
+                        var l = new Levenshtein(matches[1], cmd);
+                        sorted.push({
+                            'distance' : l.distance,
+                            'action' : actions[cmd]                  
+                        });
+                    }
+                    sorted.sort(function(a, b) {
+                        return (a.distance - b.distance);
+                    });
+                    action = sorted[0].action
+                }
 
                 if (action != null) {
 

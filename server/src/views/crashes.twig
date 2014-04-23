@@ -1,21 +1,55 @@
 {% extends 'base.twig' %}
 {% block main %}
-    
-<div class="page-header">
-    <h1>Crashes</h1>
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1>Crashes</h1>
+        </div>
+    </div>
 </div>
+<div class="row well">
+    <div class="col-md-12">
+        <form role="form">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                  <label for="inputMod">Mod:</label>
+                  <input type="text" class="form-control" id="inputMod">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                  <label for="inputVersion" style="display: block;">Version <span style="float: right;font-weight: normal;"><input style="margin-left: 20px;" type="checkbox" /> Regex?</span></label>
+                  <input type="text" class="form-control" id="exampleInputPassword1">
+                </div>
+            </div>
+        </div>
+          <div class="form-group">
+            <label for="inputSignature">File signature</label>
+            <input type="text" class="form-control" id="inputSignature">
+          </div>
+          <div class="form-group">
+            <label for="inputPackage" style="display: block;">Package <span style="float: right;font-weight: normal;"><input style="margin-left: 20px;" type="checkbox" /> Regex?</span></label>
+            <input type="text" class="form-control" id="inputSignature">
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+    </div>
+</div>
+            
     
 <table class="table table-striped">
     <thead>
     <tr>
-        <th>Date</th><th>Class</th><th>Exception</th><th>File</th><th>Method</th><th>Line</th>            
+        <th>Date</th><th>Exception</th><th>Class</th><th>Method</th><th>Line</th><th>Reports</th>            
     </tr>
     </thead>
     <tbody>
     {% for crash in crashes %}
     {% set trace = crash.stack|first %}
         <tr>
-            <td>{{ crash.timestamp|round|date("Y-m-d H:i:s") }}</td><td>{{ trace.class }}</td><td>{{ crash.exception }}</td><td>{{ trace.file }}</td><td>{{ trace.method }}</td><td>{{ trace.line }}</td>            
+            <td>{{ crash.latest|round|date("Y-m-d H:i:s") }}</td><td><a href="#">{{ crash.exception }}</a></td><td>{{ trace.class }}</td><td>{{ trace.method }}</td><td>{{ trace.line }}</td><td>{{ crash.count }}</td>
         </tr>
     {% endfor %}
     </tbody>
