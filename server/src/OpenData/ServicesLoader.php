@@ -29,11 +29,15 @@ class ServicesLoader {
         $this->app['mods.service'] = $this->app->share(function () use ($loader) {
             return new Services\ModsService($loader->app["mongo"]);
         });
+        $this->app['tags.service'] = $this->app->share(function () use ($loader) {
+            return new Services\TagsService($loader->app["mongo"]);
+        });
         
         $this->app['handler.analytics'] = $this->app->share(function () use ($loader) {
             return new PacketHandlers\Analytics(
                 $loader->app["analytics.service"],
-                $loader->app["files.service"]
+                $loader->app["files.service"],
+                $loader->app["tags.service"]
             );
         });
         

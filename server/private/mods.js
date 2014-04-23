@@ -1,3 +1,7 @@
+
+require('datejs');
+
+
 Array.prototype.remove = function() {
     var what, a = arguments, L = a.length, ax;
     while (L && this.length) {
@@ -17,6 +21,51 @@ var validFields = [
     'tags', 'repository', 'irc', 'credits', 'admins'
 ];
 
+function findModsBy(context, query) {
+
+    context.db.collection('mods').find(
+            query
+    ).toArray(function(err, results) {
+        var response = [];
+        var i = 0;
+        results.forEach(function(result) {
+            if (i < 10) {
+                response.push(result.name + ' (' + result._id + ')');
+            }
+            i++;
+        });
+        if (response.length > 0) {
+            var msg = i + ' results found.';
+            if (i > 10) {
+                msg = msg + ' Limiting to 10!';
+            }
+            context.bot.say(context.channel, msg);
+        	context.bot.say(context.channel, response.join(', '));
+        } else {
+            context.bot.say(context.channel, 'No results found');
+		}
+    });
+}
+
+function findModsByAuthor(context) {
+	var args = context.args;
+
+	if (args.length != 1) {
+		context.bot.say(context.channel, 'Invalid number of arguments. Expected 1');
+		return;
+	}
+
+	var regex = null;
+
+	try {
+		regex = new RegExp(args[0], 'i');
+	}catch (e) {
+		context.bot.say(context.channel, 'Bad regular expression.. noob.');
+		return;
+	}
+
+    findModsBy(context, {'authors' : regex});
+}
 
 function findMods(context) {
 
@@ -36,28 +85,7 @@ function findMods(context) {
         return;
     }
 
-    context.db.collection('mods').find(
-            {_id: regex}
-    ).toArray(function(err, results) {
-        var response = [];
-        var i = 0;
-        results.forEach(function(result) {
-            if (i < 50) {
-                response.push(result.name + ' (' + result._id + ')');
-            }
-            i++;
-        });
-        if (response.length > 0) {
-            var msg = i + ' results found.';
-            if (i > 50) {
-                msg = msg + ' Limiting to 50!';
-            }
-            context.bot.say(context.channel, msg);
-        	context.bot.say(context.channel, response.join(', '));
-        } else {
-            context.bot.say(context.channel, 'No results found');
-		}
-    });
+    findModsBy(context, {'$or': [{_id: regex}, {name: regex}]});
 }
 
 function removeAdmin(context) {
@@ -317,6 +345,73 @@ function unsetField(context) {
 
 }
 
+
+function getStats(context) {
+
+	var args = context.args;
+
+    if (args.length == 2) {
+
+        var modId = args[0];
+        var time = args[1];
+
+		console.log(time);
+
+        var date = Date.parse(time);
+
+        if (date == null) {
+			context.bot.say(
+				context.channel,
+				'Invalid date string'
+			);
+			return;
+		}
+
+		date.setMinutes(0);
+		date.setSeconds(0);
+		date.setMilliseconds(0);
+
+        getMod(context, modId, false, function(mod) {
+
+				var found = false;
+				if (mod['hours'] != null) {
+					mod['hours'].forEach(function(hour) {
+						if (hour.time.getTime() == date.getTime()) {
+							context.bot.say(
+								context.channel,
+								hour.time.toString("dddd, MMMM dd, yyyy HH:00:00") + ': ' + hour.launches + ' launches'
+							);
+							found = true;
+						}
+					});
+				}
+				if (mod['days'] != null) {
+					mod['days'].forEach(function(day) {
+						if (day.time.getTime() == date.getTime()) {
+							context.bot.say(
+								context.channel,
+								day.time.toString("dddd, MMMM dd, yyyy") + ': ' + day.launches + ' launches'
+							);
+							found = true;
+						}
+					});
+				}
+
+				if (!found) {
+						context.bot.say(
+							context.channel,
+							'No stats found for ' + date.toString("dddd, MMMM dd, yyyy HH:00:00")
+						);
+				}
+        });
+
+
+    } else {
+        context.bot.say(context.channel, 'Bad usage.  Expected <modId> "<date>"');
+    }
+
+}
+
 function getFields(context) {
 
     if (context.args.length > 0) {
@@ -380,3 +475,5 @@ module.exports.setField = setField;
 module.exports.unsetField = unsetField;
 module.exports.addAdmin = addAdmin;
 module.exports.removeAdmin = removeAdmin;
+module.exports.findModsByAuthor = findModsByAuthor;
+module.exports.getStats = getStats;

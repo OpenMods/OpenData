@@ -82,6 +82,13 @@ class FilesService extends BaseService {
         if ($currentEntry == null) {
             return false;
         }
+        
+        try {
+            $redis = new \Predis\Client();
+            $redis->publish('file', 'New file: '.$currentEntry['filenames'][0]);
+        }catch (\Exception $e) {
+        
+        }
 
         unset($file['signature']);
 

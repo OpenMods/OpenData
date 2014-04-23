@@ -7,10 +7,12 @@ class Analytics implements IPacketHandler {
     
     private $serviceAnalytics;
     private $serviceFiles;
+    private $serviceTags;
     
-    public function __construct($analytics, $files) {
+    public function __construct($analytics, $files, $tags) {
         $this->serviceAnalytics = $analytics;
         $this->serviceFiles = $files;
+        $this->serviceTags = $tags;
     }
     
     public function getPacketType() {
@@ -26,6 +28,16 @@ class Analytics implements IPacketHandler {
         $packet['created_at'] = time();
         
         $this->serviceAnalytics->add($packet);
+        
+        if (isset($packet['tags']) && is_array($packet['tags'])) {
+            $thisHour = strtotime(date("Y-m-d H:00:00"));
+            $date = new \MongoDate($thisHour);
+            foreach ($packet['tags'] as $tag) {
+                if (!empty($tag)) {
+                    $this->serviceTags->inc($tag, $date);
+                }
+            }
+        }
         
         $signatureMap = array();
         

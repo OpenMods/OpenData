@@ -45,14 +45,24 @@ var MongoClient = require('mongodb').MongoClient
 var irc = require('irc');
 var mods = require('./mods.js');
 var files = require('./files.js');
+var redis = require("redis"), redisClient = redis.createClient();
+
 
 var actions = {
     'mod:find': {
         func: mods.findMods,
         secure: false
     },
+	'mod:find:author': {
+        func: mods.findModsByAuthor,
+        secure: false
+    },
     'mod:get': {
         func: mods.getFields,
+        secure: false
+    },
+    'mod:stats': {
+        func: mods.getStats,
         secure: false
     },
     'mod:update': {
@@ -102,6 +112,15 @@ MongoClient.connect(connectionString, function(err, db) {
         channels: [mainChannel],
         debug: true
     });
+    
+    redisClient.on('message', function (channel, message) {
+	if (channel == 'file') {
+		console.log(channel);
+		bot.say('#OpenEye', message);
+	}
+    });
+
+    redisClient.subscribe('file');
 
 
     bot.addListener('message', function(from, to, message) {
