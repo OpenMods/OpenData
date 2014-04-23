@@ -32,16 +32,21 @@ class FilesService extends BaseService {
 
     public function findByPackage($package) {
         return $this->db->files->find(
-            array('packages' => $package)
+            array('packages' =>  new \MongoRegex('/^'.preg_quote($package).'/i'))
         );
     }
 
-    public function findSubPackages($package) {
+    public function findSubPackages($package, $onlyChildren = true) {
 
+        $suffix = '';
+        if ($onlyChildren) {
+            $suffix = '\.';
+        }
+        
         $results = $this->db->files->aggregate(
             array('$project' => array('packages' => 1)),
             array('$unwind' => '$packages'),
-            array('$match' => array('packages' => new \MongoRegex('/^'.preg_quote($package).'\./'))),
+            array('$match' => array('packages' => new \MongoRegex('/^'.preg_quote($package).$suffix.'/'))),
             array('$group' => array('_id' => '$packages')));
 
         $packages = array();
@@ -142,10 +147,6 @@ class FilesService extends BaseService {
         );
 
         return $result['result'];
-    }
-
-    public function findUniquePackages() {
-        return $this->db->files->distinct('packages');
     }
 
     public function findDownloadsForSignatures($signatures) {

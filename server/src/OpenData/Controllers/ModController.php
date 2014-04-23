@@ -2,6 +2,9 @@
 
 namespace OpenData\Controllers;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+
 class ModController {
 
     private $serviceFiles;
@@ -16,6 +19,29 @@ class ModController {
         $this->serviceCrashes = $crashes;
     }
 
+
+    
+    public function find(Request $request) {
+        
+        $query = $request->get('q');
+        if ($query == null) {
+            return new JsonResponse(array());
+        }
+        
+        $modNames = array();
+        
+        $results = $this->serviceMods->findByRegex($request->get('q'), false);
+        $results->sort(array(
+            'name' => 1
+        ));
+        
+        foreach ($results as $mod) {
+            $modNames[] = $mod['name'];
+        }
+        
+        return new JsonResponse($modNames);
+    }
+    
     public function modinfo($modId) {
 
         $modInfo = $this->serviceMods->findById($modId);

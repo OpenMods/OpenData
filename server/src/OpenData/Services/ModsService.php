@@ -8,14 +8,16 @@ class ModsService extends BaseService {
         return $this->db->mods->findOne(array('_id' => $modId));
     }
 
-    public function findByRegex($search) {
-        //{ $or: [ { qty: { $lt: 20 } }, { sale: true } ] } 
+    public function findByRegex($search, $searchId = true) {
+        
         $regex = new \MongoRegex('/'.$search.'/i');
-        return $this->db->mods->find(array(
-            '$or' => array(
-                array('_id' => $regex),
-                array('name' => $regex)
-            )));
+        
+        $q = array(array('name' => $regex));
+        if ($searchId) {
+            $q[] = array('_id' => $regex);
+        }
+        
+        return $this->db->mods->find(array('$or' => $q));
     }
     
     public function updateMod($modId, $data) {

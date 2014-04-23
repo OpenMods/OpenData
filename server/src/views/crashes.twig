@@ -1,4 +1,5 @@
 {% extends 'base.twig' %}
+
 {% block main %}
 <div class="row">
     <div class="col-md-12">
@@ -9,29 +10,28 @@
 </div>
 <div class="row well">
     <div class="col-md-12">
-        <form role="form">
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                  <label for="inputMod">Mod:</label>
-                  <input type="text" class="form-control" id="inputMod">
+        <form role="form" method="post" action="">
+          <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="form_mod">Mod:</label>
+                      {{ form_widget(form.mod, { 'attr': {'class': 'form-control'} } ) }}
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                  <label for="inputVersion" style="display: block;">Version <span style="float: right;font-weight: normal;"><input style="margin-left: 20px;" type="checkbox" /> Regex?</span></label>
-                  <input type="text" class="form-control" id="exampleInputPassword1">
+                <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="form_version" style="display: block;">Version</label>
+                      {{ form_widget(form.version, { 'attr': {'class': 'form-control'} } ) }}
+                    </div>
                 </div>
-            </div>
-        </div>
-          <div class="form-group">
-            <label for="inputSignature">File signature</label>
-            <input type="text" class="form-control" id="inputSignature">
           </div>
           <div class="form-group">
-            <label for="inputPackage" style="display: block;">Package <span style="float: right;font-weight: normal;"><input style="margin-left: 20px;" type="checkbox" /> Regex?</span></label>
-            <input type="text" class="form-control" id="inputSignature">
+            <label for="signature">File signature</label>
+            {{ form_widget(form.signature, { 'attr': {'class': 'form-control'} } ) }}
+          </div>
+          <div class="form-group">
+            <label for="package" style="display: block;">Package</label>
+            {{ form_widget(form.package, { 'attr': {'class': 'form-control'} } ) }}
           </div>
           <button type="submit" class="btn btn-default">Submit</button>
         </form>
@@ -56,4 +56,23 @@
     
 </table>
     
+{% endblock %}
+    
+{% block javascript %}
+    <script src="{{ relative('js/typeahead.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            var mods = new Bloodhound({
+                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+                 queryTokenizer: Bloodhound.tokenizers.whitespace,
+                 remote: '{{ relative('mod/find') }}?q=%QUERY'
+            });
+            mods.initialize();
+            $('#form_mod').typeahead({
+                 name: 'mods',
+                 displayKey: 'value',
+                 source: mods.ttAdapter()
+            });
+        });
+    </script>
 {% endblock %}

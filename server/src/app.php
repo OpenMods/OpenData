@@ -5,9 +5,9 @@ use Silex\Provider\HttpCacheServiceProvider;
 use Silex\Provider\MonologServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
 use Mongo\Silex\Provider\MongoServiceProvider;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Silex\Provider\FormServiceProvider;
 
 date_default_timezone_set('Etc/UTC');
 
@@ -50,12 +50,16 @@ $app->register(new ServiceControllerServiceProvider());
 $app->register(new MongoServiceProvider(), array(
     'mongo.connections' => array(
         'default' => array(
-            'server' => 'mongodb://'.$app['dbuser'].':'.$app['dbpass'].'@localhost:27017/hopper',
+            'server' => 'mongodb://'.$app['dbuser'].':'.$app['dbpass'].'@openeye.openmods.info:27017/hopper',
             'options' => array("connect" => true)
         )
     ),
 ));
 
+$app->register(new FormServiceProvider());
+$app->register(new Silex\Provider\TranslationServiceProvider(), array(
+    'translator.messages' => array(),
+));
 if (class_exists('\Memcache')) {
     $app->register(new SilexMemcache\MemcacheExtension(), array(
             'memcache.library'    => 'memcache',

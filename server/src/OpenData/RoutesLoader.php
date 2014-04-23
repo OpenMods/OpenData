@@ -70,7 +70,8 @@ class RoutesLoader {
                 $loader->app['twig'],
                 $loader->app['files.service'],
                 $loader->app['mods.service'],
-                $loader->app['crashes.service']
+                $loader->app['crashes.service'],
+                $loader->app['form.factory']
             );
         });
     }
@@ -98,6 +99,7 @@ class RoutesLoader {
          * Mods
          */
         $site->get('/file/{fileId}', "mod.controller:fileinfo");
+        $site->get('/mod/find', "mod.controller:find");
         $site->get('/mod/{modId}', "mod.controller:modinfo");
         
         $site->get('/mod/{modId}/crashes', "mod.controller:crashes");
@@ -110,6 +112,7 @@ class RoutesLoader {
          * Crashes
          */
         $site->get('/crashes', "crashes.controller:search");
+        $site->post('/crashes', "crashes.controller:search");
         
         /**
          * Packages
