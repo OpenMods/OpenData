@@ -22,6 +22,42 @@ class CrashesController {
         $this->serviceForms = $forms;
     }
     
+    public function view(Request $request, $stackhash) {
+        
+        $crash = $this->serviceCrashes->findByStackhash($stackhash);
+        if ($crash == null) {
+            throw new \Exception();
+        }
+        
+        $response = array(
+            'crash' => $crash
+        );
+        
+        
+        if (count($crash['involvedMods']) > 0) {
+            $response['involvedMods'] = $this->serviceMods->findByIds($crash['involvedMods']);
+            $response['involvedMods_count'] = $response['involvedMods']->count();
+        }
+        
+        if (count($crash['allMods']) > 0) {
+            $response['allMods'] = $this->serviceMods->findByIds($crash['allMods']);
+            $response['allMods_count'] = $response['allMods']->count();
+        }
+        
+        if (count($crash['involvedSignatures']) > 0) {
+            $response['involvedSignatures'] = $this->serviceFiles->findIn($crash['involvedSignatures']);
+            $response['involvedSignatures_count'] = $response['involvedSignatures']->count();
+        }
+        
+        if (count($crash['allSignatures']) > 0) {
+            $response['allSignatures'] = $this->serviceFiles->findIn($crash['allSignatures']);
+            $response['allSignatures_count'] = $response['allSignatures']->count();
+        }
+        
+        return $this->twig->render('crash.twig', $response);
+        
+    }
+    
     public function search(Request $request) {
         
         $data = array();
@@ -35,15 +71,63 @@ class CrashesController {
 
         $form->handleRequest($request);
 
+        $query = array();
+        $invalid = false;
         if ($form->isValid()) {
+            
             $data = $form->getData();
-
+            $query = array();
+            if (!empty($data['package'])) {
+                $query['stack.class'] = new \MongoRegex('/^'.preg_quote($data['package']).'/i');
+            }
+            if (!empty($data['mod'])) {
+                $mods = $this->serviceMods->findByRegex('^'.$data['mod'].'$');
+                if ($mods->count() > 0) {
+                    $mod = $mods->getNext();
+                    $modId = $mod['_id'];
+                    $query['involvedMods'] = $modId;
+                } else {
+                    $invalid = true;
+                }
+            }
+            if (!empty($data['signature'])) {
+                $query['involvedSignatures'] = $data['signature'];
+            }
         }
+        
+        $results = $this->serviceCrashes->findLatest($query);
 
-        return $this->twig->render('crashes.twig', array(
-            'crashes' => $this->serviceCrashes->findLatestUnique(),
-            'form'  => $form->createView()
+        return $this->twig->render('crashes.twig', array_merge(
+                $this->getPagination($results),
+                array(
+                    'form'  => $form->createView()
+                )
         ));
     }
     
+    
+    private function getPagination($iterator, $page = 1, $perPage = 20) {
+        
+        if ($iterator == null) {
+            return array('crashes' => array());
+        }
+        
+        $skip = ($page - 1) * $perPage;
+        $total = $iterator->count();
+        
+        $pageCount = ((int) $total / $perPage) + 1;
+        
+        if ($page > $pageCount || $page < 1) {
+            throw new \Exception('nope');
+        }
+        
+        return array(
+            'crashes' => $iterator->skip($skip)->limit($perPage),
+            'page_count' => $pageCount,
+            'current_page' => $page,
+            'total' => $total,
+            'disablePrev' => $page <= 1,
+            'disableNext' => $page + 1 >= $pageCount
+        );
+    }
 }

@@ -44,3 +44,9 @@
     width: 100%;
     height: 316px;    
 }
+.highlight_class {
+    color: #000277;
+}
+.highlight_method {
+    color: #CE1600;
+}

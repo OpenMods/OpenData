@@ -6,13 +6,29 @@ use OpenData\Services\ModsService;
 
 class FilesService extends BaseService {
 
-    public function findIn($signatures = array()) {
-        return $this->db->files->find(
-                        array('_id' => array('$in' => $signatures))
-        );
+    public function findIn($signatures = array(), $onlyLinkData = false) {
+        if (count($signatures) == 0) {
+            return array();
+        }
+        if ($onlyLinkData) {
+            return $this->db->files->find(
+               array('_id' => array('$in' => $signatures)),
+               array(
+                    '_id' => 1,
+                    'filenames' => 1,
+                    'mods.modId' => 1,
+                    'mods.name' => 1
+                )
+            );
+        } else {
+            return $this->db->files->find(
+               array('_id' => array('$in' => $signatures))
+            );
+        }
     }
 
     public function create($signature) {
+        
         try {
             $this->db->files->insert(array(
                 '_id' => $signature['signature'],
@@ -21,6 +37,14 @@ class FilesService extends BaseService {
         } catch (\MongoCursorException $e) {
             return false;
         }
+        
+        try {
+            $redis = new \Predis\Client();
+            $redis->publish('file', 'New file detected: '.$signature['filename']);
+        }catch (\Exception $e) {
+        
+        }
+        
         return true;
     }
 
@@ -86,13 +110,6 @@ class FilesService extends BaseService {
 
         if ($currentEntry == null) {
             return false;
-        }
-        
-        try {
-            $redis = new \Predis\Client();
-            $redis->publish('file', 'New file: '.$currentEntry['filenames'][0]);
-        }catch (\Exception $e) {
-        
         }
 
         unset($file['signature']);

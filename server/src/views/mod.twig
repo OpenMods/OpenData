@@ -44,7 +44,6 @@
         <ul class="nav nav-tabs">
           <li class="active"><a href="#files" data-toggle="tab">Files</a></li>
           <li><a href="#analytics" data-toggle="tab">Analytics</a></li>
-          <li><a href="#crashes" data-toggle="tab">Crashes</a></li>
         </ul>
 
         <!-- Tab panes -->
@@ -102,30 +101,6 @@
                     {{ render(relative('mod/'~modInfo._id~'/analytics')) }}
                 </div>
             </div>
-            <div class="tab-pane" id="crashes" style="padding-top:20px;">
-                <div class="well">
-                    <form class="form-horizontal" role="form">
-                        <div class="form-group" style="margin-bottom:0">
-                            <label for="inputEmail3" class="col-sm-1 control-label">File</label>
-                            <div class="col-sm-11">
-                                <select class="form-control" id="select_crashes_file">
-                                    <option value="{{ relative('mod/' ~ modInfo._id ~ '/crashes') }}">All files</option>
-                                    {% for version, files in versions %}
-                                        <option value="{{ relative('mod/' ~ modInfo._id ~ '/crashes/' ~ version) }}">{{ version }}</option>
-                                        {% for file in files %}
-                                            <option value="{{ relative('mod/' ~ modInfo._id ~ '/crashes/' ~ file._id) }}">&nbsp;&nbsp;&nbsp;- {{ file.filenames|first|lower }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
-                                        {% endfor %}
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                
-                <div id="crashes_content">
-                    {{ render(relative('mod/'~modInfo._id~'/crashes')) }}
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -158,9 +133,6 @@
             $( "#analytics_content" ).load($(this).val(), function() {
                 plotHourly();
             });
-        });
-        $('#select_crashes_file').change(function() {
-            $( "#crashes_content" ).load($(this).val())
         });
         $('a[href="#analytics"]').on('shown.bs.tab', function (e) {
            plotHourly(); 

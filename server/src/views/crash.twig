@@ -1,0 +1,93 @@
+{% extends 'base.twig' %}
+
+{% block main %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1>{{ crash.exception }}: {{ crash.message }}</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        {% if page_count and page_count > 2 %}
+        <ul class="pagination">
+            <li{% if disablePrev %} class="disabled"{%endif %}><a href="{% if disablePrev %}#{% else %}?page={{ current_page - 1 }}{% endif %}">&laquo;</a></li>
+            {% for page in range(1, page_count) %}
+                <li{% if current_page == page %} class="active"{%endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+            {% endfor %}
+            <li{% if disableNext %} class="disabled"{%endif %}><a href="{% if disableNext %}#{% else %}?page={{ current_page + 1 }}{% endif %}">&raquo;</a></li>
+        </ul>
+        {% endif %}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <pre><strong>{{ crash.exception }}: {{ crash.message }}</strong>
+
+        {% for trace in crash.stack %}
+    at <span class="highlight_class">{{ trace.class }}</span>.<span class="highlight_method">{{ trace.method }}</span><span class="highlight_file">({{ trace.file }}:</span><span class="highlight_line">{{ trace.line }})</span>
+        {% endfor %}
+        </pre>
+    </div>
+</div>
+
+<div class="row" style="padding-top: 20px;">
+    <div class="col-md-12">
+        <h4>Likely involved mods</h4>
+    </div>
+    {% set chunks = involvedMods|batch(involvedMods_count/2) %}
+    {% for chunk in chunks %}
+        <div class="col-md-5">
+            <ul>
+            {% for mod in chunk %}
+                <li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+<div class="row" style="padding-top: 40px;">
+    <div class="col-md-12">
+        <h4>Likely involved files</h4>
+    </div>
+    {% set chunks = involvedSignatures|batch(involvedSignatures_count/2) %}
+    {% for chunk in chunks %}
+        <div class="col-md-5">
+            <ul>
+            {% for file in chunk %}
+                <li>{{ file.filenames|first }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+<div class="row" style="padding-top: 40px;">
+    <div class="col-md-12">
+        <h4>Mods that have been installed during every crash</h4>
+    </div>
+    {% set chunks = allMods|batch(allMods_count/3) %}
+    {% for chunk in chunks %}
+        <div class="col-md-4">
+            <ul>
+            {% for mod in chunk %}<li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a></li>{% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="row" style="padding-top: 40px;">
+    <div class="col-md-12">
+        <h4>Files that have been installed during every crash</h4>
+    </div>
+    {% set chunks = allSignatures|batch(allSignatures_count/3) %}
+    {% for chunk in chunks %}
+        <div class="col-md-4">
+            <ul>
+            {% for file in chunk %}<li>{{ file.filenames|first }}</li>{% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

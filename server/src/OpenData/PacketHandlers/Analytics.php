@@ -45,6 +45,7 @@ class Analytics implements IPacketHandler {
             $signatureMap[$signature['signature']] = $signature['filename'];
         }
         
+        
         // find all the mods we already have in the database
         $filesData = $this->serviceFiles->findIn(array_keys($signatureMap));
 

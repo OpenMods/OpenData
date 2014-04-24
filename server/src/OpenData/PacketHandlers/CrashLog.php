@@ -25,17 +25,7 @@ class CrashLog implements IPacketHandler {
     }
     
     public function execute($packet) {
-        
-        $signatures = array();
-        $modIds = array();
-        foreach ($packet['states'] as $state) {
-            $signatures[] = $state['signature'];
-            foreach ($state['mods'] as $mod) {
-                $modIds[] = ModsService::sanitizeModId($mod['modId']);
-            }
-        }
-        
-        $this->serviceCrashes->add($packet, $signatures, $modIds);
+        $this->serviceCrashes->add($packet);
     }
 
 }

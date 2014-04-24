@@ -106,7 +106,6 @@ var actions = {
     }
 };
 
-
 MongoClient.connect(connectionString, function(err, db) {
 
     var bot = new irc.Client('irc.esper.net', myNick, {
@@ -115,13 +114,46 @@ MongoClient.connect(connectionString, function(err, db) {
     });
     
     redisClient.on('message', function (channel, message) {
-	if (channel == 'file') {
-		console.log(channel);
-		bot.say('#OpenEye', message);
-	}
+        if (channel == 'crash') {
+            var packet = JSON.parse(message);
+            var modIds = packet['modIds'];
+            var content = packet['content'];
+            
+            if (modIds.length > 0) {
+                db.collection('mods').find({
+                    _id: {'$in': modIds}
+                }).toArray(function(err, results) {
+                    results.forEach(function(mod) {
+                       if (mod['irc'] != null) {
+                            var irc = mod['irc'];
+                            if (irc['host'] == 'irc.esper.net' && irc['report'] != null && irc['report'] == true) {
+                                bot.join(irc['channel'], function() {
+                                    bot.say(irc['channel'], content);
+                                    setTimeout(function() {
+                                        bot.part(irc['channel'], 'Bye!', function() {})
+                                    }, 2000);
+                                });
+                            }
+                       } 
+                    });
+                });
+            }
+            
+            bot.say('#OpenEye', content);
+            
+        } else {
+            bot.say('#OpenEye', message);
+        }
+    });
+    
+    redisClient.on('subscribe', function(channel, count) {
+       console.log('subscribed to ' + channel); 
     });
 
+
+
     redisClient.subscribe('file');
+    redisClient.subscribe('crash');
 
 
     bot.addListener('message', function(from, to, message) {

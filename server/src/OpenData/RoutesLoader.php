@@ -68,8 +68,8 @@ class RoutesLoader {
         $this->app['crashes.controller'] = $this->app->share(function () use ($loader) {
             return new Controllers\CrashesController(
                 $loader->app['twig'],
-                $loader->app['files.service'],
                 $loader->app['mods.service'],
+                $loader->app['files.service'],
                 $loader->app['crashes.service'],
                 $loader->app['form.factory']
             );
@@ -113,6 +113,7 @@ class RoutesLoader {
          */
         $site->get('/crashes', "crashes.controller:search");
         $site->post('/crashes', "crashes.controller:search");
+        $site->get('/crashes/{stackhash}', "crashes.controller:view");
         
         /**
          * Packages

@@ -17,7 +17,7 @@
             "required": true
         },
         "timestamp": {
-            "type": "integer",
+            "type": "number",
             "required": true
         },
         "stack": {
