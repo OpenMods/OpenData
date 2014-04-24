@@ -95,7 +95,10 @@ class CrashesController {
             }
         }
         
-        $results = $this->serviceCrashes->findLatest($query);
+        $results = array();
+        if (!$invalid) {
+            $results = $this->serviceCrashes->findLatest($query);
+        }
 
         return $this->twig->render('crashes.twig', array_merge(
                 $this->getPagination($results),
