@@ -1,6 +1,10 @@
 group = rootProject.mod_group
-version = "${rootProject.minecraft_version}-${rootProject.mod_version}"
+version = "${rootProject.mod_version}"
 archivesBaseName = rootProject.jar_name
+
+if (env.BUILD_NUMBER != null) {
+    version += "-snapshot-" + env.BUILD_NUMBER
+}
 
 minecraft {
     version = rootProject.minecraft_version + "-" + rootProject.forge_version
