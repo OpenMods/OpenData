@@ -15,7 +15,7 @@ class HomeController {
     
     public function home() {
         return $this->twig->render('home.twig', array(
-            'mods' => $this->serviceMods->findOrderedByPastHourLaunches(),
+            'mods' => $this->serviceMods->findOrderedByPastDayLaunches(),
             'title' => 'Most popular this week',
             'tags' => $this->serviceMods->getDistinctTags()
         ));
@@ -70,7 +70,7 @@ class HomeController {
         $skip = ($page - 1) * $perPage;
         $total = $iterator->count();
         
-        $pageCount = ((int) $total / $perPage) + 1;
+        $pageCount = max(1, ((int) ($total - 1) / $perPage) + 1);
         
         if ($page > $pageCount || $page < 1) {
             throw new \Exception('nope');
