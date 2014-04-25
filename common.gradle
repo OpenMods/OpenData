@@ -2,8 +2,9 @@ group = rootProject.mod_group
 version = "${rootProject.mod_version}"
 archivesBaseName = rootProject.jar_name
 
+env = System.getenv()
 if (env.BUILD_NUMBER != null) {
-    version += "-snapshot-" + env.BUILD_NUMBER
+    version += "-" + env.BUILD_NUMBER
 }
 
 minecraft {
