@@ -45,6 +45,7 @@ var MongoClient = require('mongodb').MongoClient
 var irc = require('irc');
 var mods = require('./mods.js');
 var files = require('./files.js');
+var crashes = require('./crashes.js');
 var redis = require("redis"), redisClient = redis.createClient();
 var Levenshtein = require('levenshtein');
 
@@ -92,6 +93,14 @@ var actions = {
     },
     'file:notes:remove': {
         func: files.removeNote,
+        secure: true
+    },
+    'crash:note:set': {
+        func: crashes.setNote,
+        secure: true
+    },
+    'crash:note:remove': {
+        func: crashes.removeNote,
         secure: true
     },
     'commands': {
@@ -222,14 +231,16 @@ MongoClient.connect(connectionString, function(err, db) {
 
                             var isOp = info['channels'].indexOf('@#OpenEye') > -1 ||
                                     info['channels'].indexOf('@+#OpenEye') > -1;
-
-                            console.log(info);
+                            
+                            var isVoiced = info['channels'].indexOf('+#OpenEye') > -1 ||
+                                    info['channels'].indexOf('@+#OpenEye') > -1;
 
                             action['func']({
                                 bot: bot,
                                 db: db,
                                 username: username,
                                 isOp: isOp,
+                                isVoiced: isVoiced,
                                 from: from,
                                 channel: to,
                                 args: args
@@ -243,6 +254,7 @@ MongoClient.connect(connectionString, function(err, db) {
                             db: db,
                             username: null,
                             isOp: false,
+                            isVoiced: false,
                             from: from,
                             channel: to,
                             args: args

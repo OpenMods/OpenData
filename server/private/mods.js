@@ -18,7 +18,7 @@ Array.prototype.remove = function() {
 var validFields = [
     'name', 'description', 'url', 'parent',
     'donation', 'authors', 'releasesPage', 'credits',
-    'tags', 'repository', 'irc', 'credits', 'admins'
+    'tags', 'repository', 'irc', 'credits', 'admins', 'versionGroup'
 ];
 
 function findModsBy(context, query) {
