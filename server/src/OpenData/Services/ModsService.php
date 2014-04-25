@@ -76,14 +76,13 @@ class ModsService extends BaseService {
         ))->sort(array('name' => 1));
     }
 
-    public function findOrderedByPastHourLaunches($limit = 50, $filterLibraries = true) {
-    	return $this->findAll();
-    /*
-        $currentHour = strtotime(date("Y-m-d H:00:00"));
-        $searchDate = new \MongoDate($currentHour);
+    public function findOrderedByPastDayLaunches($limit = 50, $filterLibraries = true) {
+
+        $yesterday = strtotime(date("Y-m-d 00:00:00", time() - 86400));
+        $searchDate = new \MongoDate($yesterday);
         return $this->db->mods->find(
             array(
-                //'hours.time' => $searchDate,
+                'days.time' => $searchDate,
                 'tags' => array('$ne' => 'library'),
                 'hide' => array('$ne' => true),
                 'image' => array('$exists' => 1)
@@ -94,9 +93,9 @@ class ModsService extends BaseService {
                 'description' => 1,
                 'tags' => 1,
                 'image' => 1,
-                'hours' => array('$elemMatch' => array('time' => $searchDate))
+                'days' => array('$elemMatch' => array('time' => $searchDate))
             )
-        )->sort(array('hours.launches' => -1))->limit($limit);*/
+        )->sort(array('days.launches' => -1))->limit($limit);
     }
     
     
