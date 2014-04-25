@@ -8,7 +8,7 @@
     <div class="col-md-12">
         <div class="page-header" id="modheader">
             <div class="inner">
-            <h1><span class="wrapped"><img style="width: 32px;height:32px;margin-top:-8px;" src="{% if modInfo.image %}{{ relative(modInfo.image) }}{% else %}{{ relative('modimages/stone.png') }}{% endif %}" alt=""> {{ modInfo.name }}
+            <h1><span class="wrapped"><img style="width: 32px;height:32px;margin-top:-8px;" src="{% if modInfo.image %}{{ relative(modInfo.image) }}{% else %}{{ relative('modimages/grass.png') }}{% endif %}" alt=""> {{ modInfo.name }}
             {% if modInfo.authors|length > 0 %}
                 <small>by {{ modInfo.authors|join(', ') }}</small>
             {% endif %}</span></h1>
