@@ -4,7 +4,7 @@ archivesBaseName = rootProject.jar_name
 
 env = System.getenv()
 if (env.BUILD_NUMBER != null) {
-    version += "-" + env.BUILD_NUMBER
+    version += "-snapshot-" + env.BUILD_NUMBER
 }
 
 minecraft {
