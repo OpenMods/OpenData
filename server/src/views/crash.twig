@@ -57,7 +57,7 @@
         <div class="col-md-5">
             <ul>
             {% for file in chunk %}
-                <li>{{ file.filenames|first }}</li>
+                <li><a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal">{{ file.filenames|first }}</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -85,9 +85,29 @@
     {% for chunk in chunks %}
         <div class="col-md-4">
             <ul>
-            {% for file in chunk %}<li>{{ file.filenames|first }}</li>{% endfor %}
+            {% for file in chunk %}<li><a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal">{{ file.filenames|first }}</a></li>{% endfor %}
             </ul>
         </div>
     {% endfor %}
 </div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content"> 
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+<script>
+$(function() {
+    $("a[data-target=#myModal]").click(function(ev) {
+        ev.preventDefault();
+        var target = $(this).attr("href");
+        $("#myModal .modal-content").load(target, function() { 
+             $("#myModal").modal("show"); 
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -26,7 +26,7 @@
                         
                         <div class="media">
                           <a class="pull-left" href="{{ relative('mod/' ~ mod._id) }}">
-                            <img src="{% if mod.image %}{{ relative(mod.image) }}{% else %}http://placehold.it/64x64{% endif %}" alt="">
+                            <img src="{% if mod.image %}{{ relative(mod.image) }}{% else %}{{ relative('modimages/stone.png') }}{% endif %}" alt="">
                           </a>
                           <div class="media-body">
                             <h4 class="media-heading"><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>{% if mod.authors|length > 0 %} <small>by {{ mod.authors|join(', ') }}</small>{% endif %}</h4>

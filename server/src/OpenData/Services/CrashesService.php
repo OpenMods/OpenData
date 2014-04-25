@@ -79,10 +79,10 @@ class CrashesService extends BaseService {
                 'stack' => $stackWithoutSignatures,
                 'exception' => $packet['exception'],
                 'message' => $packet['message'],
-                'involvedSignatures' => $involvedSignatures,
-                'involvedMods' => $involvedModIds,
-                'allSignatures' => $allSignatures,
-                'allMods' => $allModIds,
+                'involvedSignatures' => array_values($involvedSignatures),
+                'involvedMods' => array_values($involvedModIds),
+                'allSignatures' => array_values($allSignatures),
+                'allMods' => array_values($allModIds),
                 'count' => 1
             ));
             
