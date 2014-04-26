@@ -1,7 +1,10 @@
 package openeye.responses;
 
+import java.io.File;
+
 import net.minecraft.nbt.NBTTagCompound;
 import openeye.logic.IContext;
+import openeye.notes.NoteCollector;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -36,5 +39,8 @@ public class ResponseModMsg implements IResponse {
 			msg.setString("description", description);
 			FMLInterModComms.sendMessage(modId, "EyeNotification", msg);
 		}
+
+		File file = context.getFileForSignature(signature);
+		NoteCollector.INSTANCE.addNote(file, this);
 	}
 }

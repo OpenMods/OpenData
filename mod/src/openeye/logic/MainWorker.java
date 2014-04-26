@@ -24,6 +24,10 @@ import cpw.mods.fml.common.discovery.ASMDataTable;
 
 public final class MainWorker {
 
+	public static String getOpenEyeUrl(String resource) {
+		return "http://openeye.openmods.info/" + resource;
+	}
+
 	private final class Context implements IContext {
 		private final ReportsList result = new ReportsList();
 		private final Set<String> addedFileInfos = Sets.newHashSet();
@@ -32,6 +36,11 @@ public final class MainWorker {
 		@Override
 		public Set<String> getModsForSignature(String signature) {
 			return collector.getModsForSignature(signature);
+		}
+
+		@Override
+		public File getFileForSignature(String signature) {
+			return collector.getContainerForSignature(signature);
 		}
 
 		@Override
@@ -65,7 +74,7 @@ public final class MainWorker {
 		}
 	}
 
-	private final String url = "http://openeye.openmods.info/api/v1/data";
+	private final String url = getOpenEyeUrl("api/v1/data");
 
 	private ModMetaCollector collector;
 
@@ -164,8 +173,6 @@ public final class MainWorker {
 				ResponseList response = sender.sendAndReceive(currentReports);
 				filterStructs(response, Config.responseBlacklist);
 
-				if (response == null || response.isEmpty()) break;
-
 				try {
 					storeRequest(response);
 				} catch (Exception e) {
@@ -250,7 +257,8 @@ public final class MainWorker {
 		senderThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
-				Log.warn(e, "Uncaught exception in data collector thread, report will not be send");
+				Log.severe(e, "Uncaught exception in data collector thread, report will not be send");
+				canContinueLoading.countDown(); // oh well, better luck next time
 			}
 		});
 
