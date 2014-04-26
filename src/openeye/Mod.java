@@ -78,12 +78,11 @@ public class Mod extends DummyModContainer {
 
 	@Subscribe
 	public void onInit(FMLPostInitializationEvent evt) {
-		if (Config.crashOnStartup) controller.errorOccurred(this, new RuntimeException("derp"));
+		if (Config.crashOnStartup) controller.errorOccurred(this, new RuntimeException("Goodbye, cruel world!"));
 	}
 
 	@Override
 	public File getSource() {
-		// -Dfml.coreMods.load=openeye.CorePlugin
 		File injectedSource = InjectedDataStore.instance.getSelfLocation();
 		URL cpSource = getClass().getProtectionDomain().getCodeSource().getLocation();
 		try {

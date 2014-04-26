@@ -46,18 +46,27 @@ public class ReportCrash implements IReport {
 		public List<ModState> mods;
 	}
 
+	public static class ExceptionInfo {
+
+		@SerializedName("stack")
+		public List<StackTrace> stackTrace;
+
+		@SerializedName("exception")
+		public String exceptionCls;
+
+		@SerializedName("message")
+		public String message;
+
+		@SerializedName("cause")
+		public ExceptionInfo cause;
+	}
+
 	@SerializedName("states")
 	public List<FileState> states;
 
-	@SerializedName("stack")
-	public List<StackTrace> stackTrace;
-
-	@SerializedName("exception")
-	public String exceptionCls;
-
-	@SerializedName("message")
-	public String message;
-
 	@SerializedName("timestamp")
 	public long timestamp;
+
+	@SerializedName("exception")
+	public ExceptionInfo exception;
 }
