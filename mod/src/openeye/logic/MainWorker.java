@@ -173,6 +173,8 @@ public final class MainWorker {
 				ResponseList response = sender.sendAndReceive(currentReports);
 				filterStructs(response, Config.responseBlacklist);
 
+				if (response == null || response.isEmpty()) break;
+
 				try {
 					storeRequest(response);
 				} catch (Exception e) {
