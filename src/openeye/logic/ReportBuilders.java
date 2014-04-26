@@ -157,7 +157,7 @@ public class ReportBuilders {
 
 		byte[] buffer = new byte[1024];
 
-		while (dis.read(buffer) != -1);
+		while (dis.read(buffer) != -1) {}
 
 		dis.close();
 
