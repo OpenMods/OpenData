@@ -19,9 +19,9 @@ public class GuiNotesList extends GuiScrollingList {
 	private final GuiNotes owner;
 	private final Minecraft mc;
 
-	public GuiNotesList(GuiNotes owner, int width, int height, int top, int bottom, List<NoteEntry> notes) {
-		super(owner.mc, width, height, top, bottom, 0, ENTRY_HEIGHT);
-		this.mc = owner.mc;
+	public GuiNotesList(GuiNotes owner, Minecraft mc, int width, int height, int top, int bottom, List<NoteEntry> notes) {
+		super(mc, width, height, top, bottom, 0, ENTRY_HEIGHT);
+		this.mc = mc;
 		this.owner = owner;
 		this.notes = notes;
 	}
@@ -53,10 +53,10 @@ public class GuiNotesList extends GuiScrollingList {
 		mc.renderEngine.bindTexture(GuiButtonNotes.TEXTURE);
 		owner.drawTexturedModalRect(left, top, entry.type.textureX + 2, 60 + 2, 16, 16);
 
-		owner.drawString(owner.fontRenderer, entry.title(), left + 20, top + 4, 0xFFFFFF);
+		owner.drawString(mc.fontRenderer, entry.title(), left + 20, top + 4, 0xFFFFFF);
 		String description = entry.description();
 
 		int width = right - left;
-		if (!Strings.isNullOrEmpty(description)) owner.fontRenderer.drawSplitString(entry.description(), left, top + 20, left + width, 0xCCCCCC);
+		if (!Strings.isNullOrEmpty(description)) mc.fontRenderer.drawSplitString(entry.description(), left, top + 20, left + width, 0xCCCCCC);
 	}
 }
