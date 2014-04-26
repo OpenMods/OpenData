@@ -45,7 +45,7 @@ public class GuiNotes extends GuiScreen {
 		gotoButton = new GuiButton(BUTTON_GOTO_ID, width / 2 - 150, height - 30, 150, 20, I18n.getString("openeye.notes.goto_page"));
 		gotoButton.enabled = false;
 		buttonList.add(gotoButton);
-		noteList = new GuiNotesList(this, width, height, 10, height - 40, notes);
+		noteList = new GuiNotesList(this, mc, width, height, 10, height - 40, notes);
 	}
 
 	@Override
