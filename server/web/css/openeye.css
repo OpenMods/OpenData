@@ -1,6 +1,15 @@
 #sidenav.affix {
     top: 50px;
 }
+
+@media (max-width: 992px) {
+  #sidenav {
+    position: static !important;
+    width: auto !important;
+    top: 0 !important;
+  }
+}
+
 .nav-home  {
     overflow: hidden;
     zoom: 1;

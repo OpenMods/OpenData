@@ -1,0 +1,13 @@
+
+<strong>{{ crash.exception }}: {{ crash.message }}</strong>
+
+{% for trace in crash.stack %}
+    at <span class="highlight_class">{{ trace.class }}</span>.<span class="highlight_method">{{ trace.method }}</span><span class="highlight_file">({{ trace.file }}:</span><span class="highlight_line">{{ trace.line }})</span>
+{% endfor %}
+{% if crash.cause %}
+
+
+
+Caused by..
+{% include 'stack.twig' with {crash: crash.cause} %}
+{% endif %}

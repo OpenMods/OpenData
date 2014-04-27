@@ -52,7 +52,7 @@ class RoutesLoader {
                 $loader->app['twig'],
                 $loader->app['files.service'],
                 $loader->app['mods.service'],
-                $loader->app['crashes.service']
+                $loader->app['analytics.service']
             );
         });
 

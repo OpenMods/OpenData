@@ -14,137 +14,119 @@ $mongo = $app['mongo'];
 $conn = $mongo['default'];
 $db = $conn->hopper;
 
-/*************************************************
+/* * ***********************************************
  * Hourly stats
- ************************************************/
+ * ********************************************** */
 
 $currentHour = strtotime(date("Y-m-d H:00:00"));
 $previousHour = $currentHour - 3600;
 
-$results = $db->analytics->aggregate(array(
-    array('$match' => array('created_at' => array('$gte' => $previousHour, '$lt' => $currentHour))),
-    array('$unwind' => '$signatures'),
-    array('$group' => array('_id' => '$signatures.signature', 'launches' => array('$sum' => 1)))
-));
+$reportTypes = array();
 
+$fileStatMap = array();
 
-$fileLaunches = array();
-$modLaunches = array();
-
-foreach ($results['result'] as $result) {
-    $fileLaunches[$result['_id']] = $result['launches'];
-}
-
-$files = $db->files->find(
-    array('_id' => array('$in' => array_keys($fileLaunches))),
-    array('hours' => 1, 'mods.modId' => 1)
-);
-
-foreach ($files as $file) {
-
-    $fileId = $file['_id'];
-
-    $launchesOfThisFile = $fileLaunches[$fileId];
-
-    $hours = isset($file['hours']) ? $file['hours'] : array();
-
-    if (count($hours) >= 48) {
-        array_shift($hours);
-    }
-
-    $hours[] = array(
-        'time' => new MongoDate($currentHour),
-        'launches' => $launchesOfThisFile
+foreach ($db->reports->find() as $report) {
+    $reportTypes[] = $report['type'];
+    $docs = array();
+    $aggregate = $report['aggregate'];
+    array_unshift(
+        $aggregate, array('$match' => array('created_at' => array('$gte' => $previousHour, '$lt' => $currentHour)))
     );
+    $results = $db->analytics->aggregate($aggregate);
 
-    $db->files->update(
-        array('_id' => $fileId),
-        array('$set' => array(
-            'hours' => $hours
-        ))
-    );
-
-    foreach ($file['mods'] as $mod) {
-        $modId = $mod['modId'];
-        if (!isset($modLaunches[$modId])) {
-            $modLaunches[$modId] = 0;
+    foreach ($results['result'] as $result) {
+        if ($report['type'] == 'signatures') {
+            $fileStatMap[$result['_id']] = $result['launches'];
         }
-        $modLaunches[$modId] += $launchesOfThisFile;
+        $docs[] = array(
+            '_id' => array(
+                'key' => $result['_id'],
+                'type' => $report['type'],
+                'span' => 'hourly',
+                'time' => new \MongoDate($previousHour)
+            ),
+            'launches' => $result['launches']
+        );
+    }
+    
+    if (count($docs) > 0) {
+        $db->analytics_aggregated->batchInsert($docs);
     }
 }
 
-$modDocuments = $db->mods->find(
-    array('_id' => array('$in' => array_keys($modLaunches))),
-    array('hours' => 1)
-);
-
-foreach ($modDocuments as $mod) {
-    $modId = $mod['_id'];
-
-    $hours = isset($mod['hours']) ? $mod['hours'] : array();
-
-    if (count($hours) == 48) {
-        array_shift($hours);
+/***********************************************
+ * Update mod stats for homepage listing
+ **********************************************/
+$mods = array();
+$files = $db->files->find(array(
+    '_id' => array('$in' => array_keys($fileStatMap))
+));
+foreach ($files as $file) {
+    if (isset($fileStatMap[$file['_id']])) {
+        foreach ($file['mods'] as $mod) {
+            if (!isset($mods[$mod['modId']])) {
+                $mods[$mod['modId']] = 0;
+            }
+            $mods[$mod['modId']] += $fileStatMap[$file['_id']];
+        }
     }
-
-    if (isset($modLaunches[$modId])) {
-        $hours[] = array(
-            'time' => new MongoDate($currentHour),
-            'launches' => $modLaunches[$modId]
-        );
-
-        $db->mods->update(
-            array('_id' => $modId),
+}
+foreach ($mods as $mod => $launches) {
+    $db->mods->update(
+            array('_id' => $mod),
             array('$set' => array(
-                'hours' => $hours
-            ))
-        );
-    }
+                'launches' => $launches
+            )
+        )
+    );
 }
 
-/*************************************************
+/**************************************************
  * Daily stats
- ************************************************/
+ **************************************************/
 
-if ((int)date('G', $currentHour) == 0) {
+
+if ((int) date('G', $currentHour) == 0) {
 
     $today = strtotime(date("Y-m-d 00:00:00"));
     $yesterday = $today - 86400;
+    $oYesterday = new \MongoDate($yesterday);
 
-    foreach (array('files', 'mods') as $collection) {
-
-	foreach($db->$collection->find() as $document) {
-	    $launches = 0;
-	    if (isset($document['hours'])) {
-		foreach($document['hours'] as $hour) {
-		    if ($hour['time']->sec >= $yesterday) {
-			$launches += $hour['launches'];
-		    }
-		}
-	    }
-	    $days = array();
-	    if (isset($document['days'])) {
-		$days = $document['days'];
-	    }
-
-	    $days[] = array(
-		'time' => new \MongoDate($yesterday),
-		'launches' => $launches
-	    );
-
-	    $db->$collection->update(
-		    array('_id' => $document['_id']),
-		    array('$set' => array(
-			'days' => $days
-		    ))
-	    );
-	}
+    foreach ($reportTypes as $type) {
+        $docs = array();
+        $results = $db->analytics_aggregated->aggregate(
+            array(
+                array(
+                    '$where' => array(
+                        '_id.time' => array('$gte' => $oYesterday),
+                        '_id.type' => $type,
+                        '_id.span' => 'hourly'
+                    )
+                ),
+                array('$group' => array('_id' => '$_id.key', 'launches' => array($sum => '$launches')))
+            )
+        );
+        foreach ($results['result'] as $result) {
+            
+            $docs[] = array(
+                '_id' => array(
+                    'key' => $result['_id'],
+                    'type' => $type,
+                    'span' => 'daily',
+                    'time' => $oYesterday
+                ),
+                'launches' => $result['launches']
+            );
+        }
+        if (count($docs) > 0) {
+            $db->analytics_aggregated->batchInsert($docs);
+        }
     }
+    
 }
 
 function rutime($ru, $rus, $index) {
-    return ($ru["ru_$index.tv_sec"]*1000 + intval($ru["ru_$index.tv_usec"]/1000))
-     -  ($rus["ru_$index.tv_sec"]*1000 + intval($rus["ru_$index.tv_usec"]/1000));
+    return ($ru["ru_$index.tv_sec"] * 1000 + intval($ru["ru_$index.tv_usec"] / 1000)) - ($rus["ru_$index.tv_sec"] * 1000 + intval($rus["ru_$index.tv_usec"] / 1000));
 }
 
 $ru = getrusage();
@@ -152,7 +134,7 @@ $time_end = microtime(true);
 $timeTaken = $time_end - $time_start;
 
 $date = date("Y-m-d H:i:s");
-echo "[".$date."] Computations: " . rutime($ru, $rustart, "utime")."\n";
-echo "[".$date."] System calls: " . rutime($ru, $rustart, "stime")."\n";
-echo "[".$date."] Memory: " . memory_get_peak_usage()."\n";
-echo "[".$date."] Clock time: " . $timeTaken."\n";
+echo "[" . $date . "] Computations: " . rutime($ru, $rustart, "utime") . "\n";
+echo "[" . $date . "] System calls: " . rutime($ru, $rustart, "stime") . "\n";
+echo "[" . $date . "] Memory: " . memory_get_peak_usage() . "\n";
+echo "[" . $date . "] Clock time: " . $timeTaken . "\n";

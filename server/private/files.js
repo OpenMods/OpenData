@@ -4,11 +4,7 @@ function addNote(context) {
 	var args = context.args;
 
 	if (args.length < 3 || args.length > 4) {
-		context.bot.say(
-			context.bot.channel,
-			'Expected 3 or 4 arguments: signature, level, description, payload (optional)'		
-		);
-		return;
+		return false;
 	}
 	
 	var signature = args[0];
@@ -102,18 +98,14 @@ function addNote(context) {
 			
 		}
 	);
-	
+	return true;
 	
 }
 
 function listNotes(context) {
 
 	if (context.args.length != 1) {
-		context.bot.say(
-			context.bot.channel,
-			'Please specify the file signature'		
-		);
-		return;
+		return false;
 	}
 		
 	var signature = context.args[0];
@@ -160,6 +152,7 @@ function listNotes(context) {
 			
 		}
 	);
+	return truel
 
 }
 
@@ -168,11 +161,7 @@ function removeNote(context) {
 	var args = context.args;
 
 	if (args.length != 2) {
-		context.bot.say(
-			context.bot.channel,
-			'Expected two arguments. Signature and index'		
-		);
-		return;
+		return false;
 	}
 	
 	var signature = args[0];
@@ -263,7 +252,7 @@ function removeNote(context) {
 			
 		}
 	);
-	
+	return true;
 }
 
 module.exports.addNote = addNote;

@@ -25,7 +25,12 @@ class CrashLog implements IPacketHandler {
     }
     
     public function execute($packet) {
-        $this->serviceCrashes->add($packet);
+        $crashDetails = $this->serviceCrashes->add($packet);
+        return array(array(
+            'type' => 'known_crash',
+            'url' => 'http://openeye.openmods.info/crashes/'.$crashDetails['stackhash'],
+            'note'   => $crashDetails['note'] == null ? null : $crashDetails['note']['message']
+        ));
     }
 
 }

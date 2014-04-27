@@ -51,7 +51,7 @@ class FilesService extends BaseService {
     public function findByModId($modId) {
         return $this->db->files->find(
             array('mods.modId' => strtolower($modId))
-        )->sort(array('days.launches' => -1));
+        );
     }
 
     public function findByPackage($package) {
@@ -148,22 +148,17 @@ class FilesService extends BaseService {
         return $this->db->files->findOne(array('_id' => $signature));
     }
 
-    public function findHoursByVersion($modId, $version) {
-        $result = $this->db->files->aggregate(
-            array('$match' => array(
+    public function findByVersion($modId, $version) {
+        return $this->db->files->find(
+            array(
                 'mods' => array(
                     '$elemMatch' => array(
                         'modId' => $modId,
                         'version' => new \MongoRegex('/^'.preg_quote($version).'/i')
                     )
                 )
-            )),
-            array('$project' => array('hours' => 1)),
-            array('$unwind' => '$hours'),
-            array('$group' => array('_id' => '$hours.time', 'time' => array('$first' => '$hours.time'), 'launches' => array('$sum' => '$hours.launches')))
+            )
         );
-
-        return $result['result'];
     }
 
     public function findDownloadsForSignatures($signatures) {

@@ -28,23 +28,12 @@ class Analytics implements IPacketHandler {
         $packet['created_at'] = time();
         
         $this->serviceAnalytics->add($packet);
-        
-        if (isset($packet['tags']) && is_array($packet['tags'])) {
-            $thisHour = strtotime(date("Y-m-d H:00:00"));
-            $date = new \MongoDate($thisHour);
-            foreach ($packet['tags'] as $tag) {
-                if (!empty($tag)) {
-                    $this->serviceTags->inc($tag, $date);
-                }
-            }
-        }
-        
+                
         $signatureMap = array();
         
         foreach ($packet['signatures'] as $signature) {
             $signatureMap[$signature['signature']] = $signature['filename'];
         }
-        
         
         // find all the mods we already have in the database
         $filesData = $this->serviceFiles->findIn(array_keys($signatureMap));

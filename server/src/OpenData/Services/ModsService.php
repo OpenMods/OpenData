@@ -30,7 +30,15 @@ class ModsService extends BaseService {
     }
     
     public function findAll() {
-        return $this->db->mods->find(array('hide' => array('$ne' => true)))->sort(array('name' => 1));
+        return $this->db->mods->find(
+                array('hide' => array('$ne' => true))
+        )->sort(array('name' => 1));
+    }
+    
+    public function findForHomepage() {
+        return $this->db->mods->find(
+                array('hide' => array('$ne' => true))
+        )->sort(array('launches' => -1))->limit(50);
     }
 
     public function findByIds($modIds = array()) {
@@ -75,29 +83,6 @@ class ModsService extends BaseService {
             'tags' => new \MongoRegex('/^'.$tag.'/i')
         ))->sort(array('name' => 1));
     }
-
-    public function findOrderedByPastDayLaunches($limit = 50, $filterLibraries = true) {
-
-        $yesterday = strtotime(date("Y-m-d 00:00:00", time() - 86400));
-        $searchDate = new \MongoDate($yesterday);
-        return $this->db->mods->find(
-            array(
-                'days.time' => $searchDate,
-                'tags' => array('$ne' => 'library'),
-                'hide' => array('$ne' => true),
-                'image' => array('$exists' => 1)
-            ),
-            array(
-                'name' => 1,
-                'authors' => 1,
-                'description' => 1,
-                'tags' => 1,
-                'image' => 1,
-                'days' => array('$elemMatch' => array('time' => $searchDate))
-            )
-        )->sort(array('days.launches' => -1))->limit($limit);
-    }
-    
     
     public static function sanitizeModId($modId) {
         return strtolower(preg_replace("@[^a-z0-9_ ]+@i", '', $modId));

@@ -1,51 +1,47 @@
 {
     "type": "object",
-    "additionalProperties": true,
     "$schema": "http://json-schema.org/draft-03/schema",
-    "required": true,
+    "required": false,
     "properties": {
-        "type": {
-            "type": "string",
-            "required": true
-        },
-        "onFailure": {
-            "type": "string",
-            "required": false
-        },
         "exception": {
-            "type": "string",
-            "required": true
-        },
-        "timestamp": {
-            "type": "number",
-            "required": true
-        },
-        "stack": {
-            "type": "array",
-            "required": true,
-            "items": {
-                "type": "object",
-                "required": false,
-                "additionalProperties": true,
-                "properties": {
-                    "class": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "method": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "line": {
-                        "type": "integer",
-                        "required": true
-                    },
-                    "signatures": {
-                        "type": "array",
-                        "required": true,
-                        "items": {
-                            "type": "string",
-                            "required": false
+            "type": "object",
+            "required": false,
+            "properties": {
+                "exception": {
+                    "type": "string",
+                    "required": false
+                },
+                "message": {
+                    "type": "string",
+                    "required": false
+                },
+                "stack": {
+                    "type": "array",
+                    "required": false,
+                    "items": {
+                        "type": "object",
+                        "required": false,
+                        "properties": {
+                            "class": {
+                                "type": "string",
+                                "required": false
+                            },
+                            "file": {
+                                "type": "string",
+                                "required": false
+                            },
+                            "line": {
+                                "type": "number",
+                                "required": false
+                            },
+                            "method": {
+                                "type": "string",
+                                "required": false
+                            },
+                            "signatures": {
+                                "type": "array",
+                                "required": false
+                            }
                         }
                     }
                 }
@@ -53,51 +49,29 @@
         },
         "states": {
             "type": "array",
-            "required": true,
-            "items": [
-                {
-                    "type": "object",
-                    "required": false,
-                    "properties": {
-                        "mods": {
-                            "type": "array",
-                            "required": false
-                        },
-                        "signature": {
-                            "type": "string",
-                            "required": false
-                        }
-                    }
-                },
-                {
-                    "type": "object",
-                    "required": false,
-                    "properties": {
-                        "mods": {
-                            "type": "array",
-                            "required": false,
-                            "items": {
-                                "type": "object",
-                                "required": false,
-                                "properties": {
-                                    "modId": {
-                                        "type": "string",
-                                        "required": false
-                                    },
-                                    "state": {
-                                        "type": "string",
-                                        "required": false
-                                    }
-                                }
-                            }
-                        },
-                        "signature": {
-                            "type": "string",
-                            "required": false
-                        }
+            "required": false,
+            "items": {
+                "type": "object",
+                "required": false,
+                "properties": {
+                    "mods": {
+                        "type": "array",
+                        "required": false
+                    },
+                    "signature": {
+                        "type": "string",
+                        "required": false
                     }
                 }
-            ]
+            }
+        },
+        "timestamp": {
+            "type": "number",
+            "required": false
+        },
+        "type": {
+            "type": "string",
+            "required": false
         }
     }
 }

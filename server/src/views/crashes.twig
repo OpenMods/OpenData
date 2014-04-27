@@ -61,9 +61,9 @@
             </thead>
             <tbody>
             {% for crash in crashes %}
-            {% set trace = crash.stack|first %}
+            {% set trace = crash.exception.stack|first %}
                 <tr>
-                    <td>{{ crash.latest|round|date("Y-m-d H:i:s") }}</td><td><a href="{{ relative('crashes/' ~ crash._id) }}">{{ crash.exception }}</a></td><td>{{ trace.class }}</td><td>{{ trace.method }}</td><td>{{ trace.line }}</td><td>{{ crash.count }}</td>
+                    <td>{{ crash.latest|round|date("Y-m-d H:i:s") }}</td><td><a href="{{ relative('crashes/' ~ crash._id) }}">{{ crash.exception.exception }}</a></td><td>{{ trace.class }}</td><td>{{ trace.method }}</td><td>{{ trace.line }}</td><td>{{ crash.count }}</td>
                 </tr>
             {% endfor %}
             </tbody>

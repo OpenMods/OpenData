@@ -53,55 +53,70 @@ var Levenshtein = require('levenshtein');
 var actions = {
     'mod:find': {
         func: mods.findMods,
-        secure: false
+        secure: false,
+        usage: '#mod:find <regex>'
     },
-	'mod:find:author': {
+    'mod:find:author': {
         func: mods.findModsByAuthor,
-        secure: false
+        secure: false,
+        usage: '#mod:find:authors <regex>'
     },
     'mod:get': {
         func: mods.getFields,
-        secure: false
+        secure: false,
+        usage: '#mod:get <modid> <field1> <field2>... (' + [    'name', 'description', 'url', 'parent',
+    		'donation', 'authors', 'releasesPage', 'credits',
+    		'tags', 'repository', 'irc', 'credits', 'admins', 'versionGroup'].join(', ') + ')'
     },
     'mod:stats': {
         func: mods.getStats,
-        secure: false
+        secure: false,
+        usage: '#mod:stats <modid> <time>'
     },
     'mod:update': {
         func: mods.setField,
-        secure: true
+        secure: true,
+        usage: '#mod:update <modid> <field> <value>'
     },
     'mod:unset': {
         func: mods.unsetField,
-        secure: true
+        secure: true,
+        usage: '#mod:unset <modid> <field>'
     },
     'mod:admins:add': {
         func: mods.addAdmin,
-        secure: true
+        secure: true,
+        usage: '#mod:admins:add <modid> <username>'
     },
     'mod:admins:remove': {
         func: mods.removeAdmin,
-        secure: true
+        secure: true,
+        usage: '#mod:admins:remove <modid> <username>'
     },
     'file:notes:add': {
         func: files.addNote,
-        secure: true
+        secure: true,
+        usage: '#file:notes:add <signature> <level> <description> <payload>'
     },
     'file:notes:list': {
         func: files.listNotes,
-        secure: false
+        secure: false,
+        usage: '#file:notes:list <signature>'
     },
     'file:notes:remove': {
         func: files.removeNote,
-        secure: true
+        secure: true,
+        usage: '#file:notes:remove <signature> <index>'
     },
     'crash:note:set': {
         func: crashes.setNote,
-        secure: true
+        secure: true,
+        usage: '#crash:note:set <hash> <note>'
     },
     'crash:note:remove': {
         func: crashes.removeNote,
-        secure: true
+        secure: true,
+        usage: '#crash:note:set <hash>'
     },
     'commands': {
         func: function(context) {
@@ -110,8 +125,10 @@ var actions = {
                 keys.push(key);
             }
             context.bot.say(context.channel, keys.join(', '));
+            return true;
         },
-        secure: false
+        secure: false,
+        usage: '#commands'
     }
 };
 
@@ -124,6 +141,7 @@ MongoClient.connect(connectionString, function(err, db) {
     
     redisClient.on('message', function (channel, message) {
         if (channel == 'crash') {
+        
             var packet = JSON.parse(message);
             var modIds = packet['modIds'];
             var content = packet['content'];
@@ -167,9 +185,9 @@ MongoClient.connect(connectionString, function(err, db) {
 
     bot.addListener('message', function(from, to, message) {
 
-        if (message.startsWith('!')) {
+        if (message.startsWith('#')) {
 
-            var matches = message.match(/^\!([a-z0-9\:]+)\s?(.*)?$/i);
+            var matches = message.match(/^#([a-z0-9\:]+)\s?(.*)?$/i);
 
             if (matches.length > 0) {
 
@@ -235,7 +253,7 @@ MongoClient.connect(connectionString, function(err, db) {
                             var isVoiced = info['channels'].indexOf('+#OpenEye') > -1 ||
                                     info['channels'].indexOf('@+#OpenEye') > -1;
 
-                            action['func']({
+                            if (!action['func']({
                                 bot: bot,
                                 db: db,
                                 username: username,
@@ -244,12 +262,14 @@ MongoClient.connect(connectionString, function(err, db) {
                                 from: from,
                                 channel: to,
                                 args: args
-                            });
+                            })) {
+            			bot.say(to, 'Usage: ' + action.usage);
+                            }
 
                         });
                     } else {
 
-                        action['func']({
+                        if (!action['func']({
                             bot: bot,
                             db: db,
                             username: null,
@@ -258,7 +278,9 @@ MongoClient.connect(connectionString, function(err, db) {
                             from: from,
                             channel: to,
                             args: args
-                        });
+                        })) {
+            			bot.say(to, 'Usage: ' + action.usage);
+                        }
                     }
 
                 }

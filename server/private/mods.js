@@ -40,10 +40,10 @@ function findModsBy(context, query) {
                 msg = msg + ' Limiting to 10!';
             }
             context.bot.say(context.channel, msg);
-        	context.bot.say(context.channel, response.join(', '));
+            context.bot.say(context.channel, response.join(', '));
         } else {
             context.bot.say(context.channel, 'No results found');
-		}
+	}
     });
 }
 
@@ -51,8 +51,7 @@ function findModsByAuthor(context) {
 	var args = context.args;
 
 	if (args.length != 1) {
-		context.bot.say(context.channel, 'Invalid number of arguments. Expected 1');
-		return;
+		return false;
 	}
 
 	var regex = null;
@@ -60,11 +59,11 @@ function findModsByAuthor(context) {
 	try {
 		regex = new RegExp(args[0], 'i');
 	}catch (e) {
-		context.bot.say(context.channel, 'Bad regular expression.. noob.');
-		return;
+		return false;
 	}
 
     findModsBy(context, {'authors' : regex});
+    return true;
 }
 
 function findMods(context) {
@@ -72,8 +71,7 @@ function findMods(context) {
     var args = context.args;
 
     if (args.length != 1) {
-        context.bot.say(context.channel, 'Invalid number of arguments. Expected 1');
-        return;
+    	return false;
     }
 
     var regex = null;
@@ -81,11 +79,11 @@ function findMods(context) {
     try {
         regex = new RegExp(args[0], 'i');
     }catch (e) {
-        context.bot.say(context.channel, 'Bad regular expression.. noob.');
-        return;
+    	return false;
     }
 
     findModsBy(context, {'$or': [{_id: regex}, {name: regex}]});
+    return true;
 }
 
 function removeAdmin(context) {
@@ -94,7 +92,7 @@ function removeAdmin(context) {
 
     if (!context.isOp) {
         context.bot.say(context.channel, 'Sorry, but no.');
-        return;
+        return true;
     }
 
     if (args.length == 2) {
@@ -133,9 +131,9 @@ function removeAdmin(context) {
             );
 
         });
-
+	return true;
     } else {
-        context.bot.say(context.channel, 'Bad usage');
+    	return false;
     }
 }
 
@@ -145,7 +143,7 @@ function addAdmin(context) {
 
     if (!context.isOp) {
         context.bot.say(context.channel, 'Sorry, but no.');
-        return;
+        return true;
     }
 
     if (args.length == 2) {
@@ -186,10 +184,10 @@ function addAdmin(context) {
             );
 
         });
-
-    } else {
-        context.bot.say(context.channel, 'Bad usage');
+	return true;
     }
+    return false;
+    
 }
 
 function getMod(context, modId, requiresPermissions, callback) {
@@ -201,7 +199,7 @@ function getMod(context, modId, requiresPermissions, callback) {
                     context.channel,
                     'Mod not found'
                     );
-            return;
+            return true;
         }
         if (requiresPermissions && !context.isOp) {
             if (result['admins'] == null || result['admins'].indexOf(context.username) == -1) {
@@ -209,7 +207,7 @@ function getMod(context, modId, requiresPermissions, callback) {
                         context.channel,
                         'Not authorized'
                         );
-                return;
+                return true;
             }
         }
         callback(result);
@@ -235,7 +233,7 @@ function setField(context) {
 
         if (field == 'irc' && context.args.length != 2) {
             context.bot.say(context.channel, 'Not enough arguments');
-            return;
+            return true;
         }
 
         if (validFields.indexOf(field) == -1) {
@@ -243,7 +241,7 @@ function setField(context) {
                     context.channel,
                     'Invalid field'
                     );
-            return;
+    		return true;
         }
 
         getMod(context, modId, true, function(mod) {
@@ -267,7 +265,7 @@ function setField(context) {
                                     context.channel,
                                     err.message
                                     );
-                            return;
+    				return true;
                         }
                         context.bot.say(
                                 context.channel,
@@ -278,9 +276,9 @@ function setField(context) {
             );
 
         });
-    } else {
-        context.bot.say(context.channel, 'Bad usage');
+    	return true;
     }
+    return false;
 
 }
 
@@ -339,16 +337,16 @@ function unsetField(context) {
 
             );
         });
-    } else {
-        context.bot.say(context.channel, 'Bad usage');
+        return true;
     }
+    return false;
 
 }
 
 
 function getStats(context) {
 
-	var args = context.args;
+    var args = context.args;
 
     if (args.length == 2) {
 
@@ -405,10 +403,9 @@ function getStats(context) {
 				}
         });
 
-
-    } else {
-        context.bot.say(context.channel, 'Bad usage.  Expected <modId> "<date>"');
-    }
+	return true;
+    } 
+    return false;
 
 }
 
@@ -462,10 +459,9 @@ function getFields(context) {
             });
         });
 
-
-    } else {
-        context.bot.say(context.channel, 'Bad usage');
+	return true;
     }
+    return false;
 
 }
 

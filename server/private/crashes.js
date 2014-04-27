@@ -20,11 +20,7 @@ function setNote(context) {
 	var args = context.args;
 
 	if (args.length != 2) {
-		context.bot.say(
-			context.channel,
-			'Usage: <crashId> "<note>"'		
-		);
-		return;
+		return false;
 	}
         
         var crashId = args[0];
@@ -35,7 +31,7 @@ function setNote(context) {
 			context.bot.channel,
 			'Insufficient permissions'		
 		);
-		return;
+		return true;
         }
         getCrash(context, crashId, function(crash) {
            context.db.collection('crashes').update(
@@ -49,17 +45,14 @@ function setNote(context) {
                    }
             );
         });
+        return true;
         
 }
 function removeNote(context) {
 	var args = context.args;
 
 	if (args.length != 1) {
-		context.bot.say(
-			context.channel,
-			'Usage: <crashId>'		
-		);
-		return;
+		return false;
 	}
         
         var crashId = args[0];
@@ -83,6 +76,7 @@ function removeNote(context) {
                    }
             );
         });
+        return true;
 }
 
 

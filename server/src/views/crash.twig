@@ -4,27 +4,15 @@
 <div class="row">
     <div class="col-md-12">
         <div class="page-header">
-            <h1>{{ crash.exception }}: {{ crash.message }}</h1>
+            <h1>{{ crash.exception.exception }}: {{ crash.exception.message }}</h1>
         </div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-12">
-        
-        {% if crash.note %}
-        <div class="bs-callout bs-callout-warning">
-            <h4>{{ crash.note.message }} - {{ crash.note.user }}</h4>
-        </div>
-        {% endif %}
-        
-        <pre><strong>{{ crash.exception }}: {{ crash.message }}</strong>
-
-        {% for trace in crash.stack %}
-    at <span class="highlight_class">{{ trace.class }}</span>.<span class="highlight_method">{{ trace.method }}</span><span class="highlight_file">({{ trace.file }}:</span><span class="highlight_line">{{ trace.line }})</span>
-        {% endfor %}
-        </pre>
-    </div>
+        {% if crash.note %}<div class="bs-callout bs-callout-warning"><h4>{{ crash.note.message }} - {{ crash.note.user }}</h4></div>{% endif %}
+        <pre>{% include 'stack.twig' with {crash: crash.exception} %}</pre></div>
 </div>
 
 <div class="row" style="padding-top: 20px;">

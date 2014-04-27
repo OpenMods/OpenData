@@ -78,7 +78,7 @@ class CrashesController {
             $data = $form->getData();
             $query = array();
             if (!empty($data['package'])) {
-                $query['stack.class'] = new \MongoRegex('/^'.preg_quote($data['package']).'/i');
+                $query['classes'] = new \MongoRegex('/^'.preg_quote($data['package']).'/i');
             }
             if (!empty($data['mod'])) {
                 $mods = $this->serviceMods->findByRegex('^'.$data['mod'].'$');

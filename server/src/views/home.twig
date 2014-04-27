@@ -6,6 +6,28 @@
             <h1>{{ title }}{% if total %} <small>({{ total }} total)</small>{% endif %}</h1>
         </div>
     </div>
+    <div class="col-md-3 pull-right">
+        <div id="sidenav" data-spy="affix" data-offset-top="50">
+            
+          <strong>Find by:</strong>
+          <ul class="nav nav-home nav-home-stacked">
+                <li><a href="{{ relative('') }}">Popular mods</a></li>
+                <li><a href="{{ relative('all') }}">List all mods</a></li>
+          </ul>
+          <strong>Find by name:</strong>
+          <ul class="nav nav-home">
+              {% for letter in range('A', 'Z') %}
+                <li><a href="{{ relative('letter/'~letter|lower) }}">{{ letter }}</a></li>
+              {% endfor %}
+          </ul>
+          <strong>Find by tag:</strong>
+          <ul class="nav nav-home">
+            {% for tag in tags %}
+                <li><a href="{{ relative('tag/' ~ tag) }}">{{ tag }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+    </div>
 
     <div class="col-md-9">
 
@@ -57,28 +79,6 @@
         {% endif %}
         
         
-    </div>
-    <div class="col-md-3">
-        <div id="sidenav" data-spy="affix" data-offset-top="50">
-            
-          <strong>Find by:</strong>
-          <ul class="nav nav-home nav-home-stacked">
-                <li><a href="{{ relative('') }}">Popular this week</a></li>
-                <li><a href="{{ relative('all') }}">List all mods</a></li>
-          </ul>
-          <strong>Find by name:</strong>
-          <ul class="nav nav-home">
-              {% for letter in range('A', 'Z') %}
-                <li><a href="{{ relative('letter/'~letter|lower) }}">{{ letter }}</a></li>
-              {% endfor %}
-          </ul>
-          <strong>Find by tag:</strong>
-          <ul class="nav nav-home">
-            {% for tag in tags %}
-                <li><a href="{{ relative('tag/' ~ tag) }}">{{ tag }}</a></li>
-            {% endfor %}
-          </ul>
-        </div>
     </div>
 </div>
 {% endblock %}

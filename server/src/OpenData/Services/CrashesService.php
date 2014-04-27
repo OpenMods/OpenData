@@ -4,8 +4,31 @@ namespace OpenData\Services;
 
 class CrashesService extends BaseService {
 
+    public static function stripSignatures($arr) {
+	$signatures = array();
+        $classes = array();
+	for ($i = 0; $i < count($arr['stack']); $i++) {
+		$signatures = array_merge($arr['stack'][$i]['signatures'], $signatures);
+                $classes[] = $arr['stack'][$i]['class'];
+		unset($arr['stack'][$i]['signatures']);
+	}
+	if (isset($arr['cause'])) {
+		$cause = self::stripSignatures($arr['cause']);
+		$signatures = array_merge($signatures, $cause['signatures']);
+		$classes = array_merge($classes, $cause['classes']);
+		$arr['cause'] = $cause['exception'];
+	}
+	return array(
+            'signatures' => $signatures,
+            'classes'   => $classes,
+            'exception' => $arr
+	);
+    }
+    
     public function add($packet, $fileIds, $modIds) {
 
+        $note = null;
+        
         $involvedSignatures = array();
         $involvedModIds = array();
         
@@ -28,21 +51,10 @@ class CrashesService extends BaseService {
             }
             $allSignatures[] = $state['signature'];
         }
-        
-        $stackWithoutSignatures = array();
 
-        // extract the serializeable stacktrace, and build up a list
-        // of any stack signatures
-        $stackSignatures = array();
-        foreach ($packet['stack'] as $stack) {
-            $stackWithoutSignatures[] = array(
-                'class' => $stack['class'],
-                'method' => $stack['method'],
-                'file'  => $stack['file'],
-                'line'  => $stack['line']
-            );
-            $stackSignatures = array_merge($stackSignatures, $stack['signatures']);
-        }
+        $crashData = self::stripSignatures($packet['exception']);
+        $stackSignatures = $crashData['signatures'];
+        $stackWithoutSignatures = $crashData['exception'];
         
         // if we've got stack signatures, lets get the modids for those
         // signatures
@@ -76,26 +88,29 @@ class CrashesService extends BaseService {
             $this->db->crashes->insert(array(
                 '_id' => $packet['stackhash'],
                 'latest' => time(),
-                'stack' => $stackWithoutSignatures,
-                'exception' => $packet['exception'],
-                'message' => $packet['message'],
+                'exception' => $stackWithoutSignatures,
                 'involvedSignatures' => array_values($involvedSignatures),
                 'involvedMods' => array_values($involvedModIds),
                 'allSignatures' => array_values($allSignatures),
                 'allMods' => array_values($allModIds),
+                'classes' => $crashData['classes'],
                 'count' => 1
             ));
             
             $redis = new \Predis\Client();
             $redis->publish('crash', json_encode(array(
                 'modIds' => $involvedModIds,
-                'content' => $packet['exception'].': '.$packet['message'].' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
+                'content' => $stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message'].' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
             )));
  
         } else {
             
             $crash['involvedSignatures'] = array_intersect($crash['involvedSignatures'], $allSignatures);
             $crash['involvedMods'] = array_intersect($crash['involvedMods'], $allModIds);
+            
+            if (isset($crash['note']) && isset($crash['note']['message'])) {
+                $note = $crash['note'];
+            }
             
             $this->db->crashes->update(
                 array('_id' => $packet['stackhash']),
@@ -113,11 +128,16 @@ class CrashesService extends BaseService {
                 )
             );
         }
+        
+        return array(
+            'stackhash' => $packet['stackhash'],
+            'note'      => $note
+        );
     }
 
 
     public function findByPackage($package, $skip = 0, $limit = 40) {
-        return $this->find(array('stack.class' => new \MongoRegex('/^'.preg_quote($package).'\./')))
+        return $this->find(array('classes' => new \MongoRegex('/^'.preg_quote($package).'\./')))
                 ->sort(array('timestamp' => -1))
                 ->skip($skip)
                 ->limit($limit);

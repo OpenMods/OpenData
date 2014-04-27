@@ -9,14 +9,13 @@ class ModController {
 
     private $serviceFiles;
     private $serviceMods;
-    private $serviceCrashes;
     private $twig;
 
-    public function __construct($twig, $files, $mods, $crashes) {
+    public function __construct($twig, $files, $mods, $analytics) {
         $this->twig = $twig;
         $this->serviceFiles = $files;
         $this->serviceMods = $mods;
-        $this->serviceCrashes = $crashes;
+        $this->serviceAnalytics = $analytics;
     }
 
 
@@ -112,32 +111,42 @@ class ModController {
     }
     
     public function analytics($modId, $fileId = null) {
-
-        $document = null;
         
-        if ($fileId == null) {
-            $document = $this->serviceMods->findById($modId);
+        $today = strtotime(date("Y-m-d 00:00:00"));
+        $yesterday = $today - 86400;
+	$oYesterday = new \MongoDate($yesterday);
+        
+        $signatures = array();
+        if ($fileId != null) {
+            if ($this->serviceFiles->findOne($fileId) != null) {
+                $signatures[] = $fileId;
+            } else {
+                foreach ($this->serviceFiles->findByVersion($modId, $fileId) as $result) {
+                    $signatures[] = $result['_id'];
+                }
+            }
         } else {
-            $document = $this->serviceFiles->findOne($fileId);
-            if ($document == null) {
-                $document = array(
-                    'hours' => $this->serviceFiles->findHoursByVersion($modId, $fileId)
-                );
+            foreach ($this->serviceFiles->findByModId($modId) as $file) {
+                $signatures[] = $file['_id'];
             }
         }
         
-        if ($document == null) {
-            throw new \Exception();
+        $results = array();
+        if (count($signatures) > 0) {
+            $results = $this->serviceAnalytics->findBy(array(
+               '_id.type' => 'signatures',
+               '_id.key' => array('$in' => $signatures),
+               '_id.span' => 'hourly',
+               '_id.time' => array('$gte' => $oYesterday)
+            ));
         }
         
         $hourly = array();
         
-        if (isset($document['hours'])) {
-            foreach ($document['hours'] as $hour) {
-                $hourly[$hour['time']->sec * 1000] = $hour['launches'];
-            }
+        foreach ($results as $hour) {
+            $hourly[$hour['_id']['time']->sec] = $hour['launches'];
         }
-        
+                
         $lastHour = strtotime(date("Y-m-d H:00:00"));
         
         $hourlyStats = array(
@@ -147,13 +156,13 @@ class ModController {
         
         foreach ($hourlyStats as $day => $v) {
             for ($i = 0; $i < 24; $i++) {
-                $displayTime = ($lastHour - ($i * 3600)) * 1000;
+                $displayTime = ($lastHour - ($i * 3600));
                 $statTime = $displayTime;
                 if ($day == 'yesterday') {
-                    $statTime -= 86400000;
+                    $statTime -= 604800;
                 }
                 $hourlyStats[$day][] = array(
-                    $displayTime,
+                    $displayTime * 1000,
                     isset($hourly[$statTime]) ? $hourly[$statTime] : 0
                 ); 
             }
