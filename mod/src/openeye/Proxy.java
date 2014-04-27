@@ -3,8 +3,10 @@ package openeye;
 import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.MinecraftForge;
 import openeye.logic.DangerousFileClientException;
 import openeye.logic.DangerousFileServerException;
+import openeye.notes.GuiReplacer;
 import openeye.reports.FileSignature;
 import cpw.mods.fml.common.FMLCommonHandler;
 
@@ -20,6 +22,11 @@ public abstract class Proxy {
 		public Throwable signalDangerousFiles(Collection<FileSignature> dangerousFiles) {
 			return new DangerousFileClientException(dangerousFiles);
 		}
+
+		@Override
+		public void init() {
+			MinecraftForge.EVENT_BUS.register(new GuiReplacer());
+		}
 	}
 
 	private static class Server extends Proxy {
@@ -32,9 +39,14 @@ public abstract class Proxy {
 		public Throwable signalDangerousFiles(Collection<FileSignature> dangerousFiles) {
 			return new DangerousFileServerException(dangerousFiles);
 		}
+
+		@Override
+		public void init() {}
 	}
 
 	public abstract boolean isSnooperEnabled();
+
+	public abstract void init();
 
 	public abstract Throwable signalDangerousFiles(Collection<FileSignature> dangerousFiles);
 

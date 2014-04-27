@@ -5,12 +5,10 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 
-import net.minecraftforge.common.MinecraftForge;
 import openeye.logic.Config;
 import openeye.logic.InjectedDataStore;
 import openeye.logic.MainWorker;
 import openeye.notes.CommandNotes;
-import openeye.notes.GuiReplacer;
 import openeye.reports.FileSignature;
 
 import com.google.common.eventbus.EventBus;
@@ -61,7 +59,7 @@ public class Mod extends DummyModContainer {
 			handleDangerousFiles();
 		}
 
-		MinecraftForge.EVENT_BUS.register(new GuiReplacer());
+		Proxy.instance().init();
 	}
 
 	private void handleDangerousFiles() {
