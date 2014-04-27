@@ -33,7 +33,7 @@ public class ResponseModMsg implements IResponse {
 	@Override
 	public void execute(IContext context) {
 		for (String modId : context.getModsForSignature(signature)) {
-			NBTTagCompound msg = new NBTTagCompound("IMC");
+			NBTTagCompound msg = new NBTTagCompound();
 			msg.setInteger("level", level);
 			msg.setString("payload", payload);
 			msg.setString("description", description);

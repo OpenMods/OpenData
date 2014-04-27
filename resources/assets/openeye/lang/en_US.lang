@@ -7,3 +7,12 @@ openeye.notes.dangerous_file=File %s is marked as dangerous (possibly malware) i
 openeye.notes.title.known_crash=Information about recent crash available on site
 openeye.notes.title.note=Note for file %s
 openeye.notes.title.dangerous_file=Dangerous file: %s
+
+openeye.chat.note=Note %s, type: %s
+openeye.chat.store_failed=Failed to store notes!
+openeye.chat.dumped=Dumped notes to file %s
+
+openeye.level.critical=Critical
+openeye.level.alert=Alert
+openeye.level.warning=Warning
+openeye.level.info=Info

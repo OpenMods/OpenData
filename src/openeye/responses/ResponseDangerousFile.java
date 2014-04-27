@@ -20,7 +20,7 @@ public class ResponseDangerousFile implements IResponse {
 		context.markDangerousSignature(signature);
 
 		File file = context.getFileForSignature(signature);
-		NoteCollector.INSTANCE.addDangerousFile(file, this);
+		NoteCollector.INSTANCE.addNote(file, this);
 	}
 
 }

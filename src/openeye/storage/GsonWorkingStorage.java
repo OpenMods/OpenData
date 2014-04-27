@@ -6,29 +6,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
-public class GsonWorkingStorage<T> extends GsonStorageBase<T> implements IWorkingStorage<T> {
-
-	@Override
-	protected void removeEntry(String id) {
-		sources.remove(id);
-	}
+public class GsonWorkingStorage<T> extends GsonDirStorage<T> implements IWorkingStorage<T> {
 
 	private final Map<String, IDataSource<T>> sources = Maps.newHashMap();
 
-	private final String prefix;
-
-	private final File dir;
-
 	public GsonWorkingStorage(File dir, String prefix, Class<? extends T> cls, Gson gson) {
-		super(cls, gson, "json");
-		Preconditions.checkArgument(dir.isDirectory());
-		this.prefix = prefix;
-		this.dir = dir;
+		super(dir, prefix, cls, gson, "json");
 
 		Pattern filePattern = Pattern.compile(prefix + "-(.+)\\.json");
 		for (File file : dir.listFiles()) {
@@ -39,6 +26,11 @@ public class GsonWorkingStorage<T> extends GsonStorageBase<T> implements IWorkin
 				sources.put(id, createFromFile(id, file));
 			}
 		}
+	}
+
+	@Override
+	protected void removeEntry(String id) {
+		sources.remove(id);
 	}
 
 	@Override
@@ -65,10 +57,7 @@ public class GsonWorkingStorage<T> extends GsonStorageBase<T> implements IWorkin
 
 	@Override
 	public IDataSource<T> createNew(String id) {
-		String filename = generateFilename(prefix, id);
-		File file = new File(dir, filename);
-
-		IDataSource<T> newSource = createFromFile(id, file);
+		IDataSource<T> newSource = super.createNew(id);
 		sources.put(id, newSource);
 		return newSource;
 	}

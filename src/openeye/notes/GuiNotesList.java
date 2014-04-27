@@ -53,10 +53,10 @@ public class GuiNotesList extends GuiScrollingList {
 		mc.renderEngine.bindTexture(GuiButtonNotes.TEXTURE);
 		owner.drawTexturedModalRect(left, top, entry.type.textureX + 2, 60 + 2, 16, 16);
 
-		owner.drawString(mc.fontRenderer, entry.title(), left + 20, top + 4, 0xFFFFFF);
-		String description = entry.description();
+		owner.drawString(mc.fontRenderer, entry.title().toString(), left + 20, top + 4, 0xFFFFFF);
+		String description = entry.description().toString();
 
 		int width = right - left;
-		if (!Strings.isNullOrEmpty(description)) mc.fontRenderer.drawSplitString(entry.description(), left, top + 20, left + width, 0xCCCCCC);
+		if (!Strings.isNullOrEmpty(description)) mc.fontRenderer.drawSplitString(description, left, top + 20, left + width, 0xCCCCCC);
 	}
 }

@@ -16,11 +16,11 @@ public class ResponseKnownCrash implements IResponse {
 	@SerializedName("note")
 	public String note;
 
-	@SerializedName("crashUrl")
-	public String crashUrl;
+	@SerializedName("url")
+	public String url;
 
 	@Override
 	public void execute(IContext context) {
-		NoteCollector.INSTANCE.addKnownCrash(this);
+		NoteCollector.INSTANCE.addNote(this);
 	}
 }

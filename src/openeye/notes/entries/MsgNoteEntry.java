@@ -2,16 +2,24 @@ package openeye.notes.entries;
 
 import java.io.File;
 
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.ChatMessageComponent;
 import openeye.responses.ResponseModMsg;
 
+import com.google.gson.JsonObject;
+
 public class MsgNoteEntry extends NoteEntry {
+	private final String description;
+	private final String signature;
+	private final int level;
+	private final String payload;
+
 	public MsgNoteEntry(File file, ResponseModMsg msg) {
 		super(file, calculateIconType(msg.level));
-		this.msg = msg;
+		this.signature = msg.signature;
+		this.description = msg.description;
+		this.level = msg.level;
+		this.payload = msg.payload;
 	}
-
-	public final ResponseModMsg msg;
 
 	@Override
 	public String url() {
@@ -19,12 +27,22 @@ public class MsgNoteEntry extends NoteEntry {
 	}
 
 	@Override
-	public String title() {
-		return StatCollector.translateToLocalFormatted("openeye.notes.title.note", file.getName());
+	public ChatMessageComponent title() {
+		return ChatMessageComponent.createFromTranslationWithSubstitutions("openeye.notes.title.note", file.getName());
 	}
 
 	@Override
-	public String description() {
-		return msg.description;
+	public ChatMessageComponent description() {
+		return ChatMessageComponent.createFromText(description);
 	}
+
+	@Override
+	public JsonObject toJson() {
+		JsonObject result = super.toJson();
+		result.addProperty("signature", signature);
+		result.addProperty("level", level);
+		result.addProperty("payload", payload);
+		return result;
+	}
+
 }

@@ -2,9 +2,12 @@ package openeye.notes.entries;
 
 import java.io.File;
 
+import net.minecraft.util.ChatMessageComponent;
 import openeye.notes.IconType;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+import com.google.gson.JsonObject;
 
 public abstract class NoteEntry {
 	private static final File DUMMY_FILE = new File("invalid");
@@ -30,7 +33,22 @@ public abstract class NoteEntry {
 
 	public abstract String url();
 
-	public abstract String title();
+	public abstract ChatMessageComponent title();
 
-	public abstract String description();
+	public abstract ChatMessageComponent description();
+
+	public JsonObject toJson() {
+		JsonObject result = new JsonObject();
+		result.addProperty("filename", file.getName());
+		result.addProperty("path", file.getPath());
+		result.addProperty("type", type.toString());
+
+		result.addProperty("title", title().toString());
+		result.addProperty("description", description().toString());
+
+		String url = url();
+		if (!Strings.isNullOrEmpty(url)) result.addProperty("url", url);
+
+		return result;
+	}
 }

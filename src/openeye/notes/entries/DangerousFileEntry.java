@@ -2,30 +2,40 @@ package openeye.notes.entries;
 
 import java.io.File;
 
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.ChatMessageComponent;
 import openeye.notes.IconType;
+import openeye.responses.ResponseDangerousFile;
+
+import com.google.gson.JsonObject;
 
 public class DangerousFileEntry extends NoteEntry {
-	@SuppressWarnings("unused")
+
 	private final String signature;
 
-	public DangerousFileEntry(File file, String signature) {
-		super(file, IconType.DANGER);
-		this.signature = signature;
+	public DangerousFileEntry(File file, ResponseDangerousFile msg) {
+		super(file, IconType.CRITICAL);
+		this.signature = msg.signature;
 	}
 
 	@Override
-	public String title() {
-		return StatCollector.translateToLocalFormatted("openeye.notes.title.dangerous_file", file.getName());
+	public ChatMessageComponent title() {
+		return ChatMessageComponent.createFromTranslationWithSubstitutions("openeye.notes.title.dangerous_file", file.getName());
 	}
 
 	@Override
-	public String description() {
-		return StatCollector.translateToLocalFormatted("openeye.notes.dangerous_file", file.getName());
+	public ChatMessageComponent description() {
+		return ChatMessageComponent.createFromTranslationWithSubstitutions("openeye.notes.dangerous_file", file.getName());
 	}
 
 	@Override
 	public String url() {
-		return null; // MainWorker.getOpenEyeUrl("achtung/" + signature);
+		return null;
+	}
+
+	@Override
+	public JsonObject toJson() {
+		JsonObject result = super.toJson();
+		result.addProperty("signature", signature);
+		return result;
 	}
 }
