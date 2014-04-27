@@ -19,10 +19,9 @@ sourceSets {
     main {
         java {
             srcDir "src"
-            //srcDir "integration/buildcraft/api"
         }
         resources {
-            srcDir "resources/assets"
+            srcDir "resources"
         }
     }
 }
