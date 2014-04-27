@@ -22,7 +22,7 @@ sourceSets {
             //srcDir "integration/buildcraft/api"
         }
         resources {
-            srcDir "assets"
+            srcDir "resources/assets"
         }
     }
 }
