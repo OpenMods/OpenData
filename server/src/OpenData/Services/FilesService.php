@@ -38,13 +38,6 @@ class FilesService extends BaseService {
             return false;
         }
         
-        try {
-            $redis = new \Predis\Client();
-            $redis->publish('file', 'New file detected: '.$signature['filename']);
-        }catch (\Exception $e) {
-        
-        }
-        
         return true;
     }
 
@@ -142,6 +135,10 @@ class FilesService extends BaseService {
                 '$set' => $query
             )
         );
+    }
+    
+    public function findUniquePackages() {
+        return $this->db->files->distinct('packages');
     }
 
     public function findOne($signature) {

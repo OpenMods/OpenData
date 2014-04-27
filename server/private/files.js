@@ -152,7 +152,7 @@ function listNotes(context) {
 			
 		}
 	);
-	return truel
+	return true;
 
 }
 

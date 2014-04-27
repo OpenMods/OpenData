@@ -101,19 +101,27 @@ class Analytics implements IPacketHandler {
             }
         }
 
+        $newFilenames = array();
+        
         // loop through any mods we didn't find in the database,
         // add them in, then tell the client we need the rest of the packages
         foreach ($packet['signatures'] as $signature) {
             
             if (!in_array($signature['signature'], $fileSignaturesFound)) {
-                $this->serviceFiles->create($signature);
+                if ($this->serviceFiles->create($signature)) {
+                    $newFilenames[] = $signature['filename'];
+                }
                 $responses[] = array(
                     'type' => 'file_info',
                     'signature' => $signature['signature']
                 );
             }
         }
-
+        
+        if (count($newFilenames) > 0) {
+            $redis = new \Predis\Client();
+            $redis->publish('file', 'New files detected: '.implode(", ", $newFilenames));
+        }
 
         return $responses;
     }
