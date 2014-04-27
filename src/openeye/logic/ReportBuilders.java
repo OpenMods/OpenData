@@ -12,6 +12,7 @@ import net.minecraftforge.common.ForgeVersion;
 import openeye.Log;
 import openeye.reports.*;
 import openeye.reports.ReportAnalytics.FmlForgeRuntime;
+import openeye.reports.ReportCrash.ExceptionInfo;
 import openeye.reports.ReportCrash.StackTrace;
 import openeye.reports.ReportFileContents.ArchiveDirEntry;
 import openeye.reports.ReportFileContents.ArchiveEntry;
@@ -77,29 +78,55 @@ public class ReportBuilders {
 		return analytics;
 	}
 
+	private static StackTrace createStackTraceElement(StackTraceElement e, ModMetaCollector collector) {
+		StackTrace el = new StackTrace();
+		final String clsName = e.getClassName();
+		el.className = clsName;
+		el.fileName = e.getFileName();
+		el.methodName = e.getMethodName();
+		el.lineNumber = e.getLineNumber();
+
+		if (collector != null) el.signatures = collector.identifyClassSource(clsName);
+		return el;
+	}
+
+	private static ExceptionInfo createStackTrace(Throwable throwable, StackTraceElement[] prevStacktrace, Set<Throwable> alreadySerialized, ModMetaCollector collector) {
+		if (alreadySerialized.contains(throwable)) return null; // cyclical reference
+
+		ExceptionInfo info = new ExceptionInfo();
+
+		info.exceptionCls = throwable.getClass().getName();
+		info.message = throwable.getMessage();
+
+		alreadySerialized.add(throwable);
+
+		info.stackTrace = Lists.newArrayList();
+
+		StackTraceElement[] stackTrace = throwable.getStackTrace();
+
+		int m = stackTrace.length - 1;
+		int n = prevStacktrace.length - 1;
+		while (m >= 0 && n >= 0 && stackTrace[m].equals(prevStacktrace[n])) {
+			m--;
+			n--;
+		}
+
+		for (int i = 0; i <= m; i++)
+			info.stackTrace.add(createStackTraceElement(stackTrace[i], collector));
+
+		Throwable cause = throwable.getCause();
+		if (cause != null) info.cause = createStackTrace(cause, stackTrace, alreadySerialized, collector);
+
+		return info;
+	}
+
 	public static ReportCrash buildCrashReport(Throwable throwable, ModMetaCollector collector) {
 		ReportCrash crash = new ReportCrash();
 
 		crash.timestamp = new Date().getTime();
 
-		crash.exceptionCls = throwable.getClass().getName();
-
-		crash.message = throwable.getMessage();
-
-		List<StackTrace> trace = Lists.newArrayList();
-		for (StackTraceElement e : throwable.getStackTrace()) {
-			StackTrace el = new StackTrace();
-			final String clsName = e.getClassName();
-			el.className = clsName;
-			el.fileName = e.getFileName();
-			el.methodName = e.getMethodName();
-			el.lineNumber = e.getLineNumber();
-
-			if (collector != null) el.signatures = collector.identifyClassSource(clsName);
-			trace.add(el);
-		}
-
-		crash.stackTrace = trace;
+		Set<Throwable> blacklist = Sets.newSetFromMap(new IdentityHashMap<Throwable, Boolean>());
+		crash.exception = createStackTrace(throwable, new StackTraceElement[0], blacklist, collector);
 
 		if (collector != null) crash.states = collector.collectStates();
 
@@ -157,7 +184,7 @@ public class ReportBuilders {
 
 		byte[] buffer = new byte[1024];
 
-		while (dis.read(buffer) != -1);
+		while (dis.read(buffer) != -1) {}
 
 		dis.close();
 

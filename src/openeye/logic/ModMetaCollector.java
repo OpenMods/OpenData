@@ -172,7 +172,7 @@ public class ModMetaCollector {
 			return report;
 		}
 
-		public FileSignature createSignature() {
+		public FileSignature createFileSignature() {
 			FileSignature result = new FileSignature();
 			result.signature = signature();
 			result.filename = container.getName();
@@ -372,7 +372,7 @@ public class ModMetaCollector {
 			FileSignature tmp = new FileSignature();
 			tmp.signature = meta.signature();
 			tmp.filename = meta.container.getName();
-			result.add(meta.createSignature());
+			result.add(meta.createFileSignature());
 		}
 
 		return result;
@@ -409,7 +409,12 @@ public class ModMetaCollector {
 
 	public FileSignature getFileForSignature(String signature) {
 		FileMeta meta = signatures.get(signature);
-		return meta != null? meta.createSignature() : null;
+		return meta != null? meta.createFileSignature() : null;
+	}
+
+	public File getContainerForSignature(String signature) {
+		FileMeta meta = signatures.get(signature);
+		return meta != null? meta.container : null;
 	}
 
 	public Set<String> identifyClassSource(String className) {

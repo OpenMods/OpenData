@@ -1,17 +1,22 @@
 package openeye;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 
+import net.minecraftforge.common.MinecraftForge;
 import openeye.logic.Config;
 import openeye.logic.InjectedDataStore;
 import openeye.logic.MainWorker;
+import openeye.notes.GuiReplacer;
 import openeye.reports.FileSignature;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import cpw.mods.fml.client.FMLFileResourcePack;
+import cpw.mods.fml.client.FMLFolderResourcePack;
 import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.ModMetadata;
@@ -56,6 +61,8 @@ public class Mod extends DummyModContainer {
 			worker.waitForFirstMsg();
 			handleDangerousFiles();
 		}
+
+		MinecraftForge.EVENT_BUS.register(new GuiReplacer());
 	}
 
 	private void handleDangerousFiles() {
@@ -71,12 +78,28 @@ public class Mod extends DummyModContainer {
 
 	@Subscribe
 	public void onInit(FMLPostInitializationEvent evt) {
-		if (Config.crashOnStartup) controller.errorOccurred(this, new RuntimeException("derp"));
+		if (Config.crashOnStartup) controller.errorOccurred(this, new RuntimeException("Goodbye, cruel world!"));
 	}
 
 	@Override
 	public File getSource() {
-		return InjectedDataStore.instance.getSelfLocation();
+		File injectedSource = InjectedDataStore.instance.getSelfLocation();
+		URL cpSource = getClass().getProtectionDomain().getCodeSource().getLocation();
+		try {
+			return new File(cpSource.toURI());
+		} catch (Exception e) {
+			Log.warn(e, "Failed to extract source from URL %s, using injected path %s", cpSource, injectedSource);
+		}
+		return injectedSource;
 	}
 
+	@Override
+	public Class<?> getCustomResourcePackClass() {
+		File source = getSource();
+		if (source == null) {
+			Log.warn("Failed to get source, resource pack missing");
+			return null;
+		}
+		return source.isDirectory()? FMLFolderResourcePack.class : FMLFileResourcePack.class;
+	}
 }

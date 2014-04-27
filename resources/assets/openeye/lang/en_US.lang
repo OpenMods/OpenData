@@ -1,0 +1,9 @@
+openeye.main_screen.dangerous_file=One of mod files was marked as dangerous by OpenEye
+openeye.main_screen.known_crash=OpenEye has information about one or more of your recent crashes
+
+openeye.notes.goto_page=Go to page
+openeye.notes.dangerous_file=File %s is marked as dangerous (possibly malware) in OpenEye database. Go to website for details.
+
+openeye.notes.title.known_crash=Information about recent crash available on site
+openeye.notes.title.note=Note for file %s
+openeye.notes.title.dangerous_file=Dangerous file: %s
