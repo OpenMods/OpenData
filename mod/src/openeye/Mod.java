@@ -9,6 +9,7 @@ import net.minecraftforge.common.MinecraftForge;
 import openeye.logic.Config;
 import openeye.logic.InjectedDataStore;
 import openeye.logic.MainWorker;
+import openeye.notes.CommandNotes;
 import openeye.notes.GuiReplacer;
 import openeye.reports.FileSignature;
 
@@ -20,9 +21,7 @@ import cpw.mods.fml.client.FMLFolderResourcePack;
 import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.event.FMLConstructionEvent;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.*;
 
 public class Mod extends DummyModContainer {
 
@@ -76,9 +75,34 @@ public class Mod extends DummyModContainer {
 		}
 	}
 
+	public static void crash1() {
+		try {
+			throw new RuntimeException("deep one");
+		} catch (RuntimeException e) {
+			throw new RuntimeException("u wot m8", e);
+		}
+	}
+
+	public static void crash2() {
+		try {
+			crash1();
+		} catch (RuntimeException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Subscribe
 	public void onInit(FMLPostInitializationEvent evt) {
-		if (Config.crashOnStartup) controller.errorOccurred(this, new RuntimeException("Goodbye, cruel world!"));
+		if (Config.crashOnStartup) try {
+			crash2();
+		} catch (RuntimeException e) {
+			controller.errorOccurred(this, new RuntimeException("Goodbye, cruel world!", e));
+		}
+	}
+
+	@Subscribe
+	public void onServerStart(FMLServerStartingEvent evt) {
+		evt.registerServerCommand(new CommandNotes(evt.getServer().getFile(".")));
 	}
 
 	@Override

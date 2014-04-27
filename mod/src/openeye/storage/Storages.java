@@ -14,11 +14,16 @@ public class Storages {
 	public final IAppendableStorage<Object> sessionArchive;
 
 	public Storages(File mcDir) {
-		File eyeDir = new File(mcDir, "reports");
-		eyeDir.mkdir();
+		File eyeDir = getReportDir(mcDir);
 
 		state = new GsonPredefinedStorage<ModState>(eyeDir, ModState.class, GsonUtils.PRETTY_GSON, STATE_FILE_ID);
 		pendingCrashes = new GsonWorkingStorage<ReportCrash>(eyeDir, "pending-crash", ReportCrash.class, GsonUtils.PRETTY_GSON);
 		sessionArchive = new GsonSessionStorage<Object>(eyeDir, "json", Object.class, GsonUtils.PRETTY_GSON);
+	}
+
+	public static File getReportDir(File mcDir) {
+		File eyeDir = new File(mcDir, "reports");
+		eyeDir.mkdir();
+		return eyeDir;
 	}
 }
