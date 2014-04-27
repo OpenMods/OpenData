@@ -71,13 +71,13 @@ public class NoteCollector {
 		important |= entry.type.important;
 	}
 
-	public void addDangerousFile(File file, ResponseDangerousFile note) {
-		addNote(new DangerousFileEntry(file, note.signature));
-		lines.add(new ScreenNotification(IconType.DANGER, 0xFF0000, "\u00a7L", "openeye.main_screen.dangerous_file"));
+	public void addNote(File file, ResponseDangerousFile note) {
+		addNote(new DangerousFileEntry(file, note));
+		lines.add(new ScreenNotification(IconType.CRITICAL, 0xFF0000, "\u00a7L", "openeye.main_screen.dangerous_file"));
 		important = true;
 	}
 
-	public void addKnownCrash(ResponseKnownCrash note) {
+	public void addNote(ResponseKnownCrash note) {
 		addNote(new KnownCrashEntry(note));
 		lines.add(new ScreenNotification(IconType.INFO, 0x00FF00, "", "openeye.main_screen.known_crash"));
 		important = true;
