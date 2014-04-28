@@ -26,6 +26,8 @@ import cpw.mods.fml.common.Loader;
 
 public class ReportBuilders {
 
+	private static final TagsCollector tagsCollector = new TagsCollector();
+
 	public static ReportKnownFiles buildKnownFilesReport(ModMetaCollector data) {
 		ReportKnownFiles result = new ReportKnownFiles();
 
@@ -59,13 +61,7 @@ public class ReportBuilders {
 
 		analytics.signatures = data.getAllFiles();
 
-		Set<String> tags = Sets.newHashSet();
-
-		Set<String> configTags = Config.tags;
-		if (configTags != null) tags.addAll(configTags);
-
-		Set<String> envTags = TagsCollector.collectSystemTags();
-		tags.addAll(envTags);
+		Set<String> tags = tagsCollector.getTags();
 
 		if (!tags.isEmpty()) analytics.tags = tags;
 
@@ -129,6 +125,8 @@ public class ReportBuilders {
 		crash.exception = createStackTrace(throwable, new StackTraceElement[0], blacklist, collector);
 
 		if (collector != null) crash.states = collector.collectStates();
+
+		crash.tags = tagsCollector.getTags();
 
 		return crash;
 	}
