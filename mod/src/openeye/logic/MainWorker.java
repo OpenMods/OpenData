@@ -151,7 +151,8 @@ public final class MainWorker {
 
 		for (IDataSource<ReportCrash> crash : storages.pendingCrashes.listAll()) {
 			try {
-				initialReports.add(crash.retrieve());
+				ReportCrash report = crash.retrieve();
+				if (report != null) initialReports.add(report);
 			} catch (Exception e) {
 				Log.warn(e, "Failed to add crash report %s", crash.getId());
 			}

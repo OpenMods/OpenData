@@ -2,6 +2,7 @@ package openeye.reports;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -69,4 +70,7 @@ public class ReportCrash implements IReport {
 
 	@SerializedName("exception")
 	public ExceptionInfo exception;
+
+	@SerializedName("tags")
+	public Set<String> tags;
 }

@@ -14,12 +14,21 @@ public class TagsCollector {
 	private static final String ELEMENT_NAME = "openeye.tags";
 	private static final Splitter TAG_SPLITTER = Splitter.on(',');
 
-	public static Set<String> collectSystemTags() {
-		Set<String> result = Sets.newHashSet();
-		addBlackboardTags(result);
-		addEnvTags(result);
-		addArgsTags(result);
-		return result;
+	private Set<String> tags;
+
+	public Set<String> getTags() {
+		if (tags == null) {
+			tags = Sets.newHashSet();
+			addBlackboardTags(tags);
+			addEnvTags(tags);
+			addArgsTags(tags);
+			addConfigTags(tags);
+		}
+		return tags;
+	}
+
+	private static void addConfigTags(Set<String> result) {
+		if (Config.tags != null) result.addAll(Config.tags);
 	}
 
 	private static void addArgsTags(Set<String> result) {
