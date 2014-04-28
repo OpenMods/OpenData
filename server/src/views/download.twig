@@ -1,0 +1,72 @@
+{% extends 'base.twig' %}
+{% block main %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1>About OpenEye</h1>
+        </div>
+    </div>
+    <div class="col-md-12">
+        
+        <p>Our primary aim is to collect and share vital information to allow us to provide a set of tools to the community to make the experience easier, drama-free and more secure for both users and modders.<p>
+        <p>We want to make it clear from the very start that we do this in a completely transparent way - our data is open to anyone and our code is open source. We do not track users or any identifying information and people are very welcome to confirm that for themselves by browsing the code or the regular data dumps that we will provide.</p>
+        
+        <h2 style="margin-top: 40px;">Download</h2>
+        
+        <p>To install OpenEye simply drop it into your /mods/ folder.</p>
+        <p style="margin-bottom: 40px">
+            <a href="#" class="btn btn-success">OpenEye 0.1 for 1.7.x</a>
+            <a href="#" class="btn btn-success">OpenEye 0.1 for 1.6.x</a>
+        </p>
+        
+        <p>Here's a quick overview of the mod:</p>
+        <h4 style="margin-top: 40px">Snooper Settings</h4>
+        <p>First things first, our mod fully respects a user's snooper settings that are built into Minecraft - so if you don't like it, simply turn it off. However, be aware that turning it off in snooper settings means information we'd need in order to help you would not be available to us.</p>
+        <p>You can safely can remove this mod without any side effects and you can also use config options to control what data is sent to the server and ignore messages recieved from the server.</p>
+        <h4 style="margin-top: 40px">Analytics</h4>
+        <p>When the game launches we collect very minimal state-free anonymous information about the mods being run. This includes a list of 'file signatures' (i.e. filename and hash of mod files), signatures of files that have been added or removed, timezone, locale, language and information about which forge and minecraft you're running. We only collect information about mods present, not how they're running or how they're configured.</p>
+        <p>This data is stored in our database for one hour, at which point it is aggregated into hourly stats and then wiped. After 1 hour we have no information about individual requests at all.</p>
+        <p>If the mod sends up a file signature that our database doesn't know about it'll request additional information about the file. The client will then send up 'mod metadata' (authors, description.etc.), as well as a list of packages contained within the file.</p>
+        <p>We also support adding of 'tags', which are also aggregated once an hour.</p>
+        <div class="panel panel-primary">
+            <div class="panel-heading">For users and mod packs</div>
+            <div class="panel-body">
+                <p>Users can add 'tags' into OpenEye configuration files.</p>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">For launchers</div>
+            <div class="panel-body">
+                <p>Tags can be added by writing comma separated list to:</p>
+                <ul>
+                    <li>"openeye.tags" command line parameter</li>
+                    <li>"openeye.tags" environment variable</li>
+                </ul>
+            </div>
+        </div>
+        <p>Want more information about what analytics data is stored? Read our <a href="{{ relative('storage-policy') }}">storage policy</a>.</p>
+        
+        <h4 style="margin-top: 40px">Crashes</h4>
+        <p>When you relaunch the game after a crash a crash report is sent to our server. If crash was already reported and site contains additional data (like information about fix) small icon will appear in your game with any information it knows about the crash (it will usually be supplied by mod authors), along with a button to launch a webpage with more information. This page will display the crash details and try to work out which mods and files may have been involved in the crash.</p>
+        <p>The crash is reported in #OpenEye IRC channel, and mod authors can leave a small note against a crash via an IRC bot. At mod author's request we can also make the bot report your crashes directly to your IRC channel if you'd like.</p>
+        <h4 style="margin-top: 40px">File notes &amp; user security</h4>
+        <p>A mod author can leave notes against a file - these can be any notes the author wishes but I imagine it'll be mostly used for things such as "There's a new version available!". A note can also have a priority, which is reflected by the icon shown to the user. This is especially useful if a world corrupting issue is found and the mod author puts out a patch release.</p>
+        <p>To make things as unobtrusive as possible all notes are displayed in a single place, accessible via a small icon on the main menu.</p>
+        <p>Another type of note is a "dangerous file" note. Nobody has access to this - it's strictly reserved for something that has been confirmed to have a virus, key logger or anything that is truly dangerous to a user. If this is ever used it'd first be discussed with all parts of the community first. This is NOT something that will be used in mod or modpack drama - we're not going to get involved in anything to do with redistribution, user tracking, modified jars or anything else. It's there to alert a user if there is a REAL security risk from a dodgy file floating around on the search engines or similar. An example would be an altered mod which also contains code to install a virus or a keylogger onto your system outside of Minecraft. As of yet, I'm not aware of any situation in the history of modded minecraft that would warrant us using this, and I hope there never will.</p>
+        <p>Having said all that, it's just a warning message that gets displayed to users like any other note in the system. If you want to increase your security we have a config setting that'll bring up a full page screen and stop you from proceeding, however that's disabled by default. Be warned that this is only a thin layer of security - if someone was intent on causing harm I imagine they'd be able to add code to bypass our system quite easily - but some security is better than none.</p>
+        <h4 style="margin-top: 40px">IRC</h4>
+        <p>In esper.net #OpenEye we have an IRC bot that can let you search for information about mods and let mod authors update information about their mods. The IRC bot will also tell users in real-time about any new crashes that have entered into the system and any new mods detected.</p>
+        <h4 style="margin-top: 40px">Our data & our code</h4>
+        <p>As mentioned, this project is 100% open. Anyone is welcome to browse the source code and find out how data is handled or browse the daily data dumps to see what data is stored. We are very open to making this data available to other systems that might find it useful - whether that be something like NEM, or any of the launchers out there.</p>
+        <h4 style="margin-top: 40px">A message to modpacks</h4>
+        <p>If you're interested in including the mod while we're in beta we'd really appreciate a chat first - not because of any permissions nonsense - but because we need to make sure our servers are able to deal with any sudden surge of data.</p>
+        <h4 style="margin-top: 40px">A message to modders and launchers</h4>
+        <p>We really hope that you'll embrace this project and see the value in it. We're very open to suggestions, so please don't hesitate to get in contact with us and we'll do our best to accommodate you or answer any questions.</p>
+        <p>We think this tool may be useful to community (both users and modders). That's why we want this project to succeed. Please, discuss with us any issues you see and don't jump to quick conclusions.</p>
+        <ul style="margin: 50px 0;">
+            <li><a href="{{ relative('storage-policy') }}">Find out more about how data is stored</a></li>
+            <li><a href="{{ relative('configuration') }}">Learn how to configure OpenEye</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

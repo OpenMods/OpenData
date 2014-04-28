@@ -1,0 +1,74 @@
+{% extends 'base.twig' %}
+{% block main %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1>Configuration</h1>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <p>We've done all we can to give you, the user, as much control as possible over what information is sent and what the mod does with any information sent back.</p>
+        <p>The OpenEye configuration file is a bit different to what you're probably used to - our configuration file is in a format called "JSON".</p>
+        <p>Here's what it looks like by default:</p>
+<pre>
+{
+    "features": {
+        "reportsBlacklist": {
+            "value": []
+        },
+        "responseBlacklist": {
+            "value": []
+        },
+        "haltOnDangerousFiles": {
+            "value": false
+        }
+    },
+    "data": {
+        "scanOnly": {
+            "value": false
+        },
+        "tags": {
+            "value": []
+        }
+    },
+    "debug": {
+        "pingOnInitialReport": {
+            "value": false
+        },
+        "crashOnStartup": {
+            "value": false
+        }
+    }
+}</pre>
+        <p>I'll try to walk you through the options..</p>
+        <h4 style="margin: 30px 0">Features:</h4>
+        <p style="margin-top: 30px;"><strong>reportsBlacklist:</strong> This lets you stop certain reports from getting sent to the server. You can list multiple values - the possible options are:</p>
+        <ul>
+            <li>'analytics' - adding this will stop any analytics data being sent. However, without analytics data the server can not respond with any useful information.</li>
+            <li>'crashlog' - adding this will stop any crash reports from being sent</li>
+            <li>'file_info' - this will stop basic information about files from being sent</li>
+            <li>'file_contents' - this will stop more detailed information about a file from being sent</li>
+        </ul>
+        <p>Here's an example of the configuration file changed to stop file information and crash reports from being sent:</p>
+        <pre>
+"reportsBlacklist": {
+    "value": ["file_info", "crashlog"]
+}</pre>
+        <p style="margin-top: 30px;"><strong>responseBlacklist:</strong> This will make the mod ignore certain replies from the server. You can list multiple values - the possible options are:</p>
+        <ul>
+            <li>'file_info' - this will ignore requests for more file information</li>
+            <li>'file_contents' - this will stop detailed information from being sent</li>
+            <li>'dangerous_file' - this will ignore any warnings about dangerous files</li>
+            <li>'notes' - this will ignore notes that have been added to files</li>
+            <li>'known_crash' - this will ignore any crash information sent from the server</li>
+        </ul>
+        <p>Here's an example of the configuration file changed to ignore dangerous files and crash information:</p>
+        <pre>
+"responseBlacklist": {
+    "value": ["dangerous_file", "known_crash"]
+}</pre>
+    </div>
+</div>
+{% endblock %}

@@ -21,6 +21,18 @@ class HomeController {
         ));
     }
     
+    public function download() {
+        return $this->twig->render('download.twig');
+    }
+    
+    public function storagepolicy() {
+        return $this->twig->render('storagepolicy.twig');
+    }
+    
+    public function configuration() {
+        return $this->twig->render('configuration.twig');
+    }
+    
     public function all(Request $request) {       
         return $this->twig->render('home.twig', array_merge(
                 $this->getPagination(
