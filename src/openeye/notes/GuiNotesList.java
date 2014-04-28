@@ -51,10 +51,11 @@ public class GuiNotesList extends GuiScrollingList {
 		GL11.glColor3f(1, 1, 1);
 		int left = this.left + 10;
 		mc.renderEngine.bindTexture(GuiButtonNotes.TEXTURE);
-		owner.drawTexturedModalRect(left, top, entry.type.textureX + 2, 60 + 2, 16, 16);
+		NoteIcons icon = entry.category.icon;
+		owner.drawTexturedModalRect(left, top, icon.textureU + 2, icon.textureV + 2, 16, 16);
 
 		owner.drawString(mc.fontRenderer, entry.title().toString(), left + 20, top + 4, 0xFFFFFF);
-		String description = entry.description().toString();
+		String description = entry.content().toString();
 
 		int width = right - left;
 		if (!Strings.isNullOrEmpty(description)) mc.fontRenderer.drawSplitString(description, left, top + 20, left + width, 0xCCCCCC);

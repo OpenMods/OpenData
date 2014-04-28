@@ -3,6 +3,8 @@ package openeye.notes.entries;
 import java.io.File;
 
 import net.minecraft.util.ChatMessageComponent;
+import openeye.notes.NoteCategory;
+import openeye.notes.NoteLevels;
 import openeye.responses.ResponseModMsg;
 
 import com.google.gson.JsonObject;
@@ -10,15 +12,20 @@ import com.google.gson.JsonObject;
 public class MsgNoteEntry extends NoteEntry {
 	private final String description;
 	private final String signature;
-	private final int level;
 	private final String payload;
 
 	public MsgNoteEntry(File file, ResponseModMsg msg) {
-		super(file, calculateIconType(msg.level));
+		super(file, calculateFromLevel(msg.level), msg.level);
 		this.signature = msg.signature;
 		this.description = msg.description;
-		this.level = msg.level;
 		this.payload = msg.payload;
+	}
+
+	private static NoteCategory calculateFromLevel(int level) {
+		if (level > NoteLevels.CRITICAL_LEVEL_THRESHOLD) return NoteCategory.CRITICAL;
+		if (level > NoteLevels.ALERT_LEVEL_THRESHOLD) return NoteCategory.ALERT;
+		else if (level > NoteLevels.WARNING_LEVEL_THRESHOLD) return NoteCategory.WARNING;
+		else return NoteCategory.INFO;
 	}
 
 	@Override
@@ -32,7 +39,7 @@ public class MsgNoteEntry extends NoteEntry {
 	}
 
 	@Override
-	public ChatMessageComponent description() {
+	public ChatMessageComponent content() {
 		return ChatMessageComponent.createFromText(description);
 	}
 
@@ -40,7 +47,6 @@ public class MsgNoteEntry extends NoteEntry {
 	public JsonObject toJson() {
 		JsonObject result = super.toJson();
 		result.addProperty("signature", signature);
-		result.addProperty("level", level);
 		result.addProperty("payload", payload);
 		return result;
 	}

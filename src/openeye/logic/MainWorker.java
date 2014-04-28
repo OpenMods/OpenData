@@ -80,8 +80,6 @@ public final class MainWorker {
 
 	private Storages storages;
 
-	private ModState state;
-
 	private CountDownLatch canContinueLoading = new CountDownLatch(1);
 
 	private static Throwable lethalException;
@@ -132,7 +130,7 @@ public final class MainWorker {
 		return context.reports();
 	}
 
-	private void sendReports() {
+	private void sendReports(ModState state) {
 		final ReportsList initialReports = new ReportsList();
 
 		try {
@@ -219,24 +217,8 @@ public final class MainWorker {
 		crashStorage.store(crashReport);
 	}
 
-	private static void storeState(ModState state, Storages storages) {
-		IDataSource<ModState> stateStorage = storages.state.getById(Storages.STATE_FILE_ID);
-		stateStorage.store(state);
-	}
-
-	private static ModState getModState(Storages storages) {
-		try {
-			IDataSource<ModState> stateStorage = storages.state.getById(Storages.STATE_FILE_ID);
-			ModState state = stateStorage.retrieve();
-			if (state != null) return state;
-		} catch (Throwable t) {
-			Log.warn(t, "Failed to get mod state, reinitializing");
-		}
-		return new ModState();
-	}
-
 	private void updateState() {
-		state.installedMods = collector.getAllSignatures();
+		StateHolder.state().installedMods = collector.getAllSignatures();
 	}
 
 	private void startDataCollection(final InjectedDataStore dataStore, final ASMDataTable table) {
@@ -246,10 +228,10 @@ public final class MainWorker {
 				loadConfig(dataStore);
 
 				storages = new Storages(dataStore.getMcLocation());
-				state = getModState(storages);
+				StateHolder.init(storages);
 				collector = new ModMetaCollector(dataStore, table);
 
-				if (sendReports) sendReports();
+				if (sendReports) sendReports(StateHolder.state());
 
 				updateState();
 
@@ -273,7 +255,6 @@ public final class MainWorker {
 		Thread crashDumperThread = new Thread() {
 			@Override
 			public void run() {
-				tryStoreState();
 				if (lethalException != null && !(lethalException instanceof INotStoredCrash)) tryStoreCrash();
 			}
 
@@ -287,19 +268,6 @@ public final class MainWorker {
 					}
 				} else {
 					System.err.println("[OpenEye] Can't store crash report, since storage is not initialized");
-				}
-			}
-
-			private void tryStoreState() {
-				if (storages != null) {
-					try {
-						storeState(state, storages);
-					} catch (Throwable t) {
-						System.err.println("[OpenEye] Failed to store state");
-						t.printStackTrace();
-					}
-				} else {
-					System.err.println("[OpenEye] Can't store state, since storage is not initalized");
 				}
 			}
 		};

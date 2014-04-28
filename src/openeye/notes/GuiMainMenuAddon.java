@@ -16,13 +16,16 @@ public class GuiMainMenuAddon extends GuiMainMenu {
 
 		if (!mc.isDemo()) {
 			final NoteCollector noteCollector = NoteCollector.INSTANCE;
+			noteCollector.finishNoteCollection();
 
 			notification = noteCollector.getScreenMsg();
 
 			if (!noteCollector.isEmpty()) {
-				IconType type = noteCollector.getMaxLevel();
+				NoteCategory type = noteCollector.getMaxLevel();
 
-				GuiButton buttonNotes = new GuiButtonNotes(BUTTON_NOTES_ID, width / 2 + 104, height / 4 + 48 + 24 * 2, type, noteCollector.hasImportantNotes());
+				NoteIcons icon = type.icon;
+				boolean blinking = noteCollector.hasImportantNotes();
+				GuiButton buttonNotes = new GuiButtonNotes(BUTTON_NOTES_ID, width / 2 + 104, height / 4 + 48 + 24 * 2, icon, blinking);
 				this.buttonList.add(buttonNotes);
 			}
 		}
@@ -31,7 +34,7 @@ public class GuiMainMenuAddon extends GuiMainMenu {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicktime) {
 		super.drawScreen(mouseX, mouseY, partialTicktime);
-		if (notification != null) drawCenteredString(fontRenderer, notification.getDisplay(), width / 2, height / 4 + 48 + 24 * 3, notification.color);
+		if (notification != null) drawCenteredString(fontRenderer, notification.msg.toStringWithFormatting(true), width / 2, height / 4 + 48 + 24 * 3, 0xFFFFFF);
 	}
 
 	@Override

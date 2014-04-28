@@ -6,4 +6,8 @@ import com.google.common.collect.Sets;
 
 public class ModState {
 	public Set<String> installedMods = Sets.newHashSet();
+
+	public boolean mainMenuInfoDisplayed;
+
+	public boolean infoNotesDisplayed;
 }
