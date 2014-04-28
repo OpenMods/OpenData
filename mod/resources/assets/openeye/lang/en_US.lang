@@ -1,18 +1,44 @@
 openeye.main_screen.dangerous_file=One of mod files was marked as dangerous by OpenEye
 openeye.main_screen.known_crash=OpenEye has information about one or more of your recent crashes
+openeye.main_screen.crash_reported=Crashes stored to server
+openeye.main_screen.intro=DON'T PANIC! Click flashing button to find out what's going on.
 
-openeye.notes.goto_page=Go to page
-openeye.notes.dangerous_file=File %s is marked as dangerous (possibly malware) in OpenEye database. Go to website for details.
+openeye.notes.goto_page=Go to URL
 
-openeye.notes.title.known_crash=Information about recent crash available on site
+openeye.notes.title.resolved_crash=Resolution for recent crash available on site
+openeye.notes.title.reported_crash=Crash report sent to server
 openeye.notes.title.note=Note for file %s
 openeye.notes.title.dangerous_file=Dangerous file: %s
+
+openeye.note.title.intro1=Welcome to Open Eye
+openeye.note.content.intro1=OpenEye is utility that collects anonymous data about mod usage and crash reports
+
+openeye.note.title.intro2=Statistics
+openeye.note.content.intro2=Select this item and click "Go to URL" to see statistics collected by this tool. Other items also have assigned URLs.
+
+openeye.note.title.intro3=Collected data
+openeye.note.content.intro3=URL in this item contains summary of data collected by OpenEye
+
+openeye.note.title.intro4=Local data
+openeye.note.content.intro4=OpenEye stores all sent and received information in reports folder in your MC installation. Click Go to URL to open that folder.
+
+openeye.note.title.intro5=Source code
+openeye.note.content.intro5=OpenEye is open source mod. Source code available on GitHub.
+
+openeye.note.title.intro6=Disabling & configuration
+openeye.note.content.intro6=OpenEye uses vanilla snooper setting. If you are not satisfied with it, you can also safely remove this mod.
+
+openeye.notes.content.dangerous_file=File %s is marked as dangerous (possibly malware) in OpenEye database. Go to website for details.
 
 openeye.chat.note=Note %s, type: %s
 openeye.chat.store_failed=Failed to store notes!
 openeye.chat.dumped=Dumped notes to file %s
 
-openeye.level.critical=Critical
-openeye.level.alert=Alert
-openeye.level.warning=Warning
-openeye.level.info=Info
+openeye.category.critical=Critical
+openeye.category.alert=Alert
+openeye.category.warning=Warning
+openeye.category.info=Info
+openeye.category.system_info=System Info
+openeye.category.dangerous_file=Dangerous File
+openeye.level.reported_crash=Reported Crash
+openeye.level.resolved_crash=Resolved Crash

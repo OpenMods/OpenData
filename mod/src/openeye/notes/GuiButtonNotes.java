@@ -10,13 +10,13 @@ public class GuiButtonNotes extends GuiButton {
 
 	public static final ResourceLocation TEXTURE = new ResourceLocation("openeye", "textures/gui/buttons.png");
 
-	private final IconType icon;
+	private final NoteIcons icon;
 
 	private boolean blink;
 
 	private int count;
 
-	public GuiButtonNotes(int id, int x, int y, IconType icon, boolean blink) {
+	public GuiButtonNotes(int id, int x, int y, NoteIcons icon, boolean blink) {
 		super(id, x, y, 20, 20, "");
 		this.icon = icon;
 		this.blink = blink;
@@ -30,13 +30,15 @@ public class GuiButtonNotes extends GuiButton {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		final boolean mouseOverButton = isMouseOverButton(mouseX, mouseY);
 
-		int textureY;
+		int textureU;
 
-		if (blink && ((count++ & 0x10) != 0)) textureY = 40;
-		else if (mouseOverButton) textureY = 20;
-		else textureY = 0;
+		if (blink && ((count++ & 0x10) != 0)) textureU = 40;
+		else if (mouseOverButton) textureU = 20;
+		else textureU = 0;
 
-		drawTexturedModalRect(xPosition, yPosition, icon.textureX, textureY, width, height);
+		drawTexturedModalRect(xPosition, yPosition, textureU, 0, width, height);
+
+		drawTexturedModalRect(xPosition + 2, yPosition + 2, icon.textureU + 2, icon.textureV + 2, 16, 16);
 	}
 
 	protected boolean isMouseOverButton(int mouseX, int mouseY) {
