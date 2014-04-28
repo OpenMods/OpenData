@@ -3,8 +3,6 @@ package openeye.storage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-import openeye.Log;
-
 import com.google.gson.Gson;
 
 public abstract class GsonStreamSource<T> implements IDataSource<T> {
@@ -55,8 +53,7 @@ public abstract class GsonStreamSource<T> implements IDataSource<T> {
 				afterRead(reader);
 			}
 		} catch (Throwable t) {
-			Log.severe(t, "Failed to save JSON data to file %s (id: %s)", description(), id);
-			return null;
+			throw new IllegalStateException(String.format("Failed to read JSON data from file %s (id: %s)", description(), id), t);
 		}
 	}
 
@@ -71,7 +68,7 @@ public abstract class GsonStreamSource<T> implements IDataSource<T> {
 				afterWrite(writer);
 			}
 		} catch (Throwable t) {
-			Log.warn(t, "Failed to save JSON data to file %s (id: %s)", description(), id);
+			throw new IllegalStateException(String.format("Failed to save JSON data to file %s (id: %s)", description(), id), t);
 		}
 	}
 }

@@ -1,50 +1,45 @@
 package openeye.notes;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.EnumChatFormatting;
+import openeye.logic.InjectedDataStore;
+import openeye.logic.ModState;
+import openeye.logic.StateHolder;
 import openeye.notes.entries.*;
 import openeye.responses.ResponseDangerousFile;
 import openeye.responses.ResponseKnownCrash;
 import openeye.responses.ResponseModMsg;
+import openeye.storage.Storages;
 
-import com.google.common.collect.*;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 
 public class NoteCollector {
 
 	private static final Comparator<NoteEntry> NOTE_COMPARATOR = new Comparator<NoteEntry>() {
 		@Override
 		public int compare(NoteEntry o1, NoteEntry o2) {
-			int result = o1.type.compareTo(o2.type);
+			int result = -Integer.compare(o1.level, o2.level);
 			if (result != 0) return result;
 
 			return o1.file.compareTo(o2.file);
 		}
 	};
 
-	public static class ScreenNotification implements Comparable<ScreenNotification> {
-		public final IconType type;
-		public final int color;
-		public final String prefix;
-		public final String line;
-		public final Object[] params;
+	public static class ScreenNotification {
+		private final int level;
+		public final ChatMessageComponent msg;
 
-		private ScreenNotification(IconType type, int color, String prefix, String line, Object... params) {
-			this.type = type;
-			this.color = color;
-			this.prefix = prefix;
-			this.line = line;
-			this.params = params;
-		}
-
-		public String getDisplay() {
-			return prefix + StatCollector.translateToLocalFormatted(line, params);
-		}
-
-		@Override
-		public int compareTo(ScreenNotification o) {
-			return type.compareTo(o.type);
+		private ScreenNotification(int level, ChatMessageComponent msg) {
+			this.level = level;
+			this.msg = msg;
 		}
 	}
 
@@ -54,45 +49,52 @@ public class NoteCollector {
 
 	private final List<NoteEntry> notes = Lists.newArrayList();
 
-	private final SortedSet<ScreenNotification> lines = Sets.newTreeSet();
+	private ScreenNotification menuLine;
 
-	private IconType maxType = IconType.INFO;
+	private NoteCategory maxCategory = NoteCategory.INFO;
 
 	private NoteCollector() {}
 
-	protected void addNote(NoteEntry entry) {
+	private void addMenuLine(int level, ChatMessageComponent msg) {
+		if (menuLine == null || level > menuLine.level) menuLine = new ScreenNotification(level, msg);
+	}
+
+	public void addNote(NoteEntry entry) {
 		notes.add(entry);
-		maxType = Ordering.natural().max(maxType, entry.type);
+		maxCategory = Ordering.natural().max(maxCategory, entry.category);
+		important |= entry.category.important;
 	}
 
 	public void addNote(File file, ResponseModMsg note) {
 		NoteEntry entry = new MsgNoteEntry(file, note);
 		addNote(entry);
-		important |= entry.type.important;
 	}
 
 	public void addNote(File file, ResponseDangerousFile note) {
 		addNote(new DangerousFileEntry(file, note));
-		lines.add(new ScreenNotification(IconType.CRITICAL, 0xFF0000, "\u00a7L", "openeye.main_screen.dangerous_file"));
-		important = true;
+		addMenuLine(64, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.dangerous_file").setBold(true).setColor(EnumChatFormatting.RED));
 	}
 
 	public void addNote(ResponseKnownCrash note) {
-		addNote(new KnownCrashEntry(note));
-		lines.add(new ScreenNotification(IconType.INFO, 0x00FF00, "", "openeye.main_screen.known_crash"));
-		important = true;
+		if (Strings.isNullOrEmpty(note.note)) {
+			addNote(new ReportedCrashEntry(note));
+			addMenuLine(8, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.crash_reported"));
+		} else {
+			addNote(new ResolvedCrashEntry(note));
+			addMenuLine(32, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.known_crash").setColor(EnumChatFormatting.GREEN));
+		}
 	}
 
 	public boolean isEmpty() {
 		return notes.isEmpty();
 	}
 
-	public IconType getMaxLevel() {
-		return maxType;
+	public NoteCategory getMaxLevel() {
+		return maxCategory;
 	}
 
 	public ScreenNotification getScreenMsg() {
-		return lines.isEmpty()? null : lines.first();
+		return menuLine;
 	}
 
 	public boolean hasImportantNotes() {
@@ -102,5 +104,35 @@ public class NoteCollector {
 	public List<NoteEntry> getNotes() {
 		Collections.sort(notes, NOTE_COMPARATOR);
 		return ImmutableList.copyOf(notes);
+	}
+
+	private void addIntroNote(int id, String url) {
+		String title = "openeye.note.title.intro" + id;
+		String content = "openeye.note.content.intro" + id;
+		addNote(new SystemNoteEntry(NoteLevels.SYSTEM_NOTIFICATION_LEVEL + 16 - id,
+				ChatMessageComponent.createFromTranslationKey(title),
+				ChatMessageComponent.createFromTranslationKey(content),
+				url));
+	}
+
+	public void finishNoteCollection() {
+		ModState state = StateHolder.state();
+
+		if (!state.infoNotesDisplayed) {
+			File reportDir = Storages.getReportDir(InjectedDataStore.instance.getMcLocation());
+
+			addIntroNote(1, "http://openeye.openmods.info");
+			addIntroNote(2, "http://openeye.openmods.info");
+			addIntroNote(3, "http://openeye.openmods.info/storage-policy");
+			addIntroNote(4, reportDir.toURI().toString());
+			addIntroNote(5, "https://github.com/OpenMods/OpenData");
+			addIntroNote(6, "http://openeye.openmods.info/configuration");
+			state.infoNotesDisplayed = true;
+		}
+
+		if (!state.mainMenuInfoDisplayed) {
+			addMenuLine(256, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.intro").setColor(EnumChatFormatting.GOLD));
+			state.mainMenuInfoDisplayed = true;
+		}
 	}
 }
