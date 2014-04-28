@@ -54,6 +54,8 @@ class CrashesController {
             $response['allSignatures_count'] = $response['allSignatures']->count();
         }
         
+        $response['unlisted'] = $this->serviceMods->findUnlistedModIds();
+        
         return $this->twig->render('crash.twig', $response);
         
     }

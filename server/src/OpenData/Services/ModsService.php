@@ -31,14 +31,39 @@ class ModsService extends BaseService {
     
     public function findAll() {
         return $this->db->mods->find(
-                array('hide' => array('$ne' => true))
-        )->sort(array('name' => 1));
+            array(
+                'hide' => array(
+                    '$ne' => true
+                )
+            )
+        )->sort(
+            array(
+                'name' => 1
+            )
+        );
+    }
+    
+    public function findUnlistedModIds() {
+        $ids = array();
+        foreach($this->db->mods->find(array(
+            'unlisted' => true
+        ), array('_id' => 1)) as $mod) {
+            $ids[] = $mod['_id'];
+        }
+        return $ids;
     }
     
     public function findForHomepage() {
         return $this->db->mods->find(
-                array('hide' => array('$ne' => true))
-        )->sort(array('launches' => -1))->limit(50);
+            array(
+                'hide' => array('$ne' => true),
+                'unlisted' => array('$ne' => true)
+            )
+        )->sort(
+            array(
+                'launches' => -1
+            )
+        )->limit(50);
     }
 
     public function findByIds($modIds = array()) {

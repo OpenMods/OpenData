@@ -45,7 +45,7 @@ class ModController {
 
         $modInfo = $this->serviceMods->findById($modId);
         
-        if ($modInfo == null) {
+        if ($modInfo == null || (isset($modInfo['unlisted']) && $modInfo['unlisted'] === true)) {
             throw new \Exception();
         }
         

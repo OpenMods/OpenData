@@ -25,11 +25,15 @@
         <h3>Included with mods:</h3>
         <ul>
         {% for mod in mods %}
-            <li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a></li>
+            <li>{% if mod.unlisted %}{{ mod.name }}{% else %}<a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>{% endif %}</li>
                 <ul>
-                {% for file in mod.files %}
-                    <li>{{ file.filenames|first }}</li>
-                {% endfor %}
+                {% if mod.unlisted %}
+                   <li>{{ mod.files|length }} files (unlisted at authors request)</li>
+                {% else %}
+                    {% for file in mod.files %}
+                        <li>{{ file.filenames|first }}</li>
+                    {% endfor %}
+                {% endif %}
                 </ul>
             </li>
         {% endfor %}

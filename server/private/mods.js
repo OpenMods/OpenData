@@ -25,7 +25,7 @@ function findModsBy(context, query) {
 
     context.db.collection('mods').find(
             query
-    ).toArray(function(err, results) {
+            ).toArray(function(err, results) {
         var response = [];
         var i = 0;
         results.forEach(function(result) {
@@ -43,26 +43,26 @@ function findModsBy(context, query) {
             context.bot.say(context.channel, response.join(', '));
         } else {
             context.bot.say(context.channel, 'No results found');
-	}
+        }
     });
 }
 
 function findModsByAuthor(context) {
-	var args = context.args;
+    var args = context.args;
 
-	if (args.length != 1) {
-		return false;
-	}
+    if (args.length != 1) {
+        return false;
+    }
 
-	var regex = null;
+    var regex = null;
 
-	try {
-		regex = new RegExp(args[0], 'i');
-	}catch (e) {
-		return false;
-	}
+    try {
+        regex = new RegExp(args[0], 'i');
+    } catch (e) {
+        return false;
+    }
 
-    findModsBy(context, {'authors' : regex});
+    findModsBy(context, {'authors': regex});
     return true;
 }
 
@@ -71,15 +71,15 @@ function findMods(context) {
     var args = context.args;
 
     if (args.length != 1) {
-    	return false;
+        return false;
     }
 
     var regex = null;
 
     try {
         regex = new RegExp(args[0], 'i');
-    }catch (e) {
-    	return false;
+    } catch (e) {
+        return false;
     }
 
     findModsBy(context, {'$or': [{_id: regex}, {name: regex}]});
@@ -131,9 +131,9 @@ function removeAdmin(context) {
             );
 
         });
-	return true;
+        return true;
     } else {
-    	return false;
+        return false;
     }
 }
 
@@ -184,10 +184,10 @@ function addAdmin(context) {
             );
 
         });
-	return true;
+        return true;
     }
     return false;
-    
+
 }
 
 function getMod(context, modId, requiresPermissions, callback) {
@@ -209,6 +209,13 @@ function getMod(context, modId, requiresPermissions, callback) {
                         );
                 return true;
             }
+        }
+        if (result['unlisted'] != null && result['unlisted'] === true) {
+            context.bot.say(
+                        context.channel,
+                        'No information is available for this mod'
+                        );
+                return true;
         }
         callback(result);
     }
@@ -241,7 +248,7 @@ function setField(context) {
                     context.channel,
                     'Invalid field'
                     );
-    		return true;
+            return true;
         }
 
         getMod(context, modId, true, function(mod) {
@@ -265,7 +272,7 @@ function setField(context) {
                                     context.channel,
                                     err.message
                                     );
-    				return true;
+                            return true;
                         }
                         context.bot.say(
                                 context.channel,
@@ -276,7 +283,7 @@ function setField(context) {
             );
 
         });
-    	return true;
+        return true;
     }
     return false;
 
@@ -284,7 +291,7 @@ function setField(context) {
 
 function unsetField(context) {
 
-	var args = context.args;
+    var args = context.args;
 
     if (args.length == 2) {
 
@@ -296,7 +303,7 @@ function unsetField(context) {
             context.bot.say(
                     context.channel,
                     'Invalid field'
-            );
+                    );
             return;
         }
 
@@ -319,7 +326,7 @@ function unsetField(context) {
 
             context.db.collection('mods').update(
                     {'_id': modId},
-            		action,
+            action,
                     {},
                     function(err) {
                         if (err) {
@@ -353,58 +360,58 @@ function getStats(context) {
         var modId = args[0];
         var time = args[1];
 
-		console.log(time);
+        console.log(time);
 
         var date = Date.parse(time);
 
         if (date == null) {
-			context.bot.say(
-				context.channel,
-				'Invalid date string'
-			);
-			return;
-		}
+            context.bot.say(
+                    context.channel,
+                    'Invalid date string'
+                    );
+            return;
+        }
 
-		date.setMinutes(0);
-		date.setSeconds(0);
-		date.setMilliseconds(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+        date.setMilliseconds(0);
 
         getMod(context, modId, false, function(mod) {
 
-				var found = false;
-				if (mod['hours'] != null) {
-					mod['hours'].forEach(function(hour) {
-						if (hour.time.getTime() == date.getTime()) {
-							context.bot.say(
-								context.channel,
-								hour.time.toString("dddd, MMMM dd, yyyy HH:00:00") + ': ' + hour.launches + ' launches'
-							);
-							found = true;
-						}
-					});
-				}
-				if (mod['days'] != null) {
-					mod['days'].forEach(function(day) {
-						if (day.time.getTime() == date.getTime()) {
-							context.bot.say(
-								context.channel,
-								day.time.toString("dddd, MMMM dd, yyyy") + ': ' + day.launches + ' launches'
-							);
-							found = true;
-						}
-					});
-				}
+            var found = false;
+            if (mod['hours'] != null) {
+                mod['hours'].forEach(function(hour) {
+                    if (hour.time.getTime() == date.getTime()) {
+                        context.bot.say(
+                                context.channel,
+                                hour.time.toString("dddd, MMMM dd, yyyy HH:00:00") + ': ' + hour.launches + ' launches'
+                                );
+                        found = true;
+                    }
+                });
+            }
+            if (mod['days'] != null) {
+                mod['days'].forEach(function(day) {
+                    if (day.time.getTime() == date.getTime()) {
+                        context.bot.say(
+                                context.channel,
+                                day.time.toString("dddd, MMMM dd, yyyy") + ': ' + day.launches + ' launches'
+                                );
+                        found = true;
+                    }
+                });
+            }
 
-				if (!found) {
-						context.bot.say(
-							context.channel,
-							'No stats found for ' + date.toString("dddd, MMMM dd, yyyy HH:00:00")
-						);
-				}
+            if (!found) {
+                context.bot.say(
+                        context.channel,
+                        'No stats found for ' + date.toString("dddd, MMMM dd, yyyy HH:00:00")
+                        );
+            }
         });
 
-	return true;
-    } 
+        return true;
+    }
     return false;
 
 }
@@ -459,7 +466,7 @@ function getFields(context) {
             });
         });
 
-	return true;
+        return true;
     }
     return false;
 

@@ -82,6 +82,9 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addFilter(new \Twig_SimpleFilter('id', function ($string) {
         return substr(md5($string), 0, 5);
     }));
+    $twig->addFunction(new \Twig_SimpleFunction('in_array', function ($needle, $haystack) {
+        return in_array($needle, $haystack);
+    }));
     $twig->addFilter(new \Twig_SimpleFilter('fullurl', function ($string) {
         if (!empty($string)) {
             if(!preg_match("/^https?:\/\//", $string)) {

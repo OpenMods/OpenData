@@ -24,7 +24,7 @@
         <div class="col-md-5">
             <ul>
             {% for mod in chunk %}
-                <li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a></li>
+                <li>{% if mod.unlisted %}{{ mod.name }}{% else %}<a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>{% endif %}</li>
             {% endfor %}
             </ul>
         </div>
@@ -39,7 +39,17 @@
         <div class="col-md-5">
             <ul>
             {% for file in chunk %}
-                <li><a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal">{{ file.filenames|first }}</a></li>
+                {% set linkFile = true %}
+                {% for mod in file.mods %}
+                  {% if in_array(mod.modId, unlisted) %}
+                     {% set linkFile = false %}
+                  {% endif %}
+                {% endfor %}
+                {% if linkFile %}
+                    <li><a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal">{{ file.filenames|first }}</a></li>
+                {% else %}
+                    <li>{{ file.filenames|first }}</li>
+                {% endif %}
             {% endfor %}
             </ul>
         </div>
@@ -53,7 +63,7 @@
     {% for chunk in chunks %}
         <div class="col-md-4">
             <ul>
-            {% for mod in chunk %}<li><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a></li>{% endfor %}
+            {% for mod in chunk %}<li>{% if mod.unlisted %}{{ mod.name }}{% else %}<a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>{% endif %}</li>{% endfor %}
             </ul>
         </div>
     {% endfor %}
@@ -67,7 +77,19 @@
     {% for chunk in chunks %}
         <div class="col-md-4">
             <ul>
-            {% for file in chunk %}<li><a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal">{{ file.filenames|first }}</a></li>{% endfor %}
+            {% for file in chunk %}
+                {% set linkFile = true %}
+                {% for mod in file.mods %}
+                  {% if in_array(mod.modId, unlisted) %}
+                     {% set linkFile = false %}
+                  {% endif %}
+                {% endfor %}
+                {% if linkFile %}
+                    <li><a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal">{{ file.filenames|first }}</a></li>
+                {% else %}
+                    <li>{{ file.filenames|first }}</li>
+                {% endif %}
+            {% endfor %}
             </ul>
         </div>
     {% endfor %}

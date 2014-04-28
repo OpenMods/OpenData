@@ -51,15 +51,15 @@
                             <img src="{% if mod.image %}{{ relative(mod.image) }}{% else %}{{ relative('modimages/grass.png') }}{% endif %}" alt="">
                           </a>
                           <div class="media-body">
-                            <h4 class="media-heading"><a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>{% if mod.authors|length > 0 %} <small>by {{ mod.authors|join(', ') }}</small>{% endif %}</h4>
+                            <h4 class="media-heading">{% if mod.unlisted %}{{ mod.name }}{% else %}<a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>{% if mod.authors|length > 0 %}{% endif %} <small>by {{ mod.authors|join(', ') }}</small>{% endif %}</h4>
                             <p>{{ mod.description }}</p>
-                          {% if mod.tags|length > 0 %}
+                            {% if mod.tags|length > 0 %}
                               <p>
                                 {% for tag in mod.tags %}
                                     <span class="label label-info">{{ tag }}</span> 
                                 {% endfor %}
                               </p>
-                          {% endif %}
+                            {% endif %}
                           </div>
                         </div>
                         
