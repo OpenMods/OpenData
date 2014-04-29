@@ -11,8 +11,54 @@
     <div class="col-md-12">
         <p>All the data we collect is anonymous and state-less. We gather only as much information as we need to be able to give useful analytics to the people who need it and give you back helpful information. We hold onto it for as little time as possible before removing it.</p>
         <h3>So how does it work?</h3>
-        <p>At first, OpenEye will send us a packet of data that looks similar to <a href="http://pastebin.com/raw.php?i=SS5UDbEm" target="_blank">this</a>.
-            As you can see, there is no information that identifies you in any way. Once the system has been collecting these packets for one hour it'll tally all of the important statistics and then remove all of the data, only ever storing as little information as it needs.</p>
+        <p>At first, OpenEye will send us a packet of data that looks similar to this:</p>
+<pre>[
+  {
+    "branding": [
+      "Minecraft 1.6.4",
+      "MCP v8.11",
+      "FML v6.4.49.965",
+      "Minecraft Forge 9.11.1.965",
+      "6 mods loaded, 6 mods active"
+    ],
+    "runtime": {
+      "fml": "6.4.49.965",
+      "forge": "9.11.1.965",
+      "mcp": "MCP v8.11"
+    },
+    "minecraft": "Minecraft 1.6.4",
+    "language": "en_US",
+    "locale": "en_GB",
+    "timezone": "Europe/London",
+    "signatures": [
+      {
+        "signature": "sha256:893863eb0e6241ed49c551662f1764fa2037a69588178e7e35a70be9247c44f1",
+        "filename": "OpenComputers-MC1.6.4-1.2.7.340-universal.jar"
+      },
+      {
+        "signature": "sha256:a4feb6b8e23887f197fc897ce70d7c6822cd94ea898e7d4d4d292ef217af17df",
+        "filename": "scala-compiler-2.10.2.jar"
+      },
+      {
+        "signature": "sha256:af93dbc687926a9e627ab29aa40da6eebcb22e4f785c71859141c7f962070506",
+        "filename": "obsidiplates-1.6.2-universal-2.0.0.15.jar"
+      },
+      {
+        "signature": "sha256:969ddb629c22a2a5edacaadddb5c3615f5f8f4aeeb4c958f1fac3c116faaef43",
+        "filename": "RemainInMotion_1.1.4.zip"
+      },
+    ],
+    "addedSignatures": [
+      "sha256:893863eb0e6241ed49c551662f1764fa2037a69588178e7e35a70be9247c44f1",
+      "sha256:a4feb6b8e23887f197fc897ce70d7c6822cd94ea898e7d4d4d292ef217af17df",
+      "sha256:af93dbc687926a9e627ab29aa40da6eebcb22e4f785c71859141c7f962070506",
+      "sha256:969ddb629c22a2a5edacaadddb5c3615f5f8f4aeeb4c958f1fac3c116faaef43"
+    ],
+    "removedSignatures": [],
+    "workTime": 1852458.0,
+    "type": "analytics"
+}</pre>
+        <p>As you can see, there is no information that identifies you in any way. Once the system has been collecting these packets for one hour it'll tally all of the important statistics and then remove all of the data, only ever storing as little information as it needs.</p>
         <p>When the server receives an analytics packet it'll search the database for any 'notes' left for a file and send them back to your game. If there's any file signatures it doesn't recognise it'll ask your game to send additional information about the file to help us identify it.</p>
         <p>If you crash, we save a crash log and we send it up to the server next time you launch the game - and the server will respond with any information it has about the crash.</p>
         <h3>Want to see exactly what gets sent? Not a problem!</h3>
