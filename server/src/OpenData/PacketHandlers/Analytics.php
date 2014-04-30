@@ -77,6 +77,12 @@ class Analytics implements IPacketHandler {
                 ));
             }
 
+            if ($this->shouldUploadFile($fileData)) {
+                $responses[] = array_merge($fileNode, array(
+                    'type' => 'upload_file'
+                ));
+            }
+
             if (isset($fileData['dangerous_file']) && $fileData['dangerous_file'] == true) {
                 $responses[] = array_merge($fileNode, array(
                     'type' => 'dangerous_file'
@@ -124,6 +130,12 @@ class Analytics implements IPacketHandler {
         return isset($fileData['request_files']) &&
                 $fileData['request_files'] &&
                 !isset($fileData['files']);
+    }
+
+    private function shouldUploadFile($fileData) {
+        return isset($fileData['upload_file']) &&
+                $fileData['upload_file'] &&
+                !isset($fileData['file_id']);
     }
 
 }

@@ -47,11 +47,15 @@
                     <div class="col-md-6">
                         
                         <div class="media">
-                          <a class="pull-left" href="{{ relative('mod/' ~ mod._id) }}">
-                            <img src="{% if mod.image %}{{ relative(mod.image) }}{% else %}{{ relative('modimages/grass.png') }}{% endif %}" alt="">
-                          </a>
+                          {% if mod.unlisted %}
+                            <img src="{% if mod.image %}{{ relative(mod.image) }}{% else %}{{ relative('modimages/grass.png') }}{% endif %}" alt="" class="pull-left">
+                          {% else %}
+                            <a class="pull-left" href="{{ relative('mod/' ~ mod._id) }}">
+                              <img src="{% if mod.image %}{{ relative(mod.image) }}{% else %}{{ relative('modimages/grass.png') }}{% endif %}" alt="">
+                            </a>
+                          {% endif %}
                           <div class="media-body">
-                            <h4 class="media-heading">{% if mod.unlisted %}{{ mod.name }}{% else %}<a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>{% if mod.authors|length > 0 %}{% endif %} <small>by {{ mod.authors|join(', ') }}</small>{% endif %}</h4>
+                            <h4 class="media-heading">{% if mod.unlisted %}{{ mod.name }}{% else %}<a href="{{ relative('mod/' ~ mod._id) }}">{{ mod.name }}</a>{% if mod.authors|length > 0 %} <small>by {{ mod.authors|join(', ') }}</small>{% endif %}{% endif %}</h4>
                             <p>{{ mod.description }}</p>
                             {% if mod.tags|length > 0 %}
                               <p>

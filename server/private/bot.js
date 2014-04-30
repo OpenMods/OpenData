@@ -29,15 +29,16 @@ Array.prototype.remove = function() {
     return this;
 };
 
-if (process.argv.length != 4) {
+if (process.argv.length != 5) {
     process.exit();
 }
 
 var dbUser = process.argv[2];
 var dbPass = process.argv[3];
+var password = process.argv[4];
 
 
-var myNick = 'OpenEye2';
+var myNick = 'MissOpenEye';
 var mainChannel = '#OpenEye';
 var connectionString = 'mongodb://' + dbUser + ':' + dbPass + '@openeye.openmods.info:27017/hopper';
 
@@ -136,7 +137,12 @@ MongoClient.connect(connectionString, function(err, db) {
 
     var bot = new irc.Client('irc.esper.net', myNick, {
         channels: [mainChannel],
+        autoConnect: false,
         debug: true
+    });
+    
+    bot.connect(5, function() {
+       bot.say('nickserv', 'identify OpenEye ' + password);
     });
     
     redisClient.on('message', function (channel, message) {

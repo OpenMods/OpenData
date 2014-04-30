@@ -8,7 +8,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="padding-bottom: 50px">
         <p>We've done all we can to give you, the user, as much control as possible over what information is sent and what the mod does with any information sent back.</p>
         <p>The OpenEye configuration file is a bit different to what you're probably used to - our configuration file is in a format called "JSON".</p>
         <p>Here's what it looks like by default:</p>
@@ -43,7 +43,7 @@
     }
 }</pre>
         <p>I'll try to walk you through the options..</p>
-        <h4 style="margin: 30px 0">Features:</h4>
+        <h3 style="margin: 30px 0">Features:</h3>
         <p style="margin-top: 30px;"><strong>reportsBlacklist:</strong> This lets you stop certain reports from getting sent to the server. You can list multiple values - the possible options are:</p>
         <ul>
             <li>'analytics' - adding this will stop any analytics data being sent. However, without analytics data the server can not respond with any useful information.</li>
@@ -69,6 +69,21 @@
 "responseBlacklist": {
     "value": ["dangerous_file", "known_crash"]
 }</pre>
+        <p style="margin-top: 30px;"><strong>haltOnDangerousFiles:</strong> This will halt the game if it detects a dangerous file</p>
+        <pre>
+"haltOnDangerousFiles": {
+    "value": true
+}</pre>
+        <h3 style="margin: 30px 0">Data:</h3>
+        <p style="margin-top: 30px;"><strong>scanOnly:</strong> Mostly a debug tool. It'll send ALL file details up by not analytics.</p>
+        <p style="margin-top: 30px;"><strong>tags:</strong> This is where users or mod packs can list custom tags that they wish to send up to the analytics. For example:</p>
+        <pre>
+"tags": {
+    "value": ["my_super_mod_pack", "something_else"]
+}</pre>
+        <h3 style="margin: 30px 0">Debug:</h3>
+        <p style="margin-top: 30px;"><strong>pingOnInitialReport:</strong> This sends up a ping packet. You do not need to use this!</p>
+        <p style="margin-top: 30px;"><strong>crashOnStartup:</strong> This will force-crash your game on startup. Don't use this! It's a testing tool!</p>
     </div>
 </div>
 {% endblock %}

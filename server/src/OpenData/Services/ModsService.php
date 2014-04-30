@@ -57,7 +57,8 @@ class ModsService extends BaseService {
         return $this->db->mods->find(
             array(
                 'hide' => array('$ne' => true),
-                'unlisted' => array('$ne' => true)
+                'unlisted' => array('$ne' => true),
+                'tags' => array('$ne' => 'library')
             )
         )->sort(
             array(

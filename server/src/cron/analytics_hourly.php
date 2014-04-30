@@ -64,6 +64,7 @@ if ((int) date('G', $currentHour) == 0) {
     $today = strtotime(date("Y-m-d 00:00:00"));
     $yesterday = $today - 86400;
     $oYesterday = new \MongoDate($yesterday);
+    
     foreach ($reportTypes as $type) {
         $docs = array();
         $results = $db->analytics_aggregated->aggregate(
@@ -78,9 +79,9 @@ if ((int) date('G', $currentHour) == 0) {
                 array('$group' => array('_id' => '$_id.key', 'launches' => array('$sum' => '$launches')))
             )
         );
+        
         foreach ($results['result'] as $result) {
-            
-            if ($report['type'] == 'signatures') {
+            if ($type == 'signatures') {
                 $fileStatMap[$result['_id']] = $result['launches'];
             }
             
@@ -100,37 +101,37 @@ if ((int) date('G', $currentHour) == 0) {
         }
     }
     
-}
-
-/***********************************************
- * Update mod stats for homepage listing
- **********************************************/
-$mods = array();
-$files = $db->files->find(array(
-    '_id' => array('$in' => array_keys($fileStatMap))
-));
-foreach ($files as $file) {
-    if (isset($fileStatMap[$file['_id']])) {
-        foreach ($file['mods'] as $mod) {
-            if (!isset($mods[$mod['modId']])) {
-                $mods[$mod['modId']] = 0;
+    /***********************************************
+     * Update mod stats for homepage listing
+     **********************************************/
+    $mods = array();
+    $files = $db->files->find(array(
+        '_id' => array('$in' => array_keys($fileStatMap))
+    ));
+    foreach ($files as $file) {
+        if (isset($fileStatMap[$file['_id']])) {
+            foreach ($file['mods'] as $mod) {
+                if (!isset($mods[$mod['modId']])) {
+                    $mods[$mod['modId']] = 0;
+                }
+                $mods[$mod['modId']] += $fileStatMap[$file['_id']];
             }
-            $mods[$mod['modId']] += $fileStatMap[$file['_id']];
         }
+    }
+
+    $db->mods->update(array(), array('$set' => array('launches' => 0)), array('multiple' => true));
+    
+    foreach ($mods as $mod => $launches) {
+        $db->mods->update(
+                array('_id' => $mod),
+                array('$set' => array(
+                    'launches' => $launches
+                )
+            )
+        );
     }
 }
 
-$db->mods->update(array(), array('$set' => array('launches' => 0)), array('multiple' => true));
-
-foreach ($mods as $mod => $launches) {
-    $db->mods->update(
-            array('_id' => $mod),
-            array('$set' => array(
-                'launches' => $launches
-            )
-        )
-    );
-}
 
 function rutime($ru, $rus, $index) {
     return ($ru["ru_$index.tv_sec"] * 1000 + intval($ru["ru_$index.tv_usec"] / 1000)) - ($rus["ru_$index.tv_sec"] * 1000 + intval($rus["ru_$index.tv_usec"] / 1000));
