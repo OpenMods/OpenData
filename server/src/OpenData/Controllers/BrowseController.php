@@ -66,7 +66,8 @@ class BrowseController {
             'current_page' => $page,
             'total' => $total,
             'disablePrev' => $page <= 1,
-            'disableNext' => $page + 1 >= $pageCount
+            'disableNext' => $page + 1 >= $pageCount,
+            'table' => $table
         ));
     }
     
