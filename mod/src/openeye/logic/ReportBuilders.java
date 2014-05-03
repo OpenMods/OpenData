@@ -86,13 +86,20 @@ public class ReportBuilders {
 		return el;
 	}
 
+	private static String sanitizeThrowableMessage(String message) {
+		File mcPath = InjectedDataStore.instance.getMcLocation();
+		if (mcPath != null) message = message.replace(mcPath.getAbsolutePath(), "[minecraft]");
+
+		return message;
+	}
+
 	private static ExceptionInfo createStackTrace(Throwable throwable, StackTraceElement[] prevStacktrace, Set<Throwable> alreadySerialized, ModMetaCollector collector) {
 		if (alreadySerialized.contains(throwable)) return null; // cyclical reference
 
 		ExceptionInfo info = new ExceptionInfo();
 
 		info.exceptionCls = throwable.getClass().getName();
-		info.message = throwable.getMessage();
+		info.message = sanitizeThrowableMessage(throwable.getMessage());
 
 		alreadySerialized.add(throwable);
 
