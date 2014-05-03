@@ -75,7 +75,8 @@ public class Mod extends DummyModContainer {
 
 	public static void crash1() {
 		try {
-			throw new RuntimeException("deep one");
+			File mcDir = InjectedDataStore.instance.getMcLocation();
+			throw new RuntimeException("deep one: " + new File(mcDir, "hello.txt"));
 		} catch (RuntimeException e) {
 			throw new RuntimeException("u wot m8", e);
 		}
