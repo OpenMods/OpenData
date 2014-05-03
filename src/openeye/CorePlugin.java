@@ -4,14 +4,16 @@ import java.util.Map;
 
 import openeye.logic.InjectedDataStore;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.Name;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
+@Name("OpenEyePlugin")
 @TransformerExclusions("openeye")
 public class CorePlugin implements IFMLLoadingPlugin {
 
 	@Override
 	public String[] getASMTransformerClass() {
-		return new String[] { "openeye.asm.CrashReportInjector" };
+		return new String[] { "openeye.asm.MultiTransformer" };
 	}
 
 	@Override

@@ -318,7 +318,7 @@ public class ModMetaCollector {
 			for (ITweaker tweaker : tweakers) {
 				try {
 					File location = (File)locationField.get(tweaker);
-					if (location.isDirectory()) continue;
+					if (location == null || location.isDirectory()) continue;
 					String name = (String)nameField.get(tweaker);
 					IFMLLoadingPlugin plugin = (IFMLLoadingPlugin)pluginField.get(tweaker);
 
