@@ -68,6 +68,9 @@ public class ReportCrash implements IReport {
 	@SerializedName("timestamp")
 	public long timestamp;
 
+	@SerializedName("location")
+	public String location;
+
 	@SerializedName("exception")
 	public ExceptionInfo exception;
 

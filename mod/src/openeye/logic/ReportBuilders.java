@@ -116,10 +116,12 @@ public class ReportBuilders {
 		return info;
 	}
 
-	public static ReportCrash buildCrashReport(Throwable throwable, ModMetaCollector collector) {
+	public static ReportCrash buildCrashReport(Throwable throwable, String location, ModMetaCollector collector) {
 		ReportCrash crash = new ReportCrash();
 
 		crash.timestamp = new Date().getTime();
+
+		crash.location = location;
 
 		Set<Throwable> blacklist = Sets.newSetFromMap(new IdentityHashMap<Throwable, Boolean>());
 		crash.exception = createStackTrace(throwable, new StackTraceElement[0], blacklist, collector);

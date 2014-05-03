@@ -19,6 +19,9 @@ public class Config {
 
 	@ConfigProperty(category = "debug")
 	public static boolean pingOnInitialReport = false;
+	
+	@ConfigProperty(category = "debug")
+	public static boolean dontSend = false;
 
 	@ConfigProperty(category = "features")
 	public static boolean haltOnDangerousFiles = false;

@@ -1,15 +1,31 @@
 package openeye.asm;
 
 import net.minecraft.crash.CrashReport;
+import net.minecraft.util.ReportedException;
+import openeye.Log;
 import openeye.logic.MainWorker;
 
 public class CallHack {
 
 	/*
-	 * I'm to lazy to do proper signatures in transformer. Obfuscation should make sure this call always has proper type
+	 * I'm to lazy to do proper signatures in transformer. Obfuscation should make sure this code always uses proper type
 	 */
 	public static void callFromCrashHandler(Object o) {
 		CrashReport report = (CrashReport)o;
-		MainWorker.storeThrowableForReport(report.getCrashCause());
+		MainWorker.storeThrowableForReport(report.getCrashCause(), "crash_handler");
+	}
+
+	public static void callForSilentException(Throwable throwable, String location) {
+		if (throwable instanceof ReportedException) {
+			try {
+				ReportedException tmp = (ReportedException)throwable;
+				throwable = tmp.getCrashReport().getCrashCause();
+			} catch (Throwable t) {
+				Log.warn(t, "Failed to extract report");
+				MainWorker.storeThrowableForReport(t, "openeye_internal");
+			}
+		}
+
+		MainWorker.storeThrowableForReport(throwable, location);
 	}
 }

@@ -74,6 +74,16 @@ public final class MainWorker {
 		}
 	}
 
+	private static class ThrowableEntry {
+		public final String location;
+		public final Throwable throwable;
+
+		public ThrowableEntry(Throwable throwable, String location) {
+			this.location = location;
+			this.throwable = throwable;
+		}
+	}
+
 	private final String url = getOpenEyeUrl("api/v1/data");
 
 	private ModMetaCollector collector;
@@ -82,7 +92,7 @@ public final class MainWorker {
 
 	private CountDownLatch canContinueLoading = new CountDownLatch(1);
 
-	private static Throwable lethalException;
+	private static List<ThrowableEntry> lethalExceptions = Lists.newArrayList();
 
 	private final boolean sendReports;
 
@@ -92,8 +102,8 @@ public final class MainWorker {
 		this.sendReports = sendReports;
 	}
 
-	public static void storeThrowableForReport(Throwable throwable) {
-		if (lethalException == null) lethalException = throwable;
+	public static void storeThrowableForReport(Throwable throwable, String location) {
+		if (!(throwable instanceof INotStoredCrash)) lethalExceptions.add(new ThrowableEntry(throwable, location));
 	}
 
 	private void storeReport(ReportsList report) {
@@ -143,7 +153,7 @@ public final class MainWorker {
 			if (Config.pingOnInitialReport) initialReports.add(new ReportPing());
 
 		} catch (Exception e) {
-			Log.warn(e, "Failed to create initial report");
+			logException(e, "Failed to create initial report");
 			return;
 		}
 
@@ -152,7 +162,7 @@ public final class MainWorker {
 				ReportCrash report = crash.retrieve();
 				if (report != null) initialReports.add(report);
 			} catch (Exception e) {
-				Log.warn(e, "Failed to add crash report %s", crash.getId());
+				logException(e, "Failed to add crash report %s", crash.getId());
 			}
 		}
 
@@ -169,10 +179,10 @@ public final class MainWorker {
 				}
 
 				filterStructs(currentReports, Config.reportsBlacklist);
-				ResponseList response = sender.sendAndReceive(currentReports);
-				filterStructs(response, Config.responseBlacklist);
+				ResponseList response = Config.dontSend? null : sender.sendAndReceive(currentReports);
 
 				if (response == null || response.isEmpty()) break;
+				filterStructs(response, Config.responseBlacklist);
 
 				try {
 					storeRequest(response);
@@ -199,6 +209,11 @@ public final class MainWorker {
 		}
 	}
 
+	private static void logException(Throwable throwable, String msg, Object... args) {
+		storeThrowableForReport(throwable, "openeye");
+		Log.warn(throwable, msg, args);
+	}
+
 	protected static void loadConfig(InjectedDataStore dataStore) {
 		try {
 			File configFolder = new File(dataStore.getMcLocation(), "config");
@@ -211,8 +226,21 @@ public final class MainWorker {
 		}
 	}
 
-	private static void storeCrash(ModMetaCollector collector, Throwable throwable, Storages storages) {
-		ReportCrash crashReport = ReportBuilders.buildCrashReport(throwable, collector);
+	private void tryStoreCrash(ThrowableEntry entry) {
+		if (storages != null) {
+			try {
+				storeCrash(collector, entry, storages);
+			} catch (Throwable t) {
+				System.err.println("[OpenEye] Failed to store crash report");
+				t.printStackTrace();
+			}
+		} else {
+			System.err.println("[OpenEye] Can't store crash report, since storage is not initialized");
+		}
+	}
+
+	private static void storeCrash(ModMetaCollector collector, ThrowableEntry entry, Storages storages) {
+		ReportCrash crashReport = ReportBuilders.buildCrashReport(entry.throwable, entry.location, collector);
 		IDataSource<ReportCrash> crashStorage = storages.pendingCrashes.createNew();
 		crashStorage.store(crashReport);
 	}
@@ -255,20 +283,8 @@ public final class MainWorker {
 		Thread crashDumperThread = new Thread() {
 			@Override
 			public void run() {
-				if (lethalException != null && !(lethalException instanceof INotStoredCrash)) tryStoreCrash();
-			}
-
-			private void tryStoreCrash() {
-				if (storages != null) {
-					try {
-						storeCrash(collector, lethalException, storages);
-					} catch (Throwable t) {
-						System.err.println("[OpenEye] Failed to store crash report");
-						t.printStackTrace();
-					}
-				} else {
-					System.err.println("[OpenEye] Can't store crash report, since storage is not initialized");
-				}
+				for (ThrowableEntry t : lethalExceptions)
+					tryStoreCrash(t);
 			}
 		};
 
