@@ -2,9 +2,9 @@ package openeye.notes.entries;
 
 import java.io.File;
 
-import net.minecraft.util.ChatMessageComponent;
 import openeye.notes.NoteCategory;
 import openeye.notes.NoteLevels;
+import openeye.notes.WrappedChatComponent;
 import openeye.responses.ResponseModMsg;
 
 import com.google.gson.JsonObject;
@@ -34,13 +34,13 @@ public class MsgNoteEntry extends NoteEntry {
 	}
 
 	@Override
-	public ChatMessageComponent title() {
-		return ChatMessageComponent.createFromTranslationWithSubstitutions("openeye.notes.title.note", file.getName());
+	public WrappedChatComponent title() {
+		return WrappedChatComponent.createTranslation("openeye.notes.title.note", file.getName());
 	}
 
 	@Override
-	public ChatMessageComponent content() {
-		return ChatMessageComponent.createFromText(description);
+	public WrappedChatComponent content() {
+		return WrappedChatComponent.createTranslation(description);
 	}
 
 	@Override

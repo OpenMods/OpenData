@@ -5,16 +5,35 @@ buildscript {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
-    }
+        if (mc_version == '1.6.4') {
+            classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
+        } else {
+            classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        }
+    }   
 }
 
 apply plugin: 'forge'
 
-ext.minecraft_version = '1.6.4'
-ext.forge_version = '9.11.1.964'
+switch (mc_version) {
+case '1.6.4':
+    ext.minecraft_version = '1.6.4'
+    ext.forge_version = '9.11.1.964'
+    ext.src_extra = '1.6.4'
+    break
+case '1.7.2':
+    ext.minecraft_version = '1.7.2'
+    ext.forge_version = '10.12.1.1060'
+    ext.src_extra = '1.7.2'
+    break
+}
+
 ext.mod_version = '0.1'
 ext.mod_group = 'com.openmods.openeye'
 ext.jar_name = 'OpenEye'

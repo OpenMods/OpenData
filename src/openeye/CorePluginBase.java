@@ -4,12 +4,8 @@ import java.util.Map;
 
 import openeye.logic.InjectedDataStore;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin.Name;
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
-@Name("OpenEyePlugin")
-@TransformerExclusions("openeye")
-public class CorePlugin implements IFMLLoadingPlugin {
+public abstract class CorePluginBase implements IFMLLoadingPlugin {
 
 	@Override
 	public String[] getASMTransformerClass() {
@@ -30,10 +26,4 @@ public class CorePlugin implements IFMLLoadingPlugin {
 	public void injectData(Map<String, Object> data) {
 		InjectedDataStore.instance.populateFromInject(data);
 	}
-
-	@Deprecated
-	public String[] getLibraryRequestClass() {
-		return null;
-	}
-
 }

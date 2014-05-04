@@ -3,12 +3,12 @@ package openeye.notes;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import openeye.logic.Config;
-import openeye.notes.NoteCollector.ScreenNotification;
+import openeye.utils.CompatiblityAdapter;
 
 public class GuiMainMenuAddon extends GuiMainMenu {
 
 	private static final int BUTTON_NOTES_ID = 666;
-	private ScreenNotification notification;
+	private WrappedChatComponent notification;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -35,7 +35,7 @@ public class GuiMainMenuAddon extends GuiMainMenu {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicktime) {
 		super.drawScreen(mouseX, mouseY, partialTicktime);
-		if (Config.mainScreenExtraLine && notification != null) drawCenteredString(fontRenderer, notification.msg.toStringWithFormatting(true), width / 2, height / 4 + 48 + 24 * 3, 0xFFFFFF);
+		if (Config.mainScreenExtraLine && notification != null) drawCenteredString(CompatiblityAdapter.getFontRenderer(), notification.getFormatted(), width / 2, height / 4 + 48 + 24 * 3, 0xFFFFFF);
 	}
 
 	@Override

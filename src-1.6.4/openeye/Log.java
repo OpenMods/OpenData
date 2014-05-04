@@ -62,16 +62,12 @@ public final class Log {
 		logWithCaller(stackInfo.fillInStackTrace(), Level.INFO, format, data);
 	}
 
-	public static void fine(String format, Object... data) {
+	public static void debug(String format, Object... data) {
 		logWithCaller(stackInfo.fillInStackTrace(), Level.FINE, format, data);
 	}
 
-	public static void finer(String format, Object... data) {
+	public static void trace(String format, Object... data) {
 		logWithCaller(stackInfo.fillInStackTrace(), Level.FINER, format, data);
-	}
-
-	public static void finest(String format, Object... data) {
-		logWithCaller(stackInfo.fillInStackTrace(), Level.FINEST, format, data);
 	}
 
 	public static void log(Level level, Throwable ex, String format, Object... data) {

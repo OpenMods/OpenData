@@ -1,8 +1,8 @@
 package openeye.notes.entries;
 
-import net.minecraft.util.ChatMessageComponent;
 import openeye.notes.NoteCategory;
 import openeye.notes.NoteLevels;
+import openeye.notes.WrappedChatComponent;
 import openeye.responses.ResponseKnownCrash;
 
 public class ReportedCrashEntry extends NoteEntry {
@@ -14,13 +14,13 @@ public class ReportedCrashEntry extends NoteEntry {
 	}
 
 	@Override
-	public ChatMessageComponent title() {
-		return ChatMessageComponent.createFromTranslationKey("openeye.notes.title.reported_crash");
+	public WrappedChatComponent title() {
+		return WrappedChatComponent.createTranslation("openeye.notes.title.reported_crash");
 	}
 
 	@Override
-	public ChatMessageComponent content() {
-		return ChatMessageComponent.createFromText("");
+	public WrappedChatComponent content() {
+		return WrappedChatComponent.createText("");
 	}
 
 	@Override

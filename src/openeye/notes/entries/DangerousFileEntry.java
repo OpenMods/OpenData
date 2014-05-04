@@ -2,9 +2,9 @@ package openeye.notes.entries;
 
 import java.io.File;
 
-import net.minecraft.util.ChatMessageComponent;
 import openeye.notes.NoteCategory;
 import openeye.notes.NoteLevels;
+import openeye.notes.WrappedChatComponent;
 import openeye.responses.ResponseDangerousFile;
 
 import com.google.gson.JsonObject;
@@ -19,13 +19,13 @@ public class DangerousFileEntry extends NoteEntry {
 	}
 
 	@Override
-	public ChatMessageComponent title() {
-		return ChatMessageComponent.createFromTranslationWithSubstitutions("openeye.notes.title.dangerous_file", file.getName());
+	public WrappedChatComponent title() {
+		return WrappedChatComponent.createTranslation("openeye.notes.title.dangerous_file", file.getName());
 	}
 
 	@Override
-	public ChatMessageComponent content() {
-		return ChatMessageComponent.createFromTranslationWithSubstitutions("openeye.notes.content.dangerous_file", file.getName());
+	public WrappedChatComponent content() {
+		return WrappedChatComponent.createTranslation("openeye.notes.content.dangerous_file", file.getName());
 	}
 
 	@Override

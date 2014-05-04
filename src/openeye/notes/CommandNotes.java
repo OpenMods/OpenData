@@ -5,25 +5,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.command.*;
-import net.minecraft.util.ChatMessageComponent;
-import openeye.Log;
+import net.minecraft.command.ICommand;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.SyntaxErrorException;
 import openeye.logic.GsonUtils;
 import openeye.notes.entries.NoteEntry;
-import openeye.storage.*;
+import openeye.storage.GsonSimpleStorage;
+import openeye.storage.IAppendableStorage;
+import openeye.storage.Storages;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 public class CommandNotes implements ICommand {
 
 	private static final String COMMAND_NAME = "eye_notes";
 
-	private interface INoteSink {
+	interface INoteSink {
 		public void dump(Collection<NoteEntry> notes, ICommandSender sender);
 	}
 
@@ -32,43 +31,8 @@ public class CommandNotes implements ICommand {
 	public CommandNotes(File minecraftDir) {
 		File reportDir = Storages.getReportDir(minecraftDir);
 		final IAppendableStorage<Object> notesDump = new GsonSimpleStorage<Object>(reportDir, "notes", "json", Object.class, GsonUtils.PRETTY_GSON);
-
-		sinks.put("console", new INoteSink() {
-			@Override
-			public void dump(Collection<NoteEntry> notes, ICommandSender sender) {
-				int count = 0;
-				for (NoteEntry note : notes) {
-					ChatMessageComponent level = ChatMessageComponent.createFromTranslationKey(note.category.translated).setColor(note.category.color);
-					sender.sendChatToPlayer(ChatMessageComponent.createFromTranslationWithSubstitutions("openeye.chat.note", count++, level));
-					sender.sendChatToPlayer(note.title().setBold(true));
-					sender.sendChatToPlayer(note.content());
-
-					String url = note.url();
-					if (!Strings.isNullOrEmpty(url)) sender.sendChatToPlayer(ChatMessageComponent.createFromText(note.url()));
-				}
-			}
-		});
-
-		sinks.put("json", new INoteSink() {
-			@Override
-			public void dump(Collection<NoteEntry> notes, ICommandSender sender) {
-				JsonArray result = new JsonArray();
-
-				for (NoteEntry note : notes) {
-					JsonObject object = note.toJson();
-					result.add(object);
-				}
-
-				try {
-					IDataSource<Object> target = notesDump.createNew();
-					target.store(result);
-					sender.sendChatToPlayer(ChatMessageComponent.createFromTranslationWithSubstitutions("openeye.chat.dumped", target.getId()));
-				} catch (Throwable t) {
-					Log.warn(t, "Failed to store notes");
-					throw new CommandException("openeye.chat.store_failed");
-				}
-			}
-		});
+		sinks.put("console", new ConsoleNoteSink());
+		sinks.put("json", new JsonNoteSink(notesDump));
 	}
 
 	@Override

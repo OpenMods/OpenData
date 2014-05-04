@@ -3,7 +3,6 @@ package openeye.logic;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.logging.Level;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
@@ -212,7 +211,7 @@ public class ModMetaCollector {
 		try {
 			return "sha256:" + Files.hash(file, Hashing.sha256()).toString();
 		} catch (Throwable t) {
-			Log.log(Level.INFO, t, "Can't hash file %s", file);
+			Log.warn(t, "Can't hash file %s", file);
 			return null;
 		}
 	}

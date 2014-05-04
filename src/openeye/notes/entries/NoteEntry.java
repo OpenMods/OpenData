@@ -2,8 +2,8 @@ package openeye.notes.entries;
 
 import java.io.File;
 
-import net.minecraft.util.ChatMessageComponent;
 import openeye.notes.NoteCategory;
+import openeye.notes.WrappedChatComponent;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
@@ -28,9 +28,9 @@ public abstract class NoteEntry {
 
 	public abstract String url();
 
-	public abstract ChatMessageComponent title();
+	public abstract WrappedChatComponent title();
 
-	public abstract ChatMessageComponent content();
+	public abstract WrappedChatComponent content();
 
 	public JsonObject toJson() {
 		JsonObject result = new JsonObject();
@@ -39,8 +39,8 @@ public abstract class NoteEntry {
 		result.addProperty("category", category.toString());
 		result.addProperty("level", level);
 
-		result.addProperty("title", title().toString());
-		result.addProperty("content", content().toString());
+		result.addProperty("title", title().getUnformatted());
+		result.addProperty("content", content().getUnformatted());
 
 		String url = url();
 		if (!Strings.isNullOrEmpty(url)) result.addProperty("url", url);
