@@ -24,8 +24,6 @@ public class GuiButtonNotes extends GuiButton {
 
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-		if (!drawButton) return;
-
 		mc.getTextureManager().bindTexture(TEXTURE);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		final boolean mouseOverButton = isMouseOverButton(mouseX, mouseY);

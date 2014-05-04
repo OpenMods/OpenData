@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import openeye.Log;
 import openeye.config.ConfigProcessing;
@@ -253,6 +254,7 @@ public final class MainWorker {
 		Thread senderThread = new Thread() {
 			@Override
 			public void run() {
+				Log.info("OpenEye started data collection");
 				loadConfig(dataStore);
 
 				storages = new Storages(dataStore.getMcLocation());
@@ -264,6 +266,7 @@ public final class MainWorker {
 				updateState();
 
 				canContinueLoading.countDown();
+				Log.info("OpenEye finished data collection");
 			}
 		};
 
@@ -306,7 +309,7 @@ public final class MainWorker {
 
 	public void waitForFirstMsg() {
 		try {
-			canContinueLoading.await();
+			if (!canContinueLoading.await(30, TimeUnit.SECONDS)) Log.warn("OpenEye timeouted while waiting for worker thread, data will be incomplete");
 		} catch (InterruptedException e) {
 			Log.warn("Thread interrupted while waiting for msg");
 		}

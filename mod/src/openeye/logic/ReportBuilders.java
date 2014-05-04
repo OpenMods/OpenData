@@ -17,6 +17,7 @@ import openeye.reports.ReportCrash.StackTrace;
 import openeye.reports.ReportFileContents.ArchiveDirEntry;
 import openeye.reports.ReportFileContents.ArchiveEntry;
 import openeye.reports.ReportFileContents.ArchiveFileEntry;
+import openeye.utils.CompatiblityAdapter;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -40,7 +41,7 @@ public class ReportBuilders {
 	public static ReportAnalytics buildAnalyticsReport(ModMetaCollector data, Set<String> prevSignatures) {
 		ReportAnalytics analytics = new ReportAnalytics();
 
-		analytics.branding = FMLCommonHandler.instance().getBrandings();
+		analytics.branding = CompatiblityAdapter.getBrandings();
 
 		analytics.language = FMLCommonHandler.instance().getCurrentLanguage();
 
@@ -89,7 +90,7 @@ public class ReportBuilders {
 
 	private static String sanitizeThrowableMessage(String message) {
 		if (Strings.isNullOrEmpty(message)) return "";
-		
+
 		File mcPath = InjectedDataStore.instance.getMcLocation();
 		if (mcPath != null) message = message.replace(mcPath.getAbsolutePath(), "[minecraft]");
 

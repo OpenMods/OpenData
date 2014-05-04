@@ -2,7 +2,7 @@
 {
   "modid" : "OpenEye",
   "name" : "OpenEye",
-  "version" : "@VERSION@",
+  "version" : "${version}",
   "url" : "http://openmods.info",
   "credits" : "",
   "authors": [

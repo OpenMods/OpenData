@@ -1,5 +1,5 @@
 group = rootProject.mod_group
-version = "${rootProject.mod_version}"
+version = "${rootProject.mod_version}-${rootProject.minecraft_version}"
 archivesBaseName = rootProject.jar_name
 
 env = System.getenv()
@@ -19,6 +19,7 @@ sourceSets {
     main {
         java {
             srcDir "src"
+            srcDir "src-${rootProject.src_extra}"
         }
         resources {
             srcDir "resources"
@@ -29,7 +30,6 @@ sourceSets {
 jar {
     manifest {
         attributes 'FMLCorePlugin': 'openeye.CorePlugin'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
 }
 

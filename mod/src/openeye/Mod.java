@@ -2,6 +2,7 @@ package openeye;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -107,13 +108,22 @@ public class Mod extends DummyModContainer {
 	@Override
 	public File getSource() {
 		File injectedSource = InjectedDataStore.instance.getSelfLocation();
-		URL cpSource = getClass().getProtectionDomain().getCodeSource().getLocation();
+
+		if (injectedSource != null) return injectedSource;
+
+		// looks like we are in dev (or broken) env
+		URL url = getClass().getResource(".");
+
 		try {
-			return new File(cpSource.toURI());
+			File rootFile = new File(url.toURI());
+			Path path = rootFile.toPath();
+			if (path.endsWith("openeye")) path = path.getParent();
+			return path.toFile();
 		} catch (Exception e) {
-			Log.warn(e, "Failed to extract source from URL %s, using injected path %s", cpSource, injectedSource);
+			Log.info(e, "Failed to extract source from URL %s", url);
 		}
-		return injectedSource;
+
+		return null;
 	}
 
 	@Override

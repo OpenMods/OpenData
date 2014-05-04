@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.util.EnumChatFormatting;
 import openeye.logic.InjectedDataStore;
 import openeye.logic.ModState;
 import openeye.logic.StateHolder;
@@ -33,15 +31,7 @@ public class NoteCollector {
 		}
 	};
 
-	public static class ScreenNotification {
-		private final int level;
-		public final ChatMessageComponent msg;
-
-		private ScreenNotification(int level, ChatMessageComponent msg) {
-			this.level = level;
-			this.msg = msg;
-		}
-	}
+	private final ScreenNotificationHolder menuLine = new ScreenNotificationHolder();
 
 	private boolean important;
 
@@ -49,15 +39,9 @@ public class NoteCollector {
 
 	private final List<NoteEntry> notes = Lists.newArrayList();
 
-	private ScreenNotification menuLine;
-
 	private NoteCategory maxCategory = NoteCategory.INFO;
 
 	private NoteCollector() {}
-
-	private void addMenuLine(int level, ChatMessageComponent msg) {
-		if (menuLine == null || level > menuLine.level) menuLine = new ScreenNotification(level, msg);
-	}
 
 	public void addNote(NoteEntry entry) {
 		notes.add(entry);
@@ -72,16 +56,16 @@ public class NoteCollector {
 
 	public void addNote(File file, ResponseDangerousFile note) {
 		addNote(new DangerousFileEntry(file, note));
-		addMenuLine(64, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.dangerous_file").setBold(true).setColor(EnumChatFormatting.RED));
+		menuLine.signalDangerousFile();
 	}
 
 	public void addNote(ResponseKnownCrash note) {
 		if (Strings.isNullOrEmpty(note.note)) {
 			addNote(new ReportedCrashEntry(note));
-			addMenuLine(8, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.crash_reported"));
+			menuLine.signalCrashReported();
 		} else {
 			addNote(new ResolvedCrashEntry(note));
-			addMenuLine(32, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.known_crash").setColor(EnumChatFormatting.GREEN));
+			menuLine.signalKnownCrash();
 		}
 	}
 
@@ -93,8 +77,8 @@ public class NoteCollector {
 		return maxCategory;
 	}
 
-	public ScreenNotification getScreenMsg() {
-		return menuLine;
+	public WrappedChatComponent getScreenMsg() {
+		return menuLine.getSelectedLine();
 	}
 
 	public boolean hasImportantNotes() {
@@ -110,8 +94,8 @@ public class NoteCollector {
 		String title = "openeye.note.title.intro" + id;
 		String content = "openeye.note.content.intro" + id;
 		addNote(new SystemNoteEntry(NoteLevels.SYSTEM_NOTIFICATION_LEVEL + 16 - id,
-				ChatMessageComponent.createFromTranslationKey(title),
-				ChatMessageComponent.createFromTranslationKey(content),
+				WrappedChatComponent.createTranslation(title),
+				WrappedChatComponent.createTranslation(content),
 				url));
 	}
 
@@ -131,7 +115,7 @@ public class NoteCollector {
 		}
 
 		if (!state.mainMenuInfoDisplayed) {
-			addMenuLine(256, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.intro").setColor(EnumChatFormatting.GOLD));
+			menuLine.signalIntroStuff();
 			state.mainMenuInfoDisplayed = true;
 		}
 	}
