@@ -18,6 +18,7 @@ import openeye.reports.ReportFileContents.ArchiveDirEntry;
 import openeye.reports.ReportFileContents.ArchiveEntry;
 import openeye.reports.ReportFileContents.ArchiveFileEntry;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -87,6 +88,8 @@ public class ReportBuilders {
 	}
 
 	private static String sanitizeThrowableMessage(String message) {
+		if (Strings.isNullOrEmpty(message)) return "";
+		
 		File mcPath = InjectedDataStore.instance.getMcLocation();
 		if (mcPath != null) message = message.replace(mcPath.getAbsolutePath(), "[minecraft]");
 

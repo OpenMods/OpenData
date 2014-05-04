@@ -2,6 +2,7 @@ package openeye.notes;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
+import openeye.logic.Config;
 import openeye.notes.NoteCollector.ScreenNotification;
 
 public class GuiMainMenuAddon extends GuiMainMenu {
@@ -34,7 +35,7 @@ public class GuiMainMenuAddon extends GuiMainMenu {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicktime) {
 		super.drawScreen(mouseX, mouseY, partialTicktime);
-		if (notification != null) drawCenteredString(fontRenderer, notification.msg.toStringWithFormatting(true), width / 2, height / 4 + 48 + 24 * 3, 0xFFFFFF);
+		if (Config.mainScreenExtraLine && notification != null) drawCenteredString(fontRenderer, notification.msg.toStringWithFormatting(true), width / 2, height / 4 + 48 + 24 * 3, 0xFFFFFF);
 	}
 
 	@Override
