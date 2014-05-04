@@ -12,3 +12,8 @@
 hs_err_pid*
 /server/nbproject/private/
 /mod/.gradle
+
+# eclipse files
+/.project
+/.classpath
+/bin
