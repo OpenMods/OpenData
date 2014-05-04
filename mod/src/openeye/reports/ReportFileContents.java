@@ -45,7 +45,4 @@ public class ReportFileContents implements IReport {
 
 	@SerializedName("dirs")
 	public List<ArchiveDirEntry> dirs;
-
-	@SerializedName("comment")
-	public String comment;
 }

@@ -1,11 +1,11 @@
 package openeye.config;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import openeye.Log;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Table;
@@ -24,7 +24,7 @@ public class GsonConfigProcessingEngine implements IConfigProcessingEngine {
 		try {
 			InputStream stream = new FileInputStream(file);
 			try {
-				Reader fileReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+				Reader fileReader = new InputStreamReader(stream, Charsets.UTF_8);
 				JsonReader jsonReader = new JsonReader(fileReader);
 				jsonReader.setLenient(true);
 				return Streams.parse(jsonReader);
@@ -41,7 +41,7 @@ public class GsonConfigProcessingEngine implements IConfigProcessingEngine {
 			Closer closer = Closer.create();
 			try {
 				FileOutputStream stream = closer.register(new FileOutputStream(file));
-				Writer fileWriter = closer.register(new OutputStreamWriter(stream, StandardCharsets.UTF_8));
+				Writer fileWriter = closer.register(new OutputStreamWriter(stream, Charsets.UTF_8));
 				JsonWriter jsonWriter = closer.register(new JsonWriter(fileWriter));
 				jsonWriter.setIndent("    ");
 				Streams.write(element, jsonWriter);

@@ -148,8 +148,6 @@ public class ReportBuilders {
 		try {
 			ZipFile jarFile = new ZipFile(container);
 
-			report.comment = jarFile.getComment();
-
 			List<ArchiveDirEntry> dirs = Lists.newArrayList();
 			List<ArchiveFileEntry> files = Lists.newArrayList();
 
