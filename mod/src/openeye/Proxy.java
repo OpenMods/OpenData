@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
+import openeye.logic.Config;
 import openeye.logic.DangerousFileClientException;
 import openeye.logic.DangerousFileServerException;
 import openeye.notes.GuiReplacer;
@@ -25,7 +26,7 @@ public abstract class Proxy {
 
 		@Override
 		public void init() {
-			MinecraftForge.EVENT_BUS.register(new GuiReplacer());
+			if (Config.mainScreenNotes) MinecraftForge.EVENT_BUS.register(new GuiReplacer());
 		}
 	}
 
