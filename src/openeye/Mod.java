@@ -2,7 +2,6 @@ package openeye;
 
 import java.io.File;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -116,9 +115,8 @@ public class Mod extends DummyModContainer {
 
 		try {
 			File rootFile = new File(url.toURI());
-			Path path = rootFile.toPath();
-			if (path.endsWith("openeye")) path = path.getParent();
-			return path.toFile();
+			if (rootFile.getName().equals("openeye")) rootFile = rootFile.getParentFile();
+			return rootFile;
 		} catch (Exception e) {
 			Log.info(e, "Failed to extract source from URL %s", url);
 		}
