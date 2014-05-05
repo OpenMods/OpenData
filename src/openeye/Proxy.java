@@ -4,11 +4,12 @@ import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
-import openeye.logic.Config;
-import openeye.logic.DangerousFileClientException;
-import openeye.logic.DangerousFileServerException;
+import openeye.logic.*;
 import openeye.notes.GuiReplacer;
 import openeye.reports.FileSignature;
+
+import com.google.common.base.Strings;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public abstract class Proxy {
@@ -22,6 +23,16 @@ public abstract class Proxy {
 		@Override
 		public Throwable signalDangerousFiles(Collection<FileSignature> dangerousFiles) {
 			return new DangerousFileClientException(dangerousFiles);
+		}
+
+		@Override
+		public void first() {
+			try {
+				String username = Minecraft.getMinecraft().getSession().getUsername();
+				if (!Strings.isNullOrEmpty(username)) Sanitizer.addFirst(Sanitizer.replace(username, "[player]"));
+			} catch (Throwable t) {
+				Log.warn(t, "Failed to get player username");
+			}
 		}
 
 		@Override
@@ -42,10 +53,15 @@ public abstract class Proxy {
 		}
 
 		@Override
+		public void first() {}
+
+		@Override
 		public void init() {}
 	}
 
 	public abstract boolean isSnooperEnabled();
+
+	public abstract void first();
 
 	public abstract void init();
 
