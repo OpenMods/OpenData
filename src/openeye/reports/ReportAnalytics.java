@@ -37,6 +37,9 @@ public class ReportAnalytics implements IReport {
 	@SerializedName("minecraft")
 	public String minecraft;
 
+	@SerializedName("javaVersion")
+	public String javaVersion;
+
 	@SerializedName("language")
 	public String language;
 

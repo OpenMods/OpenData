@@ -19,6 +19,7 @@ import openeye.reports.ReportFileContents.ArchiveEntry;
 import openeye.reports.ReportFileContents.ArchiveFileEntry;
 import openeye.utils.CompatiblityAdapter;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -35,6 +36,12 @@ public class ReportBuilders {
 		result.signatures = data.getAllFiles();
 
 		return result;
+	}
+
+	public static String getJavaVersion() {
+		String vendor = Strings.nullToEmpty(System.getProperty("java.vendor"));
+		String version = Strings.nullToEmpty(System.getProperty("java.version"));
+		return vendor + " " + version;
 	}
 
 	public static ReportAnalytics buildAnalyticsReport(ModMetaCollector data, Set<String> prevSignatures) {
@@ -59,6 +66,8 @@ public class ReportBuilders {
 		analytics.runtime = runtime;
 
 		analytics.minecraft = Loader.instance().getMCVersionString();
+
+		analytics.javaVersion = getJavaVersion();
 
 		analytics.signatures = data.getAllFiles();
 
