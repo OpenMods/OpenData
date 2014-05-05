@@ -76,4 +76,7 @@ public class ReportCrash implements IReport {
 
 	@SerializedName("tags")
 	public Set<String> tags;
+
+	@SerializedName("javaVersion")
+	public String javaVersion;
 }

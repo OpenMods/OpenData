@@ -34,7 +34,7 @@ public class InjectedDataStore {
 		mcLocation = (File)data.get("mcLocation");
 		selfLocation = (File)data.get("coremodLocation");
 
-		if (mcLocation != null) Sanitizer.addFirst(Sanitizer.replace(mcLocation, "[minecraft_dir]"));
+		if (mcLocation != null) Sanitizer.addFirst(Sanitizer.replace(mcLocation.getAbsolutePath(), "[minecraft_dir]"));
 	}
 
 	public boolean isRuntimeDeobfuscationEnabled() {

@@ -140,6 +140,8 @@ public class ReportBuilders {
 
 		crash.tags = tagsCollector.getTags();
 
+		crash.javaVersion = getJavaVersion();
+
 		return crash;
 	}
 
