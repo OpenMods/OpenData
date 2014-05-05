@@ -19,7 +19,6 @@ import openeye.reports.ReportFileContents.ArchiveEntry;
 import openeye.reports.ReportFileContents.ArchiveFileEntry;
 import openeye.utils.CompatiblityAdapter;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -88,22 +87,13 @@ public class ReportBuilders {
 		return el;
 	}
 
-	private static String sanitizeThrowableMessage(String message) {
-		if (Strings.isNullOrEmpty(message)) return "";
-
-		File mcPath = InjectedDataStore.instance.getMcLocation();
-		if (mcPath != null) message = message.replace(mcPath.getAbsolutePath(), "[minecraft]");
-
-		return message;
-	}
-
 	private static ExceptionInfo createStackTrace(Throwable throwable, StackTraceElement[] prevStacktrace, Set<Throwable> alreadySerialized, ModMetaCollector collector) {
 		if (alreadySerialized.contains(throwable)) return null; // cyclical reference
 
 		ExceptionInfo info = new ExceptionInfo();
 
 		info.exceptionCls = throwable.getClass().getName();
-		info.message = sanitizeThrowableMessage(throwable.getMessage());
+		info.message = Sanitizer.sanitize(throwable.getMessage());
 
 		alreadySerialized.add(throwable);
 
