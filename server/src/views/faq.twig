@@ -1,0 +1,51 @@
+{% extends 'base.twig' %}
+{% block main %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1>FAQ</h1>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12" style="padding-bottom: 50px">
+        <h4 style="margin-top: 40px">What is OpenEye?</h4>
+        <p>OpenEye is (mostly) a developer tool, that collects mods usage and crash reports. It also delivers notifications (created by mod authors) to clients.</p>
+        <p>OpenEye consist of two parts: the mod and this website.</p>
+        <h4 style="margin-top: 40px">Why would I, as user, install OpenEye?</h4>
+        <p>You will help mod developers by sending crash reports as soon as possible. You will also receive information about updates. known crashes (and solutions) when available.</p>
+        <p>We also hope OpenEye will reduce console spam on startup. We are giving mod authors single place (accessible from main menu) where they can post notes about exact version of mod file.</p>
+        <p>As side effect of analytics part, we also hope to collect big list of mods. We hope it can be useful to other projects.</p>
+        <h4 style="margin-top: 40px">LOL OpenNSA, you won't fool me!</h4>
+        <p>We are aware that "analytics" may sound scary. So we did some extra work and handle your data with care:</p>
+        <ul>
+            <li>Reports are anonymized - we try to remove any data that can be used to identify user or even determine that reports come from single source</li>
+            <li>We don't store any user identifier. IP is stored on server only for short time, for flood protection</li>
+            <li>Analytics data sent from client is stored only for hour, then aggregated and removed</li>
+            <li>We are not hiding anything. You can review communication with server, see aggregated data, review source code. We also inform users about OpenEye after installation.</li>
+        </ul>
+        <h4 style="margin-top: 40px">I see bit of personal data on page?</h4>
+        <p>Looks like we derper. We are sorry, but there is no reliable protection against unexpected personal data sent in crash reports.</p>
+        <p>If you see such data, report it to us via <a href="http://chat.mibbit.com/?channel=%23openeye&server=irc.esper.net">EsperNet IRC</a> and we will edit it. We will also try to filter it in next version.</p>
+        <h4 style="margin-top: 40px">How can I review collected data?</h4>
+        <p>Any data sent and received by server is saved on drive (in folder 'reports' in you Minecraft installation). You can review it if you wish. Data from current session is available only when Minecraft is closed. You can also explore all of <a href="{{ relative('browse') }}">the data we hold</a> in the database.</p>
+        <h4 style="margin-top: 40px">Why create this tool, while there's other similar projects?</h4>
+        <p>While there are few tools that do similar job, we try to take it further by offering help back to the user.</p>
+        <p>Mojang already collects crash data, with Hopper. It doesn't include any informations about mods, though. Looking for crashes in single mod on 100-something page is not fun.</p>
+        <h4 style="margin-top: 40px">How can I prevent OpenEye from tracking my mod?</h4>
+        <p>We are sorry you don't like us :`(. Come and chat with us on IRC and we'll make sure your mod doesn't get listed.</p>
+        <p>We cannot suppress crash collection, though, since it could interfere with crashes for other mods/mod interactions</p>
+        <h4 style="margin-top: 40px">Does OpenEye interfere with file/class loading or mod content?</h4>
+        <p>Short answer: No, unless you really want it.</p>
+        <p>Long answer: There is single option (haltOnDangerousFiles) that causes loading in certain conditions. It is disabled by default and should be only enabled by people why are fully aware what it does.</p>
+        <h4 style="margin-top: 40px">How can I control data sent by OpenEye/disable it completely?</h4>
+        <p>You can filter incoming and outgoing data with <a href="{{ relative('configuration') }}">config options</a>.</p>
+        <p>If you don't wish any data to be sent, you can use vanilla snooper settings.</p>
+        <p>And of course, you can always remove mod completely. It won't corrupt any data (including savefiles).</p>
+        <h4 style="margin-top: 40px">Does server can initiate communication with client?</h4>
+        <p>No. All connections are initiated by client. All data is sent through HTTP protocol.</p>
+        <h4 style="margin-top: 40px">Is OpenEye open-source?</h4>
+        <p>Yes, it's released under very liberal MIT license. Source is available here: <a href="https://github.com/OpenMods/OpenData">https://github.com/OpenMods/OpenData</a></p>
+    </div>
+</div>
+{% endblock %}

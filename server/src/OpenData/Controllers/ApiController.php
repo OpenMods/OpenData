@@ -10,7 +10,7 @@ use OpenData\PacketHandlers\IPacketHandler;
 
 class ApiController {
 
-    private static $FLOOD_LIMIT = 10000; // during dev
+    private static $FLOOD_LIMIT = 100; // during dev
     
     protected $memcache;
     

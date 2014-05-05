@@ -65,9 +65,9 @@ var actions = {
     'mod:get': {
         func: mods.getFields,
         secure: false,
-        usage: '#mod:get <modid> <field1> <field2>... (' + [    'name', 'description', 'url', 'parent',
-    		'donation', 'authors', 'releasesPage', 'credits',
-    		'tags', 'repository', 'irc', 'credits', 'admins', 'versionGroup'].join(', ') + ')'
+        usage: '#mod:get <modid> <field1> <field2>... (' + [    'name', 'description', 'url',
+    		'donation', 'authors', 'releasesPage',
+    		'tags', 'repository', 'irc', 'credits', 'admins', ].join(', ') + ')'
     },
     'mod:stats': {
         func: mods.getStats,

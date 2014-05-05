@@ -29,6 +29,10 @@ class HomeController {
         return $this->twig->render('storagepolicy.twig');
     }
     
+    public function faq() {
+        return $this->twig->render('faq.twig');
+    }
+    
     public function configuration() {
         return $this->twig->render('configuration.twig');
     }

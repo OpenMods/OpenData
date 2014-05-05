@@ -109,7 +109,12 @@ class Analytics implements IPacketHandler {
             
             if (!in_array($signature['signature'], $fileSignaturesFound)) {
                 if ($this->serviceFiles->create($signature)) {
-                    $newFilenames[] = $signature['filename'];
+                    if (!in_array($signature['filename'], array(
+                        'minecraft.jar',
+                        '1.6.4-Forge9.11.1.965.jar'
+                    ))) {
+                        $newFilenames[] = $signature['filename'];
+                    }
                 }
                 $responses[] = array(
                     'type' => 'file_info',

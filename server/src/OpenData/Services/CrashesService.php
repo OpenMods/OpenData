@@ -84,6 +84,16 @@ class CrashesService extends BaseService {
             '_id' => $packet['stackhash']
         ));
         
+        $tags = array();
+        if (isset($packet['tags']) && is_array($packet['tags'])) {
+            $tags = $packet['tags'];
+        }
+        
+        $javaVersions = array();
+        if (isset($packet['javaVersion'])) {
+            $javaVersions[] = $packet['javaVersion'];
+        }
+            
         if ($crash == null) {
             $this->db->crashes->insert(array(
                 '_id' => $packet['stackhash'],
@@ -94,7 +104,9 @@ class CrashesService extends BaseService {
                 'allSignatures' => array_values($allSignatures),
                 'allMods' => array_values($allModIds),
                 'classes' => $crashData['classes'],
-                'count' => 1
+                'count' => 1,
+                'tags' => $tags,
+                'javaVersions' => $javaVersions
             ));
             
             $redis = new \Predis\Client();
@@ -123,7 +135,9 @@ class CrashesService extends BaseService {
                     '$inc' => array('count' => 1),
                     '$addToSet' => array(
                         'involvedSignatures' => array('$each' => $involvedSignatures),
-                        'involvedMods' => array('$each' => $involvedModIds)
+                        'involvedMods' => array('$each' => $involvedModIds),
+                        'tags' => array('$each' => $tags),
+                        'javaVersions' => array('$each' => $javaVersions)
                     )
                 )
             );

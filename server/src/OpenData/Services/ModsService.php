@@ -58,7 +58,8 @@ class ModsService extends BaseService {
             array(
                 'hide' => array('$ne' => true),
                 'unlisted' => array('$ne' => true),
-                'tags' => array('$ne' => 'library')
+                'tags' => array('$ne' => 'library'),
+                '_id' => array('$ne' => 'openeye')
             )
         )->sort(
             array(

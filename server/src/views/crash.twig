@@ -12,7 +12,12 @@
 <div class="row">
     <div class="col-md-12">
         {% if crash.note %}<div class="bs-callout bs-callout-warning"><h4>{{ crash.note.message }} - {{ crash.note.user }}</h4></div>{% endif %}
-        <pre>{% include 'stack.twig' with {crash: crash.exception} %}</pre></div>
+        <pre>{% include 'stack.twig' with {crash: crash.exception} %}</pre>
+    {% if crash.javaVersions|length > 0 %}
+        <h4 style="padding-top: 20px;">Experienced in Java:</h4>
+        <p>{{ crash.javaVersions|join(', ') }}</p>
+     {% endif %}
+    </div>
 </div>
 
 <div class="row" style="padding-top: 20px;">
