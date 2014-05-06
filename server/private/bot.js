@@ -69,10 +69,10 @@ var actions = {
     		'donation', 'authors', 'releasesPage',
     		'tags', 'repository', 'irc', 'credits', 'admins', ].join(', ') + ')'
     },
-    'mod:stats': {
+    'stats': {
         func: mods.getStats,
         secure: false,
-        usage: '#mod:stats <modid> <time>'
+        usage: '#stats <span> <type> <key> <from> <to>'
     },
     'mod:update': {
         func: mods.setField,

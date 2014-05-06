@@ -12,7 +12,7 @@ class CrashesService extends BaseService {
                 
                 // strip generated class names
                 $arr['stack'][$i]['class'] = preg_replace('@GeneratedMethodAccessor[0-9]+@', 'GeneratedMethodAccessor', $arr['stack'][$i]['class']);
-                $arr['stack'][$i]['class'] = preg_replace('ASMEventHandler_[0-9]+_@', 'ASMEventHandler_0_', $arr['stack'][$i]['class']);
+                $arr['stack'][$i]['class'] = preg_replace('@ASMEventHandler_[0-9]+_@', 'ASMEventHandler_0_', $arr['stack'][$i]['class']);
                 
                 $classes[] = $arr['stack'][$i]['class'];
 		unset($arr['stack'][$i]['signatures']);

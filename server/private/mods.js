@@ -351,70 +351,98 @@ function unsetField(context) {
 
 }
 
-
+//<type> <span> <key> <from> <to>
 function getStats(context) {
 
     var args = context.args;
 
-    if (args.length == 2) {
+    if (args.length == 5) {
 
-        var modId = args[0];
-        var time = args[1];
+        var span = args[0];
+        var type = args[1];
+        var key = args[2];
+        var from = args[3];
+        var to = args[4];
 
-        console.log(time);
+        var fromDate = Date.parse(from);
+        var toDate = Date.parse(to);
 
-        var date = Date.parse(time);
-
-        if (date == null) {
+        if (fromDate == null) {
             context.bot.say(
                     context.channel,
-                    'Invalid date string'
+                    'Invalid <from> date string'
                     );
             return;
         }
 
-        date.setMinutes(0);
-        date.setSeconds(0);
-        date.setMilliseconds(0);
-
-        getMod(context, modId, false, function(mod) {
-
-            var found = false;
-            if (mod['hours'] != null) {
-                mod['hours'].forEach(function(hour) {
-                    if (hour.time.getTime() == date.getTime()) {
-                        context.bot.say(
-                                context.channel,
-                                hour.time.toString("dddd, MMMM dd, yyyy HH:00:00") + ': ' + hour.launches + ' launches'
-                                );
-                        found = true;
-                    }
+        if (toDate == null) {
+            context.bot.say(
+                    context.channel,
+                    'Invalid <to> date string'
+                    );
+            return;
+        }
+        
+        fromDate.setMinutes(0);
+        fromDate.setSeconds(0);
+        fromDate.setMilliseconds(0);
+        
+        toDate.setMinutes(0);
+        toDate.setSeconds(0);
+        toDate.setMilliseconds(0);
+        
+        if (type == 'mod') {
+            context.db.collection('files').find(
+               {'mods.modId' : key}
+            ).toArray(function(err, results) {
+                var fileIds = [];
+                results.forEach(function(result) {
+                    fileIds.push(result._id);
                 });
-            }
-            if (mod['days'] != null) {
-                mod['days'].forEach(function(day) {
-                    if (day.time.getTime() == date.getTime()) {
-                        context.bot.say(
-                                context.channel,
-                                day.time.toString("dddd, MMMM dd, yyyy") + ': ' + day.launches + ' launches'
-                                );
-                        found = true;
-                    }
-                });
-            }
-
-            if (!found) {
-                context.bot.say(
-                        context.channel,
-                        'No stats found for ' + date.toString("dddd, MMMM dd, yyyy HH:00:00")
-                        );
-            }
-        });
-
+                if (fileIds.length == 0) {
+                    return true;
+                }
+                compileStats(context, {
+                    '_id.span': span,
+                    '_id.time': {
+                        '$gte': fromDate,
+                        '$lt': toDate
+                    },
+                    '_id.type': type,
+                    '_id.key': {'$in': fileIds}
+                }, fromDate, toDate);
+            });
+        } else {
+            compileStats(context, {
+                '_id.span': span,
+                '_id.time': {
+                    '$gte': fromDate,
+                    '$lt': toDate
+                },
+                '_id.type': type,
+                '_id.key': key
+            }, fromDate, toDate);
+        }
         return true;
     }
     return false;
+}
 
+function compileStats(context, query, fromDate, toDate) {
+    context.db.collection('analytics_aggregated').find(
+        query
+    ).toArray(function(err, results) {
+        var launches = 0;
+        results.forEach(function(result) {
+            launches += result['launches'];
+        });
+        context.bot.say(
+            context.channel,
+            colors.navy(fromDate.toString("dddd, MMMM dd, yyyy HH:00:00") + ' - ' +
+            toDate.toString("dddd, MMMM dd, yyyy HH:00:00") + ': ') +
+            colors.green(launches + ' launches')
+        );
+    });
 }
 
 function getFields(context) {
