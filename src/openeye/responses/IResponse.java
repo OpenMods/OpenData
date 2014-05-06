@@ -1,7 +1,7 @@
 package openeye.responses;
 
 import openeye.logic.IContext;
-import openeye.logic.ITypedStruct;
+import openeye.struct.ITypedStruct;
 
 public interface IResponse extends ITypedStruct {
 

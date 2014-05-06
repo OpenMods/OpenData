@@ -185,17 +185,18 @@ public class ModMetaCollector {
 
 	private final long operationDuration;
 
-	ModMetaCollector(InjectedDataStore store, ASMDataTable table) {
+	ModMetaCollector(ASMDataTable table, LaunchClassLoader loader, Collection<ITweaker> tweakers) {
+		Log.info("Starting mod metadatadata collection");
 		long start = System.nanoTime();
 		Collection<ModCandidate> allCandidates = stealCandidates(table);
 		collectFilesFromModCandidates(allCandidates);
-		collectFilesFromClassTransformers(store, table);
-		collectFilesFromTweakers(store, table);
+		collectFilesFromClassTransformers(loader, table);
+		collectFilesFromTweakers(tweakers, table);
 		collectFilesFromModContainers(table);
 
 		fillSignaturesMap();
 		operationDuration = System.nanoTime() - start;
-		Log.info("Collecting data took %.4f ms", operationDuration / 1000000.0d);
+		Log.info("Collection of mod metadata finished. Duration: %.4f ms", operationDuration / 1000000.0d);
 	}
 
 	private static FileMeta fromModCandidate(ModCandidate candidate) {
@@ -302,9 +303,7 @@ public class ModMetaCollector {
 		}
 	}
 
-	private void collectFilesFromTweakers(InjectedDataStore store, ASMDataTable table) {
-		List<ITweaker> tweakers = store.getTweakers();
-
+	private void collectFilesFromTweakers(Collection<ITweaker> tweakers, ASMDataTable table) {
 		try {
 			Class<?> coreModWrapper = Class.forName("cpw.mods.fml.relauncher.CoreModManager$FMLPluginWrapper");
 			Field nameField = coreModWrapper.getField("name");
@@ -332,10 +331,9 @@ public class ModMetaCollector {
 		}
 	}
 
-	private void collectFilesFromClassTransformers(InjectedDataStore store, ASMDataTable table) {
-		LaunchClassLoader loaders = store.getLoader();
-		if (loaders != null) {
-			List<IClassTransformer> transformers = loaders.getTransformers();
+	private void collectFilesFromClassTransformers(LaunchClassLoader loader, ASMDataTable table) {
+		if (loader != null) {
+			List<IClassTransformer> transformers = loader.getTransformers();
 			for (IClassTransformer transformer : transformers)
 				registerClassTransformer(table, transformer.getClass().getName());
 		} else {

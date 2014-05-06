@@ -2,8 +2,9 @@ package openeye.logic;
 
 import java.lang.reflect.Type;
 
-import openeye.logic.TypedCollections.ReportsList;
-import openeye.logic.TypedCollections.ResponseList;
+import openeye.struct.TypedCollections;
+import openeye.struct.TypedCollections.ReportsList;
+import openeye.struct.TypedCollections.ResponseList;
 
 import com.google.gson.*;
 

@@ -26,7 +26,7 @@ public class GsonSessionStorage<T> implements IAppendableStorage<T> {
 
 	private int counter;
 
-	protected GsonSessionStorage(File dir, String ext, Class<? extends T> cls, Gson gson) {
+	public GsonSessionStorage(File dir, String ext, Class<? extends T> cls, Gson gson) {
 		this.ext = ext;
 		this.gson = gson;
 		this.cls = cls;
