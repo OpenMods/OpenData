@@ -4,10 +4,9 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.RunnableFuture;
 
-import openeye.logic.Config;
-import openeye.logic.InjectedDataStore;
-import openeye.logic.MainWorker;
+import openeye.logic.*;
 import openeye.notes.CommandNotes;
 import openeye.reports.FileSignature;
 
@@ -36,7 +35,7 @@ public class Mod extends DummyModContainer {
 		meta.description = "We see you...";
 	}
 
-	private MainWorker worker;
+	private SenderWorker worker;
 
 	@Override
 	public boolean registerBus(EventBus bus, LoadController controller) {
@@ -49,8 +48,23 @@ public class Mod extends DummyModContainer {
 	public void onModConstruct(FMLConstructionEvent evt) {
 		Proxy.instance().first();
 
-		worker = new MainWorker(Proxy.instance().isSnooperEnabled());
-		worker.start(InjectedDataStore.instance, evt.getASMHarvestedData());
+		ModCollectorFactory factory = new ModCollectorFactory();
+		RunnableFuture<ModMetaCollector> collector = factory.createCollector(
+				evt.getASMHarvestedData(),
+				Bootstrap.instance.getLoader(),
+				Bootstrap.instance.getTweakers());
+
+		startMetadataCollection(collector);
+
+		ThrowableLogger.enableResolving(collector);
+		worker = new SenderWorker(collector, StateHolder.state());
+		worker.start();
+	}
+
+	private static void startMetadataCollection(RunnableFuture<ModMetaCollector> collector) {
+		Thread modCollector = new Thread(collector);
+		modCollector.setName("OpenEye mod meta collector");
+		modCollector.start();
 	}
 
 	@Subscribe
@@ -77,7 +91,7 @@ public class Mod extends DummyModContainer {
 
 	public static void crash1() {
 		try {
-			File mcDir = InjectedDataStore.instance.getMcLocation();
+			File mcDir = Bootstrap.instance.getMcLocation();
 			throw new RuntimeException("deep one: " + new File(mcDir, "hello.txt"));
 		} catch (RuntimeException e) {
 			throw new RuntimeException("u wot m8", e);
@@ -108,7 +122,7 @@ public class Mod extends DummyModContainer {
 
 	@Override
 	public File getSource() {
-		File injectedSource = InjectedDataStore.instance.getSelfLocation();
+		File injectedSource = Bootstrap.instance.getSelfLocation();
 
 		if (injectedSource != null) return injectedSource;
 

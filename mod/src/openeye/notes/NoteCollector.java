@@ -5,14 +5,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import openeye.logic.InjectedDataStore;
 import openeye.logic.ModState;
 import openeye.logic.StateHolder;
+import openeye.logic.Storages;
 import openeye.notes.entries.*;
 import openeye.responses.ResponseDangerousFile;
 import openeye.responses.ResponseKnownCrash;
 import openeye.responses.ResponseModMsg;
-import openeye.storage.Storages;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -103,12 +102,14 @@ public class NoteCollector {
 		ModState state = StateHolder.state();
 
 		if (!state.infoNotesDisplayed) {
-			File reportDir = Storages.getReportDir(InjectedDataStore.instance.getMcLocation());
 
 			addIntroNote(1, "http://openeye.openmods.info");
 			addIntroNote(2, "http://openeye.openmods.info");
 			addIntroNote(3, "http://openeye.openmods.info/storage-policy");
-			addIntroNote(4, reportDir.toURI().toString());
+
+			Storages storages = Storages.instance();
+			if (storages != null) addIntroNote(4, storages.reportsDir.toURI().toString());
+
 			addIntroNote(5, "https://github.com/OpenMods/OpenData");
 			addIntroNote(6, "http://openeye.openmods.info/configuration");
 			state.infoNotesDisplayed = true;
