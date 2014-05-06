@@ -1,5 +1,6 @@
 
 require('datejs');
+var colors = require('irc-colors');
 
 
 Array.prototype.remove = function() {
@@ -432,7 +433,7 @@ function getFields(context) {
 
                     context.bot.say(
                             context.channel,
-                            'Invalid field: ' + field
+                            colors.red('Invalid field: ' + field)
                             );
 
                 } else {
@@ -440,7 +441,7 @@ function getFields(context) {
                     if (mod[field] === undefined || mod[field] === null) {
                         context.bot.say(
                                 context.channel,
-                                'Field not found: ' + field
+                                colors.navy('Field not found: ' + field)
                                 );
                     } else {
                         var fieldData = mod[field];
@@ -448,18 +449,18 @@ function getFields(context) {
                         if (field == 'irc') {
                             context.bot.say(
                                     context.channel,
-                                    'irc: ' + fieldData.host + ' ' + fieldData.channel
+                                    colors.navy('irc: ' + fieldData.host + ' ') + colors.green(fieldData.channel)
                                     );
                         } else if (Array.isArray(fieldData)) {
                             context.bot.say(
                                     context.channel,
-                                    field + ': ' + fieldData.join(' ')
-                                    );
+                                    colors.navy(field + ': ') + colors.green(fieldData.join(' '))
+                             );
                         } else {
                             context.bot.say(
                                     context.channel,
-                                    field + ': ' + fieldData
-                                    );
+                                    colors.navy(field + ': ') + colors.green(fieldData)
+                           );
                         }
                     }
                 }

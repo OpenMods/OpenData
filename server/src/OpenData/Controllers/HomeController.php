@@ -51,13 +51,22 @@ class HomeController {
     }
     
     public function letter(Request $request, $letter) {
+        
+        if ($letter == 'others') {
+            $title = 'Other mods';
+        } else if (strlen($letter) == 1) {
+            $title = 'Mods beginning with "'.strtoupper($letter).'"';
+        } else {
+            throw new \Exception();
+        }
+        
         return $this->twig->render('home.twig', array_merge(
                 $this->getPagination(
                     $this->serviceMods->findByLetter($letter),
                     $request->get('page', 1)
                 ),
                 array(
-                    'title' => 'Mods beginning with "'.strtoupper($letter).'"'
+                    'title' => $title
                 )
         ));
     }

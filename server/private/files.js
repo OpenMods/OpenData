@@ -1,3 +1,4 @@
+var colors = require('irc-colors');
 
 function addNote(context) {
 
@@ -156,6 +157,29 @@ function listNotes(context) {
 
 }
 
+function getLatest(context) {
+    context.db.collection('files').find().sort({
+       '$natural' : -1 
+    }).limit(5).toArray(function(err, results) {
+        results.forEach(function(result) {
+            var mods = [];
+            if (result['mods'] != null) {
+                result['mods'].forEach(function(mod) {
+                   mods.push(mod.name + ' (' +mod.modId + ')');
+                });
+            }
+            var txt = colors.navy(result.filenames[0]);
+            if (mods.length > 0) {
+                txt += colors.green(' contains: ' + mods.join(', '));
+            }
+            context.bot.say(
+                context.channel,
+                txt
+            );
+        });
+    });    
+}
+
 function removeNote(context) {
 
 	var args = context.args;
@@ -258,3 +282,4 @@ function removeNote(context) {
 module.exports.addNote = addNote;
 module.exports.listNotes = listNotes;
 module.exports.removeNote = removeNote;
+module.exports.getLatest = getLatest;

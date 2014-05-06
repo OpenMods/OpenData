@@ -13,8 +13,8 @@
         <p>OpenEye is (mostly) a developer tool, that collects mods' usage and crash reports. It also delivers notifications (created by mod authors) to clients.</p>
         <p>OpenEye consist of two parts: the mod and this website.</p>
         <h4 style="margin-top: 40px">Why would I, the user, install OpenEye?</h4>
-        <p>You will be helping mod developers by sending crash reports as soon as possible. You will also receive information about updates, known crashes (and solutions) when available.</p>
-        <p>We also hope OpenEye will reduce console spam on startup. We are giving mod authors a single place (accessible from the main menu) where they can post notes about the exact version of their mod.</p>
+        <p>You will be helping mod developers by sending crash reports as soon as possible. You will also receive information about updates and known crashes (and solutions) when available.</p>
+        <p>We also hope OpenEye will reduce console spam on startup, we are giving mod authors a single place (accessible from the main menu) where they can post notes about the exact version of their mod.</p>
         <p>As a side effect of the analytics part, we also hope to collect a big list of mods. We hope it can be useful to other projects.</p>
         <h4 style="margin-top: 40px">LOL OpenNSA, you won't fool me!</h4>
         <p>We are aware that "analytics" may sound scary. So we did some extra work to handle your data with care:</p>
@@ -25,8 +25,8 @@
             <li>We are not hiding anything. You can review the communication with the server, see the aggregated data and review the source code. We also inform users about OpenEye after installation.</li>
         </ul>
         <h4 style="margin-top: 40px">I see a bit of personal data on the page?</h4>
-        <p>Looks like we derper. We are sorry, but there is no reliable protection against unexpected personal data sent in crash reports.</p>
-        <p>If you see such data, report it to us via <a href="http://chat.mibbit.com/?channel=%23openeye&server=irc.esper.net">EsperNet IRC</a> and we will edit it. We will also try to filter it in our next version.</p>
+        <p>Looks like we derped. We are sorry, but there is no reliable protection against unexpected personal data sent in crash reports.</p>
+        <p>If you see such data, report it to us via <a href="http://chat.mibbit.com/?channel=%23openeye&server=irc.esper.net">EsperNet IRC</a> and we will edit it out. We will also try to filter it in our next version.</p>
         <h4 style="margin-top: 40px">How can I review collected data?</h4>
         <p>Any data sent and received by the server is saved on disk (in the 'reports' folder in you Minecraft installation directory). You can review it if you wish. Data from your current session is available only when Minecraft is closed. You can also explore all of <a href="{{ relative('browse') }}">the data we hold</a> in the database.</p>
         <h4 style="margin-top: 40px">Why create this tool, when there are other similar projects?</h4>
@@ -37,12 +37,12 @@
         <p>We cannot suppress crash collection, though, since it could interfere with crashes for other mods/mod interactions</p>
         <h4 style="margin-top: 40px">Does OpenEye interfere with file/class loading or mod content?</h4>
         <p>Short answer: No, unless you really want it.</p>
-        <p>Long answer: There is single option (haltOnDangerousFiles) that causes loading in certain conditions. It is disabled by default and should be enabled only by people who are fully aware of what it does.</p>
+        <p>Long answer: There is a single option (haltOnDangerousFiles) that causes loading in certain conditions. It is disabled by default and should only be enabled by people who are fully aware of what it does.</p>
         <h4 style="margin-top: 40px">How can I control data sent by OpenEye/disable it completely?</h4>
         <p>You can filter incoming and outgoing data with the <a href="{{ relative('configuration') }}">config options</a>.</p>
         <p>If you don't want any data to be sent, you can use vanilla snooper settings.</p>
         <p>And of course, you can always remove OpenEye completely. It won't corrupt any data (including savefiles).</p>
-        <h4 style="margin-top: 40px">Can the server initiate communications with the client?</h4>
+        <h4 style="margin-top: 40px">Can the server initiate communication with the client?</h4>
         <p>No. All connections are initiated by the client. All data is sent via HTTP.</p>
         <h4 style="margin-top: 40px">Is OpenEye open-source?</h4>
         <p>Yes, it's released under the very liberal MIT license. Source is available here: <a href="https://github.com/OpenMods/OpenData">https://github.com/OpenMods/OpenData</a></p>

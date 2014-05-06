@@ -9,6 +9,11 @@ class CrashesService extends BaseService {
         $classes = array();
 	for ($i = 0; $i < count($arr['stack']); $i++) {
 		$signatures = array_merge($arr['stack'][$i]['signatures'], $signatures);
+                
+                // strip generated class names
+                $arr['stack'][$i]['class'] = preg_replace('@GeneratedMethodAccessor[0-9]+@', 'GeneratedMethodAccessor', $arr['stack'][$i]['class']);
+                $arr['stack'][$i]['class'] = preg_replace('ASMEventHandler_[0-9]+_@', 'ASMEventHandler_0_', $arr['stack'][$i]['class']);
+                
                 $classes[] = $arr['stack'][$i]['class'];
 		unset($arr['stack'][$i]['signatures']);
 	}
@@ -109,38 +114,73 @@ class CrashesService extends BaseService {
                 'javaVersions' => $javaVersions
             ));
             
+            $this->db->crashes_index->insert(
+                array(
+                    '_id' => hash('sha256', $packet['stackhash'].$packet['timestamp']),
+                    'stackhash' => $packet['stackhash'],
+                    'timestamp' => $packet['timestamp'],
+                    'counter'   => 1
+                )
+            );
+            
             $redis = new \Predis\Client();
             $redis->publish('crash', json_encode(array(
                 'modIds' => $involvedModIds,
-                'content' => $stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message'].' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
+                'content' => 'New crash! '.$stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message'].' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
             )));
  
         } else {
             
-            $crash['involvedSignatures'] = array_intersect($crash['involvedSignatures'], $allSignatures);
-            $crash['involvedMods'] = array_intersect($crash['involvedMods'], $allModIds);
-            
-            if (isset($crash['note']) && isset($crash['note']['message'])) {
-                $note = $crash['note'];
-            }
-            
-            $this->db->crashes->update(
-                array('_id' => $packet['stackhash']),
+           $indexResult = $this->db->crashes_index->update(
                 array(
-                    '$set' => array(
-                        'latest' => time(),
-                        'allSignatures' => array_values($crash['allSignatures']),
-                        'allMods' => array_values($crash['allMods'])
-                    ),
-                    '$inc' => array('count' => 1),
-                    '$addToSet' => array(
-                        'involvedSignatures' => array('$each' => $involvedSignatures),
-                        'involvedMods' => array('$each' => $involvedModIds),
-                        'tags' => array('$each' => $tags),
-                        'javaVersions' => array('$each' => $javaVersions)
-                    )
+                    '_id' => hash('sha256', $packet['stackhash'].$packet['timestamp']),
+                    'stackhash' => $packet['stackhash'],
+                    'timestamp' => $packet['timestamp']
+                ),
+                array(
+                    '$inc' => array('counter' => 1)
+                ),
+                array(
+                    'upsert' => true
                 )
             );
+            
+            //if ($indexResult['nUpserted'] == 1) {
+
+                $crash['involvedSignatures'] = array_intersect($crash['involvedSignatures'], $allSignatures);
+                $crash['involvedMods'] = array_intersect($crash['involvedMods'], $allModIds);
+
+                if (isset($crash['note']) && isset($crash['note']['message'])) {
+                    $note = $crash['note'];
+                }
+
+                $this->db->crashes->update(
+                    array('_id' => $packet['stackhash']),
+                    array(
+                        '$set' => array(
+                            'latest' => time(),
+                            'allSignatures' => array_values($crash['allSignatures']),
+                            'allMods' => array_values($crash['allMods'])
+                        ),
+                        '$inc' => array('count' => 1),
+                        '$addToSet' => array(
+                            'involvedSignatures' => array('$each' => $involvedSignatures),
+                            'involvedMods' => array('$each' => $involvedModIds),
+                            'tags' => array('$each' => $tags),
+                            'javaVersions' => array('$each' => $javaVersions)
+                        )
+                    )
+                );
+                
+                if ($crash['count'] % 10 == 0 || $crash['count'] % 100 == 0 || $crash['count'] % 500 == 0 || $crash['count'] % 1000 == 0) {
+                    $redis = new \Predis\Client();
+                    $redis->publish('crash', json_encode(array(
+                        'modIds' => $involvedModIds,
+                        'content' => $crash['count'].' crashes: '.$stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message'].' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
+                    )));
+                }
+                
+            //}
         }
         
         return array(

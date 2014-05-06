@@ -4,7 +4,8 @@
 <div class="row">
     <div class="col-md-12">
         <div class="page-header">
-            <h1>{{ crash.exception.exception }}: {{ crash.exception.message }}</h1>
+            <h1>{{ crash.exception.exception }}: <small>{{ crash.exception.message }}</small></h1>
+            <h5>{{ crash.count }} report{% if crash.count > 1 %}s{% endif %}</h5>
         </div>
     </div>
 </div>

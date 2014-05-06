@@ -49,7 +49,7 @@ var files = require('./files.js');
 var crashes = require('./crashes.js');
 var redis = require("redis"), redisClient = redis.createClient();
 var Levenshtein = require('levenshtein');
-
+var colors = require('irc-colors');
 
 var actions = {
     'mod:find': {
@@ -109,6 +109,11 @@ var actions = {
         secure: true,
         usage: '#file:notes:remove <signature> <index>'
     },
+    'file:latest': {
+        func: files.getLatest,
+        secure: false,
+        usage: '#files:latest'
+    },
     'crash:note:set': {
         func: crashes.setNote,
         secure: true,
@@ -140,19 +145,22 @@ MongoClient.connect(connectionString, function(err, db) {
         autoConnect: false,
         debug: true
     });
-    
+
     bot.connect(5, function() {
        bot.say('nickserv', 'identify OpenEye ' + password);
     });
-    
+
     redisClient.on('message', function (channel, message) {
         if (channel == 'crash') {
-        
+
             var packet = JSON.parse(message);
             var modIds = packet['modIds'];
             var content = packet['content'];
-            
-            if (modIds.length > 0) {
+            if (modIds != null && modIds.length > 0) {
+                content += ' (ping: ' + modIds.join(', ') + ')';
+            }
+
+            if (packet['modIds'] != null && modIds.length > 0) {
                 db.collection('mods').find({
                     _id: {'$in': modIds}
                 }).toArray(function(err, results) {
@@ -167,20 +175,20 @@ MongoClient.connect(connectionString, function(err, db) {
                                     }, 2000);
                                 });
                             }
-                       } 
+                       }
                     });
                 });
             }
-            
+
             bot.say('#OpenEye', content);
-            
+
         } else {
             bot.say('#OpenEye', message);
         }
     });
-    
+
     redisClient.on('subscribe', function(channel, count) {
-       console.log('subscribed to ' + channel); 
+       console.log('subscribed to ' + channel);
     });
 
 
@@ -198,14 +206,14 @@ MongoClient.connect(connectionString, function(err, db) {
             if (matches.length > 0) {
 
                 var action = actions[matches[1]];
-                
+
                 if (action == null) {
                     var sorted = [];
                     for (cmd in actions) {
                         var l = new Levenshtein(matches[1], cmd);
                         sorted.push({
                             'distance' : l.distance,
-                            'action' : actions[cmd]                  
+                            'action' : actions[cmd]
                         });
                     }
                     sorted.sort(function(a, b) {
@@ -255,7 +263,7 @@ MongoClient.connect(connectionString, function(err, db) {
 
                             var isOp = info['channels'].indexOf('@#OpenEye') > -1 ||
                                     info['channels'].indexOf('@+#OpenEye') > -1;
-                            
+
                             var isVoiced = info['channels'].indexOf('+#OpenEye') > -1 ||
                                     info['channels'].indexOf('@+#OpenEye') > -1;
 

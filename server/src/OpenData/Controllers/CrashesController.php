@@ -103,7 +103,7 @@ class CrashesController {
         }
 
         return $this->twig->render('crashes.twig', array_merge(
-                $this->getPagination($results),
+                $this->getPagination($results, $request->get('page', 1)),
                 array(
                     'form'  => $form->createView()
                 )
@@ -111,7 +111,7 @@ class CrashesController {
     }
     
     
-    private function getPagination($iterator, $page = 1, $perPage = 20) {
+    private function getPagination($iterator, $page = 1, $perPage = 50) {
         
         if ($iterator == null) {
             return array('crashes' => array());
@@ -120,7 +120,7 @@ class CrashesController {
         $skip = ($page - 1) * $perPage;
         $total = $iterator->count();
         
-        $pageCount = ((int) $total / $perPage) + 1;
+        $pageCount = max(1, ((int) ($total - 1) / $perPage) + 1);
         
         if ($page > $pageCount || $page < 1) {
             throw new \Exception('nope');

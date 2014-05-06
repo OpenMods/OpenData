@@ -109,7 +109,7 @@ if ((int) date('G', $currentHour) == 0) {
         '_id' => array('$in' => array_keys($fileStatMap))
     ));
     foreach ($files as $file) {
-        if (isset($fileStatMap[$file['_id']])) {
+        if (isset($fileStatMap[$file['_id']]) && isset($file['mods'])) {
             foreach ($file['mods'] as $mod) {
                 if (!isset($mods[$mod['modId']])) {
                     $mods[$mod['modId']] = 0;
