@@ -3,7 +3,7 @@ package openeye.asm;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ReportedException;
 import openeye.Log;
-import openeye.logic.MainWorker;
+import openeye.logic.ThrowableLogger;
 
 public class CallHack {
 
@@ -12,7 +12,7 @@ public class CallHack {
 	 */
 	public static void callFromCrashHandler(Object o) {
 		CrashReport report = (CrashReport)o;
-		MainWorker.storeThrowableForReport(report.getCrashCause(), "crash_handler");
+		ThrowableLogger.processThrowable(report.getCrashCause(), "crash_handler");
 	}
 
 	public static void callForSilentException(Throwable throwable, String location) {
@@ -22,10 +22,10 @@ public class CallHack {
 				throwable = tmp.getCrashReport().getCrashCause();
 			} catch (Throwable t) {
 				Log.warn(t, "Failed to extract report");
-				MainWorker.storeThrowableForReport(t, "openeye_internal");
+				ThrowableLogger.processThrowable(t, "openeye_internal");
 			}
 		}
 
-		MainWorker.storeThrowableForReport(throwable, location);
+		ThrowableLogger.processThrowable(throwable, location);
 	}
 }

@@ -1,4 +1,4 @@
-package openeye.logic;
+package openeye.struct;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

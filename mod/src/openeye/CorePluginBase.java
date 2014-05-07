@@ -2,7 +2,7 @@ package openeye;
 
 import java.util.Map;
 
-import openeye.logic.InjectedDataStore;
+import openeye.logic.Bootstrap;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 public abstract class CorePluginBase implements IFMLLoadingPlugin {
@@ -24,6 +24,6 @@ public abstract class CorePluginBase implements IFMLLoadingPlugin {
 
 	@Override
 	public void injectData(Map<String, Object> data) {
-		InjectedDataStore.instance.populateFromInject(data);
+		Bootstrap.instance.populateFromInject(data);
 	}
 }

@@ -7,11 +7,13 @@ import java.util.Map;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
-public class InjectedDataStore {
+import com.google.common.base.Preconditions;
 
-	private InjectedDataStore() {}
+public class Bootstrap {
 
-	public static final InjectedDataStore instance = new InjectedDataStore();
+	private Bootstrap() {}
+
+	public static final Bootstrap instance = new Bootstrap();
 
 	private boolean runtimeDeobfuscationEnabled;
 
@@ -33,8 +35,18 @@ public class InjectedDataStore {
 		loader = (LaunchClassLoader)data.get("classLoader");
 		mcLocation = (File)data.get("mcLocation");
 		selfLocation = (File)data.get("coremodLocation");
+	}
 
-		if (mcLocation != null) Sanitizer.addFirst(Sanitizer.replace(mcLocation.getAbsolutePath(), "[minecraft_dir]"));
+	public void startup() {
+		Preconditions.checkNotNull(mcLocation, "Failed to start OpenEye, no minecraft folder available");
+
+		Config.load(mcLocation);
+
+		Storages storages = Storages.init(mcLocation);
+		StateHolder.init(storages);
+
+		Sanitizer.addFirst(Sanitizer.replace(mcLocation.getAbsolutePath(), "[minecraft_dir]"));
+		ThrowableLogger.init();
 	}
 
 	public boolean isRuntimeDeobfuscationEnabled() {

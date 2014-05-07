@@ -4,8 +4,8 @@ import java.io.*;
 import java.net.URL;
 
 import openeye.logic.GsonUtils;
-import openeye.logic.TypedCollections.ReportsList;
-import openeye.logic.TypedCollections.ResponseList;
+import openeye.struct.TypedCollections.ReportsList;
+import openeye.struct.TypedCollections.ResponseList;
 
 import com.google.common.base.Charsets;
 

@@ -12,7 +12,6 @@ import openeye.logic.GsonUtils;
 import openeye.notes.entries.NoteEntry;
 import openeye.storage.GsonSimpleStorage;
 import openeye.storage.IAppendableStorage;
-import openeye.storage.Storages;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -28,8 +27,7 @@ public class CommandNotes implements ICommand {
 
 	private final Map<String, INoteSink> sinks = Maps.newHashMap();
 
-	public CommandNotes(File minecraftDir) {
-		File reportDir = Storages.getReportDir(minecraftDir);
+	public CommandNotes(File reportDir) {
 		final IAppendableStorage<Object> notesDump = new GsonSimpleStorage<Object>(reportDir, "notes", "json", Object.class, GsonUtils.PRETTY_GSON);
 		sinks.put("console", new ConsoleNoteSink());
 		sinks.put("json", new JsonNoteSink(notesDump));

@@ -2,7 +2,6 @@ package openeye.logic;
 
 import openeye.Log;
 import openeye.storage.IDataSource;
-import openeye.storage.Storages;
 
 public class StateHolder {
 	private static ModState state = new ModState();

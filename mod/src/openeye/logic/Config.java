@@ -1,7 +1,10 @@
 package openeye.logic;
 
+import java.io.File;
 import java.util.Set;
 
+import openeye.Log;
+import openeye.config.ConfigProcessing;
 import openeye.config.ConfigProperty;
 
 import com.google.common.collect.ImmutableSet;
@@ -37,4 +40,16 @@ public class Config {
 
 	@ConfigProperty(category = "gui", comment = "Enables extra line in main menu screen under buttons (if true, only note button will be displayed)")
 	public static boolean mainScreenExtraLine = true;
+
+	public static void load(File mcLocation) {
+		try {
+			File configFolder = new File(mcLocation, "config");
+			configFolder.mkdir();
+			File configFile = new File(configFolder, "OpenEye.json");
+
+			ConfigProcessing.processConfig(configFile, Config.class, ConfigProcessing.GSON);
+		} catch (Exception e) {
+			Log.warn(e, "Failed to load config");
+		}
+	}
 }

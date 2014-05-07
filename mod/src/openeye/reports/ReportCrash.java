@@ -79,4 +79,7 @@ public class ReportCrash implements IReport {
 
 	@SerializedName("javaVersion")
 	public String javaVersion;
+
+	@SerializedName("random")
+	public int random;
 }
