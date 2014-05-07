@@ -56,15 +56,24 @@
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>Date</th><th>Exception</th><th>Class</th><th>Method</th><th>Line</th><th>Reports</th>            
+                <th class="col-md-2">Date</th><th class="col-md-3">Exception</th><th class="col-md-6">Note</th><th class="col-md-1">Reports</th>            
             </tr>
             </thead>
             <tbody>
             {% for crash in crashes %}
             {% set trace = crash.exception.stack|first %}
                 <tr>
-                    <td>{{ crash.latest|round|date("Y-m-d H:i:s") }}</td><td><a href="{{ relative('crashes/' ~ crash._id) }}">{{ crash.exception.exception }}</a></td><td>{{ trace.class }}</td><td>{{ trace.method }}</td><td>{{ trace.line }}</td><td>{{ crash.count }}</td>
+                    <td>{{ crash.latest|round|date("Y-m-d H:i:s") }}</td>
+                    <td style="overflow:hidden;">
+                        <a href="{{ relative('crashes/' ~ crash._id) }}">{{ crash.exception.exception }}</a><br />
+                        {{ trace.class }}{% if trace.class %}.{% endif %}{% if trace.method %}<span>{{ trace.method }}()</span> {% endif %}{% if trace.line %}:{{ trace.line }}{% endif %}</td>
+                    <td>{% if crash.note %}<strong>{{ crash.note.message }} - {{ crash.note.user }}{% endif %}</td>
+                    <td>{{ crash.count }}</td>
                 </tr>
+                
+                
+                
+                
             {% endfor %}
             </tbody>
 

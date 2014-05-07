@@ -111,7 +111,11 @@ class Analytics implements IPacketHandler {
                 if ($this->serviceFiles->create($signature)) {
                     if (!in_array($signature['filename'], array(
                         'minecraft.jar',
-                        '1.6.4-Forge9.11.1.965.jar'
+                        '1.6.4-Forge9.11.1.965.jar',
+                        '1.7.2-Forge10.12.1.1060.jar',
+                        'scala-compiler-2.10.2.jar',
+                        'scala-library-2.10.2.jar',
+                        '1.7.2-Forge10.12.0.1047.jar'
                     ))) {
                         $newFilenames[] = $signature['filename'];
                     }

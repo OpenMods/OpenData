@@ -42,7 +42,7 @@ class HomeController {
                 $this->getPagination(
                     $this->serviceMods->findAll(),
                     $request->get('page', 1),
-                    50
+                    100
                 ),
                 array(
                     'title' => 'Listing all mods'

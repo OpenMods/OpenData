@@ -172,7 +172,7 @@ class CrashesService extends BaseService {
                     )
                 );
                 
-                if ($crash['count'] % 10 == 0 || $crash['count'] % 100 == 0 || $crash['count'] % 500 == 0 || $crash['count'] % 1000 == 0) {
+                if ($crash['count'] == 10 || $crash['count'] == 100 || $crash['count'] == 500|| $crash['count'] == 1000) {
                     $redis = new \Predis\Client();
                     $redis->publish('crash', json_encode(array(
                         'modIds' => $involvedModIds,

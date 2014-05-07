@@ -31,7 +31,7 @@
     <div class="col-md-3"><strong>Contains mods:</strong></div>
     <div class="col-md-9">
       {% for mod in file.mods %}
-          {{ mod.name }} <small>({{ mod.version }})</small><br />
+          {{ mod.name }} ({{ mod.modId }}) - <small>{{ mod.version }}</small><br />
       {% endfor %}
     </div>
   </div>
