@@ -8,6 +8,9 @@
     width: auto !important;
     top: 0 !important;
   }
+  #mainbar {
+  	clear: both;
+  }
 }
 
 .nav-home  {

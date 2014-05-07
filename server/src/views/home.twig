@@ -6,7 +6,7 @@
             <h1>{{ title }}{% if total %} <small>({{ total }} total)</small>{% endif %}</h1>
         </div>
     </div>
-    <div class="col-md-3 pull-right">
+    <div class="col-md-3 pull-right" id="floatbar">
         <div id="sidenav" data-spy="affix" data-offset-top="50">
             
           <strong>Find by:</strong>
@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div class="col-md-9">
+    <div class="col-md-9" id="mainbar">
 
         {% if page_count and page_count > 2 %}
         <ul class="pagination">
