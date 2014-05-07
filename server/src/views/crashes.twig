@@ -69,6 +69,18 @@
             </tbody>
 
         </table>
+        
+        
+        {% if page_count and page_count > 2 %}
+        <ul class="pagination">
+            <li{% if disablePrev %} class="disabled"{%endif %}><a href="{% if disablePrev %}#{% else %}?page={{ current_page - 1 }}{% endif %}">&laquo;</a></li>
+            {% for page in range(1, page_count) %}
+                <li{% if current_page == page %} class="active"{%endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+            {% endfor %}
+            <li{% if disableNext %} class="disabled"{%endif %}><a href="{% if disableNext %}#{% else %}?page={{ current_page + 1 }}{% endif %}">&raquo;</a></li>
+        </ul>
+        {% endif %}
+        
     </div>
 </div>
 {% endblock %}

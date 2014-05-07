@@ -198,7 +198,7 @@ function getMod(context, modId, requiresPermissions, callback) {
         if (result == null) {
             context.bot.say(
                     context.channel,
-                    'Mod not found'
+                    colors.red('Mod not found')
                     );
             return true;
         }
@@ -351,7 +351,7 @@ function unsetField(context) {
 
 }
 
-//<type> <span> <key> <from> <to>
+//<span> <type> <key> <from> <to>
 function getStats(context) {
 
     var args = context.args;
@@ -382,15 +382,15 @@ function getStats(context) {
                     );
             return;
         }
-        
+
         fromDate.setMinutes(0);
         fromDate.setSeconds(0);
         fromDate.setMilliseconds(0);
-        
+
         toDate.setMinutes(0);
         toDate.setSeconds(0);
         toDate.setMilliseconds(0);
-        
+
         if (type == 'mod') {
             context.db.collection('files').find(
                {'mods.modId' : key}
@@ -408,7 +408,7 @@ function getStats(context) {
                         '$gte': fromDate,
                         '$lt': toDate
                     },
-                    '_id.type': type,
+                    '_id.type': 'signatures',
                     '_id.key': {'$in': fileIds}
                 }, fromDate, toDate);
             });

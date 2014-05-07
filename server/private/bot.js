@@ -203,7 +203,7 @@ MongoClient.connect(connectionString, function(err, db) {
 
             var matches = message.match(/^#([a-z0-9\:]+)\s?(.*)?$/i);
 
-            if (matches.length > 0) {
+            if (matches != null && matches.length > 0) {
 
                 var action = actions[matches[1]];
 
@@ -266,6 +266,9 @@ MongoClient.connect(connectionString, function(err, db) {
 
                             var isVoiced = info['channels'].indexOf('+#OpenEye') > -1 ||
                                     info['channels'].indexOf('@+#OpenEye') > -1;
+                            
+                            console.log("isOp ? " + isOp);
+                            console.log("isVoiced ? " + isVoiced);
 
                             if (!action['func']({
                                 bot: bot,
