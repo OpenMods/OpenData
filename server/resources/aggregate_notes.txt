@@ -1,170 +1,251 @@
-db.analytics.mapReduce(
-     function() {
-     
-        var self = this;
-        
-        var time = new Date();
-	time.setMinutes(0);
-	time.setSeconds(0);
-        time.setMilliseconds(0);
-        
-	var result = {
-		'branding': 	{},
-		'runtime': 	{},
-		'tags' : 	{},
-		'count'	: 	NumberInt(1)
-	};
-	
-	['locale', 'minecraft', 'language', 'javaVersion', 'timezone'].forEach(function(k) {
-		result[k] = {};
-		result[k][self[k]] = NumberInt(1);
-	});
-	
-	this.branding.forEach(function(brand) {
-		result['branding'][brand] = NumberInt(1);
-	});
-	
-	for (key in this.runtime) {
-		var version = this.runtime[key];
-		if (result['runtime'][key] == null) result['runtime'][key] = {};
-		result['runtime'][key][version] = NumberInt(1);
-	}
-	
-	if (this.tags != null) {
-  		this.tags.forEach(function(tag) {
-			result['tags'][tag] = NumberInt(1);
-		});
-	}
-	
-	this.signatures.forEach(function(signature) {
-		this.emit({
-			type: 	'signature',
-			key: 	signature.signature,
-			time: 	time
-		}, result);
-	});
-     },
-     function (key, docs) {
-	var result = {
-		'locale': 	{},
-		'minecraft': 	{},
-		'language': 	{},
-		'timezone': 	{},
-		'javaVersion': 	{},
-		'branding': 	{},
-		'tags' :	{},
-		'runtime' : 	{},
-		'count'	: 	0
-	};
-	docs.forEach(function(doc) {
-		['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'tags'].forEach(function(k) {
-			for (x in doc[k]) {
-				if (result[k][x] == null) result[k][x] = 0;
-				result[k][x] += doc[k][x];
-				result[k][x] = NumberInt(result[k][x]);
-			}
-		});
-		for (ware in doc.runtime) {
-			for (version in doc.runtime[ware]) {
-				if (result['runtime'][ware] == null) result['runtime'][ware] = {};
-				if (result['runtime'][ware][version] == null) {
-					result['runtime'][ware][version] = 0;
-				}
-				result['runtime'][ware][version] += 1;
-				result['runtime'][ware][version] = NumberInt(result['runtime'][ware][version]);
-			}
-		}
-		result.count += doc.count;
-	});
-	result.count = NumberInt(result.count);
-	return result;
-     },
-     { out: "temporary_aggregate" }
-)
+/****************************************************
+* I deserve to be shot for even thinking of using
+* this monstrosity in production
+****************************************************/
 
-db.analytics.mapReduce(
-     function() {
-     
-        var self = this;
-        
-        var time = new Date();
-	time.setMinutes(0);
-	time.setSeconds(0);
-        time.setMilliseconds(0);
-        
-	var result = {
-		'branding': 	{},
-		'signatures': 	{},
-		'runtime': 	{},
-		'count'	: 	NumberInt(1)
-	};
-	
-	['locale', 'minecraft', 'language', 'javaVersion', 'timezone'].forEach(function(k) {
-		result[k] = {};
-		result[k][self[k]] = NumberInt(1);
-	});
-	
-	this.branding.forEach(function(brand) {
-		result['branding'][brand] = NumberInt(1);
-	});
-	
-	this.signatures.forEach(function(signature) {
-		result['signatures'][signature] = NumberInt(1);
-	});
-	
-	for (key in this.runtime) {
-		var version = this.runtime[key];
-		if (result['runtime'][key] == null) result['runtime'][key] = {};
-		result['runtime'][key][version] = NumberInt(1);
-	}
-	
-	if (this.tags != null) {
-		this.tags.forEach(function(signature) {
-			this.emit({
-				type: 	'tags',
-				key: 	tags,
-				time: 	time
-			}, result);
-		});
-	}
-     },
-     function (key, docs) {
-	var result = {
-		'locale': 	{},
-		'minecraft': 	{},
-		'language': 	{},
-		'timezone': 	{},
-		'javaVersion': 	{},
-		'branding': 	{},
-		'signatures': 	{},
-		'count'	: 	0
-	};
-	docs.forEach(function(doc) {
-		['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'signatures'].forEach(function(k) {
-			for (x in doc[k]) {
-				if (result[k][x] == null) result[k][x] = 0;
-				result[k][x] += doc[k][x];
-				result[k][x] = NumberInt(result[k][x]);
-			}
-		});
-		
-		for (ware in doc.runtime) {
-			for (version in doc.runtime[ware]) {
-				if (result['runtime'][ware] == null) result['runtime'][ware] = {};
-				if (result['runtime'][ware][version] == null) {
-					result['runtime'][ware][version] = 0;
-				}
-				result['runtime'][ware][version] += 1;
-				result['runtime'][ware][version] = NumberInt(result['runtime'][ware][version]);
-			}
-		}
+function () {
 
-		
-		result.count += doc.count;
-	});
-	
-	result.count = NumberInt(result.count);
-	return result;
-     },
-     { out: "temporary_aggregate" }
-)
+    db.aggregated.drop();
+    db.createCollection('aggregated');
+
+    db.analytics.mapReduce(
+        function () {
+
+
+            if (this.signatures == null || this.signatures.length == 0) {
+                return;
+            }
+            var self = this;
+
+            var time = new Date();
+            time.setMinutes(0);
+            time.setSeconds(0);
+            time.setMilliseconds(0);
+
+            var result = {
+                'branding': {},
+                'runtime': {},
+                'tags': {},
+                'count': NumberInt(1)
+            };
+
+            ['locale', 'minecraft', 'language', 'javaVersion', 'timezone'].forEach(function (k) {
+                result[k] = {};
+                result[k][self[k]] = NumberInt(1);
+            });
+
+            this.branding.forEach(function (brand) {
+                result['branding'][brand] = NumberInt(1);
+            });
+
+            for (key in this.runtime) {
+                var version = this.runtime[key];
+                if (result['runtime'][key] == null) result['runtime'][key] = {};
+                result['runtime'][key][version] = NumberInt(1);
+            }
+
+            if (this.tags != null) {
+                this.tags.forEach(function (tag) {
+                    result['tags'][tag] = NumberInt(1);
+                });
+            }
+            this.signatures.forEach(function (signature) {
+                this.emit({
+                    type: 'signature',
+                    key: signature.signature,
+                    time: time
+                }, result);
+            });
+        },
+        function (key, docs) {
+            var result = {
+                'locale': {},
+                'minecraft': {},
+                'language': {},
+                'timezone': {},
+                'javaVersion': {},
+                'branding': {},
+                'tags': {},
+                'runtime': {},
+                'count': 0
+            };
+            docs.forEach(function (doc) {
+                ['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'tags'].forEach(function (k) {
+                    for (x in doc[k]) {
+                        if (result[k][x] == null) result[k][x] = 0;
+                        result[k][x] += doc[k][x];
+                        result[k][x] = NumberInt(result[k][x]);
+                    }
+                });
+                for (ware in doc.runtime) {
+                    for (version in doc.runtime[ware]) {
+                        if (result['runtime'][ware] == null) result['runtime'][ware] = {};
+                        if (result['runtime'][ware][version] == null) {
+                            result['runtime'][ware][version] = 0;
+                        }
+                        result['runtime'][ware][version] += 1;
+                        result['runtime'][ware][version] = NumberInt(result['runtime'][ware][version]);
+                    }
+                }
+                result.count += doc.count;
+            });
+            result.count = NumberInt(result.count);
+            return result;
+        }, {
+            finalize: function (key, doc) {
+                var result = {
+                    'locale': [],
+                    'minecraft': [],
+                    'language': [],
+                    'timezone': [],
+                    'javaVersion': [],
+                    'branding': [],
+                    'tags': [],
+                    'runtime': {},
+                    'count': NumberInt(doc.count)
+                };
+                ['locale', 'minecraft', 'language', 'timezone', 'javaVersion', 'branding', 'tags'].forEach(function (k) {
+                    for (key in doc[k]) {
+                        result[k].push({
+                            'key': key,
+                            'value': NumberInt(doc[k][key])
+                        });
+                    }
+                });
+                for (key in doc.runtime) {
+                    result['runtime'][key] = [];
+                    for (version in doc.runtime[key]) {
+                        result['runtime'][key].push({
+                            'key': version,
+                            'value': NumberInt(doc.runtime[key][version])
+                        });
+                    }
+                }
+                return result;
+            },
+            out: "signatures"
+        }
+    )
+
+
+    db.analytics.mapReduce(
+        function () {
+            if (this.tags == null || this.tags.length == 0) {
+                return;
+            }
+            var self = this;
+
+            var time = new Date();
+            time.setMinutes(0);
+            time.setSeconds(0);
+            time.setMilliseconds(0);
+
+            var result = {
+                'branding': {},
+                'runtime': {},
+                'signatures': {},
+                'count': NumberInt(1)
+            };
+
+            ['locale', 'minecraft', 'language', 'javaVersion', 'timezone'].forEach(function (k) {
+                result[k] = {};
+                result[k][self[k]] = NumberInt(1);
+            });
+
+            this.branding.forEach(function (brand) {
+                result['branding'][brand] = NumberInt(1);
+            });
+
+            for (key in this.runtime) {
+                var version = this.runtime[key];
+                if (result['runtime'][key] == null) result['runtime'][key] = {};
+                result['runtime'][key][version] = NumberInt(1);
+            }
+
+            if (this.signatures != null) {
+                this.signatures.forEach(function (signature) {
+                    result['signatures'][signature.signature] = NumberInt(1);
+                });
+            }
+
+            this.tags.forEach(function (tag) {
+                this.emit({
+                    type: 'tag',
+                    key: tag,
+                    time: time
+                }, result);
+            });
+        },
+        function (key, docs) {
+            var result = {
+                'locale': {},
+                'minecraft': {},
+                'language': {},
+                'timezone': {},
+                'javaVersion': {},
+                'branding': {},
+                'signatures': {},
+                'runtime': {},
+                'count': 0
+            };
+            docs.forEach(function (doc) {
+                ['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'signatures'].forEach(function (k) {
+                    for (x in doc[k]) {
+                        if (result[k][x] == null) result[k][x] = 0;
+                        result[k][x] += doc[k][x];
+                        result[k][x] = NumberInt(result[k][x]);
+                    }
+                });
+                for (ware in doc.runtime) {
+                    for (version in doc.runtime[ware]) {
+                        if (result['runtime'][ware] == null) result['runtime'][ware] = {};
+                        if (result['runtime'][ware][version] == null) {
+                            result['runtime'][ware][version] = 0;
+                        }
+                        result['runtime'][ware][version] += 1;
+                        result['runtime'][ware][version] = NumberInt(result['runtime'][ware][version]);
+                    }
+                }
+                result.count += doc.count;
+            });
+            result.count = NumberInt(result.count);
+            return result;
+        }, {
+            finalize: function (key, doc) {
+                var result = {
+                    'locale': [],
+                    'minecraft': [],
+                    'language': [],
+                    'timezone': [],
+                    'javaVersion': [],
+                    'branding': [],
+                    'signatures': [],
+                    'runtime': {},
+                    'count': NumberInt(doc.count)
+                };
+                ['locale', 'minecraft', 'language', 'timezone', 'javaVersion', 'branding', 'signatures'].forEach(function (k) {
+                    for (key in doc[k]) {
+                        result[k].push({
+                            'key': key,
+                            'value': NumberInt(doc[k][key])
+                        });
+                    }
+                });
+                for (key in doc.runtime) {
+                    result['runtime'][key] = [];
+                    for (version in doc.runtime[key]) {
+                        result['runtime'][key].push({
+                            'key': version,
+                            'value': NumberInt(doc.runtime[key][version])
+                        });
+                    }
+                }
+                return result;
+            },
+            out: "tags"
+        }
+    )
+
+    db.tags.copyTo('aggregated');
+    db.signatures.copyTo('aggregated');
+}
