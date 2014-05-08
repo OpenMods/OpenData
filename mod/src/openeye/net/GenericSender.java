@@ -40,9 +40,9 @@ public abstract class GenericSender<I, O> {
 
 	public final URL url;
 
-	private int retries = 3;
+	private int retries = 2;
 
-	private int timeout = 1000;
+	private int timeout = 10000;
 
 	protected GenericSender(URL url) {
 		this.url = url;
