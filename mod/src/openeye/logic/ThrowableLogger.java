@@ -29,7 +29,7 @@ public class ThrowableLogger {
 
 	private static void tryStoreCrash(Throwable throwable, String location) {
 		try {
-			ModMetaCollector collector = resolver != null? resolver.get(5, TimeUnit.SECONDS) : null;
+			ModMetaCollector collector = resolver != null? resolver.get(10, TimeUnit.SECONDS) : null;
 			ReportCrash crashReport = ReportBuilders.buildCrashReport(throwable, location, collector);
 
 			Storages storages = Storages.instance();

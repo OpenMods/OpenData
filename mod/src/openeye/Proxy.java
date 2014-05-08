@@ -75,7 +75,7 @@ public abstract class Proxy {
 	}
 
 	private static Proxy createProxy() {
-		switch (FMLCommonHandler.instance().getEffectiveSide()) {
+		switch (FMLCommonHandler.instance().getSide()) {
 			case CLIENT:
 				return new Client();
 			case SERVER:

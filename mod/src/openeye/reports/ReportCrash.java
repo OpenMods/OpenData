@@ -82,4 +82,7 @@ public class ReportCrash implements IReport {
 
 	@SerializedName("random")
 	public int random;
+
+	@SerializedName("side")
+	public String side;
 }
