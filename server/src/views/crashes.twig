@@ -66,14 +66,13 @@
                     <td>{{ crash.latest|round|date("Y-m-d H:i:s") }}</td>
                     <td style="overflow:hidden;">
                         <a href="{{ relative('crashes/' ~ crash._id) }}">{{ crash.exception.exception }}</a><br />
-                        {{ trace.class }}{% if trace.class %}.{% endif %}{% if trace.method %}<span>{{ trace.method }}()</span> {% endif %}{% if trace.line %}:{{ trace.line }}{% endif %}</td>
+                        {{ trace.class }}{% if trace.class %}.{% endif %}{% if trace.method %}<span>{{ trace.method }}()</span> {% endif %}{% if trace.line %}:{{ trace.line }}{% endif %}
+                        {% if crash.tags|length > 0 %}<br />{% for tag in crash.tags %}<span class="label label-info">{{ tag }}</span> {% endfor %}{% endif %}
+                        {% if crash.involvedMods|length > 0 %}<br />{% for mod in crash.involvedMods %}<span class="label label-primary">{{ mod }}</span> {% endfor %}{% endif %}
+                    </td>
                     <td>{% if crash.note %}<strong>{{ crash.note.message }} - {{ crash.note.user }}{% endif %}</td>
                     <td>{{ crash.count }}</td>
-                </tr>
-                
-                
-                
-                
+                </tr>                
             {% endfor %}
             </tbody>
 

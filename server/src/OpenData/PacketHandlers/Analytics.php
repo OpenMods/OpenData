@@ -93,7 +93,7 @@ class Analytics implements IPacketHandler {
                 foreach ($fileData['notes'] as $note) {
                     $responses[] = array_merge($fileNode, array(
                         'type' => 'note',
-                        'payload' => $note['payload'],
+                        'payload' => isset($note['payload']) ? $note['payload'] : "",
                         'level' => $note['level'],
                         'description' => $note['description']
                     ));
