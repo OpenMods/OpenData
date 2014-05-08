@@ -32,6 +32,10 @@ public class ReportBuilders {
 
 	private static final Random RANDOM = new Random();
 
+	private static String getSide() {
+		return FMLCommonHandler.instance().getSide().toString().toLowerCase();
+	}
+
 	public static ReportKnownFiles buildKnownFilesReport(ModMetaCollector data) {
 		ReportKnownFiles result = new ReportKnownFiles();
 
@@ -82,6 +86,8 @@ public class ReportBuilders {
 		analytics.addedSignatures = Sets.difference(currentSignatures, prevSignatures);
 
 		analytics.removedSignatures = Sets.difference(prevSignatures, currentSignatures);
+
+		analytics.side = getSide();
 
 		return analytics;
 	}
@@ -145,6 +151,8 @@ public class ReportBuilders {
 		crash.javaVersion = getJavaVersion();
 
 		crash.random = RANDOM.nextInt();
+
+		crash.side = getSide();
 
 		return crash;
 	}

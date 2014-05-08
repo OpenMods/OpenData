@@ -63,4 +63,7 @@ public class ReportAnalytics implements IReport {
 
 	@SerializedName("tags")
 	public Set<String> tags;
+
+	@SerializedName("side")
+	public String side;
 }
