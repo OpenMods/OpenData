@@ -154,6 +154,8 @@ public class ReportBuilders {
 
 		crash.side = getSide();
 
+		crash.resolved = collector != null;
+
 		return crash;
 	}
 
