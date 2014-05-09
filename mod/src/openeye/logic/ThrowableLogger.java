@@ -28,8 +28,14 @@ public class ThrowableLogger {
 	private static final Queue<ThrowableEntry> delayedThrowables = Queues.newConcurrentLinkedQueue();
 
 	private static void tryStoreCrash(Throwable throwable, String location) {
+		ModMetaCollector collector = null;
 		try {
-			ModMetaCollector collector = resolver != null? resolver.get(10, TimeUnit.SECONDS) : null;
+			collector = resolver != null? resolver.get(10, TimeUnit.SECONDS) : null;
+		} catch (Throwable t) {
+			Log.warn(t, "Failed to get resolver");
+		}
+
+		try {
 			ReportCrash crashReport = ReportBuilders.buildCrashReport(throwable, location, collector);
 
 			Storages storages = Storages.instance();

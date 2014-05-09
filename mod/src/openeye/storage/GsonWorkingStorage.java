@@ -29,22 +29,22 @@ public class GsonWorkingStorage<T> extends GsonDirStorage<T> implements IWorking
 	}
 
 	@Override
-	protected void removeEntry(String id) {
+	protected synchronized void removeEntry(String id) {
 		sources.remove(id);
 	}
 
 	@Override
-	public Collection<IDataSource<T>> listAll() {
+	public synchronized Collection<IDataSource<T>> listAll() {
 		return ImmutableList.copyOf(sources.values());
 	}
 
 	@Override
-	public IDataSource<T> getById(String id) {
+	public synchronized IDataSource<T> getById(String id) {
 		return sources.get(id);
 	}
 
 	@Override
-	public IDataSource<T> createNew() {
+	public synchronized IDataSource<T> createNew() {
 		String idPrefix = generateId();
 		int count = 0;
 		String id;
@@ -56,7 +56,7 @@ public class GsonWorkingStorage<T> extends GsonDirStorage<T> implements IWorking
 	}
 
 	@Override
-	public IDataSource<T> createNew(String id) {
+	public synchronized IDataSource<T> createNew(String id) {
 		IDataSource<T> newSource = super.createNew(id);
 		sources.put(id, newSource);
 		return newSource;
