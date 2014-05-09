@@ -23,7 +23,7 @@ public class ResolvedCrashEntry extends NoteEntry {
 
 	@Override
 	public WrappedChatComponent content() {
-		return WrappedChatComponent.createTranslation(Strings.nullToEmpty(note));
+		return WrappedChatComponent.createText(Strings.nullToEmpty(note));
 	}
 
 	@Override
