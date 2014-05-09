@@ -13,13 +13,13 @@ import openeye.Log;
 import openeye.reports.*;
 import openeye.reports.ReportCrash.ExceptionInfo;
 import openeye.reports.ReportCrash.StackTrace;
-import openeye.reports.ReportEnvironment.FmlForgeRuntime;
 import openeye.reports.ReportFileContents.ArchiveDirEntry;
 import openeye.reports.ReportFileContents.ArchiveEntry;
 import openeye.reports.ReportFileContents.ArchiveFileEntry;
 import openeye.utils.CompatiblityAdapter;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -44,21 +44,24 @@ public class ReportBuilders {
 		return result;
 	}
 
-	public static String getJavaVersion() {
+	private static String getJavaVersion() {
 		String vendor = Strings.nullToEmpty(System.getProperty("java.vendor"));
 		String version = Strings.nullToEmpty(System.getProperty("java.version"));
 		return vendor + " " + version;
 	}
 
+	private static Map<String, String> getEnvVersions() {
+		ImmutableMap.Builder<String, String> versions = ImmutableMap.builder();
+		versions.put("mcp", Loader.instance().getMCPVersionString());
+		versions.put("fml", Loader.instance().getFMLVersionString());
+		versions.put("forge", ForgeVersion.getVersion());
+		return versions.build();
+	}
+
 	private static void fillEnvInfo(ReportEnvironment report) {
 		report.branding = CompatiblityAdapter.getBrandings();
 
-		FmlForgeRuntime runtime = new FmlForgeRuntime();
-		runtime.mcpVersion = Loader.instance().getMCPVersionString();
-		runtime.fmlVersion = Loader.instance().getFMLVersionString();
-		runtime.forgeVersion = ForgeVersion.getVersion();
-
-		report.runtime = runtime;
+		report.runtime = getEnvVersions();
 
 		report.minecraft = Loader.instance().getMCVersionString();
 
