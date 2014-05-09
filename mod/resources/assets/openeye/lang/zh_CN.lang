@@ -1,0 +1,44 @@
+openeye.main_screen.dangerous_file=一个mod文件被OpenEye标记为危险.
+openeye.main_screen.known_crash=OpenEye收集了一个至多个你最近的崩溃信息.
+openeye.main_screen.crash_reported=崩溃已储存到了服务器上.
+openeye.main_screen.intro=不要恐慌!点击闪烁的按钮看看发生了什么!
+
+openeye.notes.goto_page=访问链接
+
+openeye.notes.title.resolved_crash=在线分析最近的崩溃.
+openeye.notes.title.reported_crash=崩溃报告已发送至服务器.
+openeye.notes.title.note=文件的注释 %s
+openeye.notes.title.dangerous_file=危险文件: %s
+
+openeye.note.title.intro1=欢迎来到Open Eye
+openeye.note.content.intro1=OpenEye是一个用于收集mod用法信息和崩溃报告的实用工具.
+
+openeye.note.title.intro2=统计资料
+openeye.note.content.intro2=选择这个项目之后点击"访问链接"以查看OpenEye收集的统计资料.其他项目也有指定的链接.
+
+openeye.note.title.intro3=已收集数据
+openeye.note.content.intro3=这个链接包含了OpenEye收集的数据概要.
+
+openeye.note.title.intro4=本地数据
+openeye.note.content.intro4=OpenEye储存了所有已发送和接收的信息在您的MC安装目录下的reports文件夹内.点击"访问链接"来打开这个文件夹.
+
+openeye.note.title.intro5=源代码
+openeye.note.content.intro5=OpenEye是一个开源mod.源代码可以在github上查看.
+
+openeye.note.title.intro6=禁用和配置
+openeye.note.content.intro6=OpenEye使用原版内置设置.如果您对它不满意,你也可以安全地移除这个mod.
+
+openeye.notes.content.dangerous_file=文件 %s 在OpenEye数据库中被标记为危险(可能为恶意文件).访问官网以获得详情.
+
+openeye.chat.note=注释 %s, 类型: %s
+openeye.chat.store_failed=注释存储失败!
+openeye.chat.dumped=存储在文件中的注释: %s
+
+openeye.category.critical=关键
+openeye.category.alert=警报
+openeye.category.warning=警告
+openeye.category.info=信息
+openeye.category.system_info=系统信息
+openeye.category.dangerous_file=危险文件
+openeye.level.reported_crash=已报告崩溃
+openeye.level.resolved_crash=已解决崩溃
