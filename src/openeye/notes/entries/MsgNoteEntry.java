@@ -7,6 +7,7 @@ import openeye.notes.NoteLevels;
 import openeye.notes.WrappedChatComponent;
 import openeye.responses.ResponseModMsg;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 
 public class MsgNoteEntry extends NoteEntry {
@@ -40,7 +41,7 @@ public class MsgNoteEntry extends NoteEntry {
 
 	@Override
 	public WrappedChatComponent content() {
-		return WrappedChatComponent.createTranslation(description);
+		return WrappedChatComponent.createText(Strings.nullToEmpty(description));
 	}
 
 	@Override
