@@ -25,12 +25,21 @@ class CrashLog implements IPacketHandler {
     }
     
     public function execute($packet) {
-        $crashDetails = $this->serviceCrashes->add($packet);
-        return array(array(
-            'type' => 'known_crash',
-            'url' => 'http://openeye.openmods.info/crashes/'.$crashDetails['stackhash'],
-            'note'   => $crashDetails['note'] == null ? null : str_replace('%', '', $crashDetails['note']['message'])
-        ));
+        
+        if ($commonCrash = $this->serviceCrashes->getCommonCrashDetails($packet)) {
+            $crashDetails = $this->serviceCrashes->add($packet, true);
+            return array(array(
+                'type' => 'known_crash',
+                'url' => 'http://openeye.openmods.info/commoncrash/'.$commonCrash['url'],
+                'note'   => $commonCrash['message']
+            ));
+        } else {
+            $crashDetails = $this->serviceCrashes->add($packet);
+            return array(array(
+                'type' => 'known_crash',
+                'url' => 'http://openeye.openmods.info/crashes/'.$crashDetails['stackhash'],
+                'note'   => $crashDetails['note'] == null ? null : str_replace('%', '', $crashDetails['note']['message'])
+            ));
+        }
     }
-
 }

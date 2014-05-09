@@ -30,7 +30,37 @@ class CrashesService extends BaseService {
 	);
     }
     
-    public function add($packet, $fileIds, $modIds) {
+    public static function getExceptionMessages($arr) {
+        $messages[] = $arr['exception'].' '.$arr['message'];
+        while (isset($arr['cause'])) {
+        	$arr = $arr['cause'];
+        	$messages[] = $arr['exception'].': '.$arr['message'];
+        }
+        return $messages;
+    }
+    
+    public function getCommonCrashDetails($packet) {
+        
+        $crashMessages = self::getExceptionMessages($packet['exception']);
+        
+        foreach ($this->db->common_crashes->find() as $commonCrash) {
+            foreach ($commonCrash['regex'] as $regex) {
+                foreach ($crashMessages as $msg) {
+                    if (preg_match("@".$regex."@i", $msg)) {
+                        return $commonCrash;
+                    }
+                }
+            }
+        }
+    }
+    
+    public function getCommonCrashBySlug($slug) {
+        return $this->db->common_crashes->findOne(array(
+            'url' => $slug
+        ));
+    }
+    
+    public function add($packet, $shouldHide = false) {
 
         $note = null;
         
@@ -111,7 +141,8 @@ class CrashesService extends BaseService {
                 'classes' => $crashData['classes'],
                 'count' => 1,
                 'tags' => $tags,
-                'javaVersions' => $javaVersions
+                'javaVersions' => $javaVersions,
+                'hidden' => $shouldHide
             ));
             
             $this->db->crashes_index->insert(
@@ -123,11 +154,13 @@ class CrashesService extends BaseService {
                 )
             );
             
-            $redis = new \Predis\Client();
-            $redis->publish('crash', json_encode(array(
-                'modIds' => $involvedModIds,
-                'content' => 'New crash! '.$stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message'].' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
-            )));
+            if (!$shouldHide && class_exists('\\Predis\\Client')) {
+                $redis = new \Predis\Client();
+                $redis->publish('crash', json_encode(array(
+                    'modIds' => $involvedModIds,
+                    'content' => 'New crash! '.$stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message'].' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
+                )));
+            }
  
         } else {
             

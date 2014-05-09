@@ -22,6 +22,15 @@ class CrashesController {
         $this->serviceForms = $forms;
     }
     
+    public function commoncrash(Request $request, $slug) {
+        $commonCrash = $this->serviceCrashes->getCommonCrashBySlug($slug);
+        if ($commonCrash == null) {
+            throw new \Exception();
+        }
+        
+        return $this->twig->render('commoncrash.twig', $commonCrash);
+    }
+    
     public function view(Request $request, $stackhash) {
         
         $crash = $this->serviceCrashes->findByStackhash($stackhash);
@@ -49,12 +58,35 @@ class CrashesController {
             $response['involvedSignatures_count'] = $response['involvedSignatures']->count();
         }
         
-        if (count($crash['allSignatures']) > 0) {
-            $response['allSignatures'] = $this->serviceFiles->findIn($crash['allSignatures']);
-            $response['allSignatures_count'] = $response['allSignatures']->count();
-        }
+        $response['classTransformers'] = array();
+        $response['tweakers'] = array();
         
         $response['unlisted'] = $this->serviceMods->findUnlistedModIds();
+        
+        if (count($crash['allSignatures']) > 0) {
+            $response['allSignatures'] = $this->serviceFiles->findIn($crash['allSignatures']);
+            foreach ($response['allSignatures'] as $file) {
+                
+                $linkFile = true;
+                foreach ($file['mods'] as $mod) {
+                    if (in_array($mod['modId'], $response['unlisted'])) {
+                        $linkFile = false;
+                    }
+                }
+                
+                if ($file['classTransformers'] != null) {
+                    foreach ($file['classTransformers'] as $transformer) {
+                        $response['classTransformers'][$transformer] = $linkFile ? $file['_id'] : '';
+                    }
+                }
+                if ($file['tweakers'] != null) {
+                    foreach ($file['tweakers'] as $tweaker) {
+                        $response['tweakers'][$tweaker['class']] = $linkFile ? $file['_id'] : '';
+                    }
+                }
+            }
+            $response['allSignatures_count'] = $response['allSignatures']->count();
+        }
         
         return $this->twig->render('crash.twig', $response);
         
@@ -70,14 +102,20 @@ class CrashesController {
             ->add('signature', 'text', array('required' => false))
             ->add('package', 'text', array('required' => false))
             ->getForm();
+        
+        if ($request->getMethod() == 'POST') {
+            $form->handleRequest($request);
+        } else {
+            $params = $request->query->get('form', array());
+            if (count($params) > 0) {
+                $form->submit($params, false);
+            }
+        }
 
-        $form->handleRequest($request);
-
-        $query = array();
+        $query = array('hidden' => array('$ne' => true));
         $invalid = false;
-        if ($form->isValid()) {
-            
-            $data = $form->getData();
+        $data = $form->getData();
+        if (count($data) > 0) {
             $query = array();
             if (!empty($data['package'])) {
                 $query['classes'] = new \MongoRegex('/^'.preg_quote($data['package']).'/i');

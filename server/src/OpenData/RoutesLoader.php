@@ -78,6 +78,7 @@ class RoutesLoader {
          * API
          */
         $api->post('/data', "api.controller:main");
+        $api->post('/crash', "api.controller:crash");
 
 
         /**
@@ -117,6 +118,7 @@ class RoutesLoader {
         $site->get('/crashes', "crashes.controller:search");
         $site->post('/crashes', "crashes.controller:search");
         $site->get('/crashes/{stackhash}', "crashes.controller:view");
+        $site->get('/commoncrash/{slug}', "crashes.controller:commoncrash");
 
         /**
          * Packages

@@ -101,6 +101,37 @@
     {% endfor %}
 </div>
 
+<div class="row" style="padding-top: 40px;">
+    <div class="col-md-6">
+        {% if classTransformers is defined and classTransformers|length > 0 %}
+            <h4>Class Transformers</h4>
+            <ul>
+            {% for transformer,file in classTransformers %}
+                {% if file != "" %}
+                    <li><a href="{{ relative('file/' ~ file) }}" data-target="#myModal">{{ transformer }}</a></li>
+                {% else %}
+                    <li>{{ transformer }}</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        {% if tweakers is defined and tweakers|length > 0 %}
+            <h4>Tweakers</h4>
+            <ul>
+            {% for tweaker, file in tweakers %}
+                {% if file != "" %}
+                    <li><a href="{{ relative('file/' ~ file) }}" data-target="#myModal">{{ tweaker }}</a></li>
+                {% else %}
+                    <li>{{ tweaker }}</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" style="width: 800px">
         <div class="modal-content"> 

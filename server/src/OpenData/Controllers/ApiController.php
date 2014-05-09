@@ -39,6 +39,45 @@ class ApiController {
         
     }
     
+    public function crash(Request $request) {
+        
+        try {
+            
+            if ($this->isUserFlooding($request)) {
+                throw new Exception('Flood protection - too many reports');
+            }
+
+            $content = $request->get('api_request');
+
+            if ($content == null) {
+                throw new \Exception('No content received');
+            }
+
+            $data = json_decode(mb_convert_encoding($content, 'UTF-8', 'auto'), true);
+
+            $handler = $this->packetHandlers['crashlog'];
+
+            $errors = $this->getErrors($data, $handler->getJsonSchema());
+
+            if ($errors != null) {
+                throw new \Exception(implode("\n", $errors));
+            }
+
+            return new JsonResponse($handler->execute($data));
+                
+        } catch (\Exception $e) {
+            return new JsonResponse(array(
+                'type' => 'error',
+                'reportType' => 'crashlog',
+                'debug' => array(
+                    'statusCode'    => $e->getCode(),
+                    'message'       => $e->getMessage(),
+                    'stacktrace'    => $e->getTraceAsString()
+                )
+            ));
+        }
+    }
+    
     public function main(Request $request) {
 
         $content = $request->get('api_request', '[]');
