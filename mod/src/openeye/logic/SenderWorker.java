@@ -85,6 +85,7 @@ public class SenderWorker implements Runnable {
 		final IWorkingStorage<ReportCrash> pendingCrashes = Storages.instance().pendingCrashes;
 
 		Map<CrashId, ReportCrash> crashes = Maps.newHashMap();
+
 		for (IDataSource<ReportCrash> crash : pendingCrashes.listAll()) {
 			try {
 				ReportCrash report = crash.retrieve();
@@ -93,7 +94,8 @@ public class SenderWorker implements Runnable {
 					if (prev != null) Log.warn("Found duplicated crash report %s", crash.getId());
 				}
 			} catch (Exception e) {
-				logException(e, "Failed to add crash report %s", crash.getId());
+				// no point of sending those to server
+				Log.warn(e, "Failed to read crash %s", crash.getId());
 			}
 		}
 		return crashes.values();

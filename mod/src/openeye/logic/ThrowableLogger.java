@@ -9,6 +9,8 @@ import openeye.Log;
 import openeye.reports.ReportCrash;
 import openeye.storage.IDataSource;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import com.google.common.collect.Queues;
 
 public class ThrowableLogger {
@@ -26,6 +28,8 @@ public class ThrowableLogger {
 	private static Future<ModMetaCollector> resolver;
 
 	private static final Queue<ThrowableEntry> delayedThrowables = Queues.newConcurrentLinkedQueue();
+
+	private static final Multiset<String> locationCounters = HashMultiset.create();
 
 	private static void tryStoreCrash(Throwable throwable, String location) {
 		ModMetaCollector collector = null;
@@ -73,6 +77,13 @@ public class ThrowableLogger {
 
 	public static void processThrowable(Throwable throwable, String location) {
 		if (throwable instanceof INotStoredCrash) return;
+
+		locationCounters.add(location);
+
+		if (locationCounters.count(location) > Config.sentCrashReportsLimit) {
+			Log.info("Limit reached for location %s, skipping %s", location, throwable);
+			return;
+		}
 
 		if (resolver != null) tryStoreCrash(throwable, location);
 		else delayedThrowables.add(new ThrowableEntry(throwable, location));

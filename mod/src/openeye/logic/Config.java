@@ -20,6 +20,9 @@ public class Config {
 	@ConfigProperty(category = "data")
 	public static boolean scanOnly = false;
 
+	@ConfigProperty(category = "data", comment = "Maximum number of crash reports from single category sent per single run")
+	public static int sentCrashReportsLimit = 20;
+
 	@ConfigProperty(category = "debug")
 	public static boolean pingOnInitialReport = false;
 
