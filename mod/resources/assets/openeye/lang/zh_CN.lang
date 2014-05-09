@@ -26,7 +26,7 @@ openeye.note.title.intro5=源代码
 openeye.note.content.intro5=OpenEye是一个开源mod.源代码可以在github上查看.
 
 openeye.note.title.intro6=禁用和配置
-openeye.note.content.intro6=OpenEye使用原版内置设置.如果您对它不满意,你也可以安全地移除这个mod.
+openeye.note.content.intro6=OpenEye使用原版反馈设置.如果您对它不满意,你也可以安全地移除这个mod.
 
 openeye.notes.content.dangerous_file=文件 %s 在OpenEye数据库中被标记为危险(可能为恶意文件).访问官网以获得详情.
 
