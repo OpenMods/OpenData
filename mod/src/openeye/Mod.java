@@ -29,7 +29,7 @@ public class Mod extends DummyModContainer {
 		ModMetadata meta = getMetadata();
 		meta.modId = "OpenEye";
 		meta.name = "OpenEye";
-		meta.version = "@VERSION@";
+		meta.version = "0.2";
 		meta.authorList = Arrays.asList("boq", "Mikee");
 		meta.url = "http://openmods.info/";
 		meta.description = "We see you...";

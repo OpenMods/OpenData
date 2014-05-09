@@ -11,9 +11,9 @@ import java.util.zip.ZipFile;
 import net.minecraftforge.common.ForgeVersion;
 import openeye.Log;
 import openeye.reports.*;
-import openeye.reports.ReportAnalytics.FmlForgeRuntime;
 import openeye.reports.ReportCrash.ExceptionInfo;
 import openeye.reports.ReportCrash.StackTrace;
+import openeye.reports.ReportEnvironment.FmlForgeRuntime;
 import openeye.reports.ReportFileContents.ArchiveDirEntry;
 import openeye.reports.ReportFileContents.ArchiveEntry;
 import openeye.reports.ReportFileContents.ArchiveFileEntry;
@@ -50,10 +50,31 @@ public class ReportBuilders {
 		return vendor + " " + version;
 	}
 
+	private static void fillEnvInfo(ReportEnvironment report) {
+		report.branding = CompatiblityAdapter.getBrandings();
+
+		FmlForgeRuntime runtime = new FmlForgeRuntime();
+		runtime.mcpVersion = Loader.instance().getMCPVersionString();
+		runtime.fmlVersion = Loader.instance().getFMLVersionString();
+		runtime.forgeVersion = ForgeVersion.getVersion();
+
+		report.runtime = runtime;
+
+		report.minecraft = Loader.instance().getMCVersionString();
+
+		report.javaVersion = getJavaVersion();
+
+		report.side = getSide();
+
+		Set<String> tags = TAGS_COLLECTOR.getTags();
+
+		if (!tags.isEmpty()) report.tags = tags;
+	}
+
 	public static ReportAnalytics buildAnalyticsReport(ModMetaCollector data, Set<String> prevSignatures) {
 		ReportAnalytics analytics = new ReportAnalytics();
 
-		analytics.branding = CompatiblityAdapter.getBrandings();
+		fillEnvInfo(analytics);
 
 		analytics.language = FMLCommonHandler.instance().getCurrentLanguage();
 
@@ -64,30 +85,13 @@ public class ReportBuilders {
 
 		analytics.workTime = data.getCollectingDuration() / 1000.0f;
 
-		FmlForgeRuntime runtime = new FmlForgeRuntime();
-		runtime.mcpVersion = Loader.instance().getMCPVersionString();
-		runtime.fmlVersion = Loader.instance().getFMLVersionString();
-		runtime.forgeVersion = ForgeVersion.getVersion();
-
-		analytics.runtime = runtime;
-
-		analytics.minecraft = Loader.instance().getMCVersionString();
-
-		analytics.javaVersion = getJavaVersion();
-
 		analytics.signatures = data.getAllFiles();
-
-		Set<String> tags = TAGS_COLLECTOR.getTags();
-
-		if (!tags.isEmpty()) analytics.tags = tags;
 
 		Set<String> currentSignatures = data.getAllSignatures();
 
 		analytics.addedSignatures = Sets.difference(currentSignatures, prevSignatures);
 
 		analytics.removedSignatures = Sets.difference(prevSignatures, currentSignatures);
-
-		analytics.side = getSide();
 
 		return analytics;
 	}
@@ -137,6 +141,8 @@ public class ReportBuilders {
 	public static ReportCrash buildCrashReport(Throwable throwable, String location, ModMetaCollector collector) {
 		ReportCrash crash = new ReportCrash();
 
+		fillEnvInfo(crash);
+
 		crash.timestamp = new Date().getTime();
 
 		crash.location = location;
@@ -146,13 +152,7 @@ public class ReportBuilders {
 
 		if (collector != null) crash.states = collector.collectStates();
 
-		crash.tags = TAGS_COLLECTOR.getTags();
-
-		crash.javaVersion = getJavaVersion();
-
 		crash.random = RANDOM.nextInt();
-
-		crash.side = getSide();
 
 		crash.resolved = collector != null;
 
