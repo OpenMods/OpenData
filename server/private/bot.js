@@ -114,6 +114,11 @@ var actions = {
         secure: false,
         usage: '#files:latest'
     },
+    'files:version:set': {
+        func: files.setVersion,
+        secure: true,
+        usage: '#files:version:set <signature> <modid> <version>'
+    },
     'crash:note:set': {
         func: crashes.setNote,
         secure: true,
@@ -122,7 +127,7 @@ var actions = {
     'crash:note:remove': {
         func: crashes.removeNote,
         secure: true,
-        usage: '#crash:note:set <hash>'
+        usage: '#crash:note:remove <hash>'
     },
     'commands': {
         func: function(context) {

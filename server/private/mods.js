@@ -19,7 +19,7 @@ Array.prototype.remove = function() {
 var validFields = [
     'name', 'description', 'url',
     'donation', 'authors', 'releasesPage',
-    'tags', 'repository', 'irc', 'credits', 'admins'
+    'tags', 'repository', 'irc', 'credits', 'admins', 'hide'
 ];
 
 function findModsBy(context, query) {
@@ -258,14 +258,18 @@ function setField(context) {
                 value = {'host': context.args[0], 'channel': context.args[1]};
             } else if (field == 'authors' || field == 'tags') {
                 value = context.args;
+            } else if (field == 'hide' && value == 'true') {
+                value = true;
+            } else if (field == 'hide') {
+                value = false;
             }
 
             var set = {};
             set[field] = value;
 
             context.db.collection('mods').update(
-                    {'_id': modId},
-            {'$set': set},
+                {'_id': modId},
+                {'$set': set},
             {},
                     function(err) {
                         if (err) {
