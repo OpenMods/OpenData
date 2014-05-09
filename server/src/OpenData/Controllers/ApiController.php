@@ -66,7 +66,7 @@ class ApiController {
             return new JsonResponse($handler->execute($data));
                 
         } catch (\Exception $e) {
-            return new JsonResponse(array(
+            return new JsonResponse(array(array(
                 'type' => 'error',
                 'reportType' => 'crashlog',
                 'debug' => array(
@@ -74,7 +74,7 @@ class ApiController {
                     'message'       => $e->getMessage(),
                     'stacktrace'    => $e->getTraceAsString()
                 )
-            ));
+            )));
         }
     }
     
