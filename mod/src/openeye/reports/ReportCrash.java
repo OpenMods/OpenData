@@ -85,4 +85,7 @@ public class ReportCrash implements IReport {
 
 	@SerializedName("side")
 	public String side;
+
+	@SerializedName("resolved")
+	public boolean resolved;
 }
