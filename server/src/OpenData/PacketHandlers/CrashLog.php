@@ -29,7 +29,7 @@ class CrashLog implements IPacketHandler {
         return array(array(
             'type' => 'known_crash',
             'url' => 'http://openeye.openmods.info/crashes/'.$crashDetails['stackhash'],
-            'note'   => $crashDetails['note'] == null ? null : $crashDetails['note']['message']
+            'note'   => $crashDetails['note'] == null ? null : str_replace('%', '', $crashDetails['note']['message'])
         ));
     }
 
