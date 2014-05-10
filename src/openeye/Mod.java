@@ -74,19 +74,19 @@ public class Mod extends DummyModContainer {
 		// give thread enough time to receive IMC
 		if (worker != null) {
 			worker.waitForFirstMsg();
-			handleDangerousFiles();
+			handleUnwantedFiles();
 		}
 
 		MinecraftForge.EVENT_BUS.register(new WorldNameSanitizer());
 		Proxy.instance().init();
 	}
 
-	private void handleDangerousFiles() {
+	private void handleUnwantedFiles() {
 		Collection<FileSignature> dangerousMods = worker.listDangerousFiles();
 
 		if (!dangerousMods.isEmpty()) {
 			for (FileSignature signature : dangerousMods)
-				Log.warn("Dangerous file detected: %s (%s)", signature.filename, signature.signature);
+				Log.warn("File suggested for deletion: %s (%s)", signature.filename, signature.signature);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class Mod extends DummyModContainer {
 			File mcDir = Bootstrap.instance.getMcLocation();
 			throw new RuntimeException("deep one: " + new File(mcDir, "hello.txt"));
 		} catch (RuntimeException e) {
-			throw new RuntimeException("u wot m8", e);
+			throw new RuntimeException("u wot m8: 127.0.0.4:5262", e);
 		}
 	}
 
