@@ -34,7 +34,9 @@ jar {
 }
 
 processResources {
-    // replace stuff in the files we want.
+
+    inputs.property "version", rootProject.mod_version
+
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
 
