@@ -28,13 +28,13 @@
         {% if page_count and page_count > 2 %}
             {% set from = max(1, current_page - 8) %}
             {% set to = min(page_count, from + 16) %}
-        <ul class="pagination">
-            <li{% if disablePrev %} class="disabled"{%endif %}><a href="{% if disablePrev %}#{% else %}?page={{ current_page - 1 }}{% endif %}">&laquo;</a></li>
-            {% for page in range(from, to) %}
-                <li{% if current_page == page %} class="active"{%endif %}><a href="?page={{ page }}">{{ page }}</a></li>
-            {% endfor %}
-            <li{% if disableNext %} class="disabled"{%endif %}><a href="{% if disableNext %}#{% else %}?page={{ current_page + 1 }}{% endif %}">&raquo;</a></li>
-        </ul>
+            <ul class="pagination">
+                <li{% if disablePrev %} class="disabled"{%endif %}><a href="{% if disablePrev %}#{% else %}?page={{ current_page - 1 }}{% endif %}">&laquo;</a></li>
+                {% for page in range(from, to) %}
+                    <li{% if current_page == page %} class="active"{%endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li{% if disableNext %} class="disabled"{%endif %}><a href="{% if disableNext %}#{% else %}?page={{ current_page + 1 }}{% endif %}">&raquo;</a></li>
+            </ul>
         {% endif %}
         
         {% for result in results %}

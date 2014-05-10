@@ -161,9 +161,6 @@ MongoClient.connect(connectionString, function(err, db) {
             var packet = JSON.parse(message);
             var modIds = packet['modIds'];
             var content = packet['content'];
-            if (modIds != null && modIds.length > 0) {
-                content += ' (ping: ' + modIds.join(', ') + ')';
-            }
 
             if (packet['modIds'] != null && modIds.length > 0) {
                 db.collection('mods').find({
@@ -184,11 +181,18 @@ MongoClient.connect(connectionString, function(err, db) {
                     });
                 });
             }
+            if (modIds != null && modIds.length > 0) {
+                if (modIds.length > 5) {
+                    modIds = modIds.slice(0, 5);
+                    modIds.push(' (..more..)');
+                }
+                content += ' (ping: ' + modIds.join(', ') + ')';
+            }
 
-            bot.say('#OpenEye', content);
+            bot.say('#OpenEye', colors.underline.bold.red('CRASH:') + ' '+ colors.navy(content));
 
         } else {
-            bot.say('#OpenEye', message);
+            bot.say('#OpenEye', colors.underline.bold.green('FILES:') + ' '+ colors.navy(message));
         }
     });
 

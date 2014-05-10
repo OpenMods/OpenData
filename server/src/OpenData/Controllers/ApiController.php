@@ -56,8 +56,12 @@ class ApiController {
             $data = json_decode(mb_convert_encoding($content, 'UTF-8', 'auto'), true);
 
             $handler = $this->packetHandlers['crashlog'];
+            
+            $data['type'] = 'crashlog';
 
             $errors = $this->getErrors($data, $handler->getJsonSchema());
+  
+            unset($data['type']);
 
             if ($errors != null) {
                 throw new \Exception(implode("\n", $errors));

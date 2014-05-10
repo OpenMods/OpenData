@@ -100,6 +100,7 @@ class CrashesController {
             ->add('mod', 'text', array('required' => false))
             ->add('version', 'text', array('required' => false))
             ->add('signature', 'text', array('required' => false))
+            ->add('tag', 'text', array('required' => false))
             ->add('package', 'text', array('required' => false))
             ->getForm();
         
@@ -120,12 +121,27 @@ class CrashesController {
             if (!empty($data['package'])) {
                 $query['classes'] = new \MongoRegex('/^'.preg_quote($data['package']).'/i');
             }
+            if (!empty($data['tag'])) {
+                $query['tags'] = $data['tag'];
+            }
             if (!empty($data['mod'])) {
                 $mods = $this->serviceMods->findByRegex('^'.$data['mod'].'$');
                 if ($mods->count() > 0) {
                     $mod = $mods->getNext();
                     $modId = $mod['_id'];
                     $query['involvedMods'] = $modId;
+                    if (!empty($data['version'])) {
+                        $files = $this->serviceFiles->findByVersion($modId, $data['version']);
+                        $signatures = array();
+                        foreach ($files as $file) {
+                            $signatures[] = $file['_id'];
+                        }
+                        if (count($signatures) > 0) {
+                            $query['involvedSignatures'] = array(
+                                '$in' => $signatures
+                            );
+                        }
+                    }
                 } else {
                     $invalid = true;
                 }

@@ -4,8 +4,25 @@
 <div class="row">
     <div class="col-md-12">
         <div class="page-header">
-            <h1>{{ crash.exception.exception }}: <small>{{ crash.exception.message }}</small></h1>
+            <h1>{{ crash.exception.exception }}: <small>{{ crash.exception.message|length > 200 ? crash.exception.message|slice(0, 200) ~ '...' : crash.exception.message  }}</small></h1>
             <h5>{{ crash.count }} report{% if crash.count > 1 %}s{% endif %}</h5>
+            <div>
+                {% if crash.side is defined %}
+                    {% for side in crash.side %}
+                        <span class="label label-primary">{{ side }}</span> 
+                    {% endfor %}
+                {% endif %}
+                {% if crash.tags is defined and crash.tags|length > 0 %}
+                    {% for tag in crash.tags %}
+                        <span class="label label-info">{{ tag }}</span> 
+                    {% endfor %}
+                {% endif %}
+                {% if crash.location is defined and crash.location|length > 0 %}
+                    {% for location in crash.location %}
+                        <span class="label label-success">{{ location }}</span> 
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
@@ -14,11 +31,83 @@
     <div class="col-md-12">
         {% if crash.note %}<div class="bs-callout bs-callout-warning"><h4>{{ crash.note.message }} - {{ crash.note.user }}</h4></div>{% endif %}
         <pre>{% include 'stack.twig' with {crash: crash.exception} %}</pre>
-    {% if crash.javaVersions|length > 0 %}
-        <h4 style="padding-top: 20px;">Experienced in Java:</h4>
-        <p>{{ crash.javaVersions|join(', ') }}</p>
-     {% endif %}
     </div>
+</div>
+{% if crash.resolved is defined and not crash.resolved %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="bs-callout bs-callout-warning">
+      <h4>We were unable to collect all information about this crash</h4>
+    </div>
+  </div>
+</div>
+{% endif %}
+<div class="well" style="margin: 20px 0;background-color: #fff;">
+<div class="row">
+    <div class="col-md-4">
+        <h4>Java</h4>
+        {% if crash.javaVersions is defined and crash.javaVersions|length > 0 %}
+        <ul>
+            {% for version in crash.javaVersions %}
+            <li>{{ version }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <h4>Minecraft</h4>
+        {% if crash.minecraft is defined and crash.minecraft|length > 0 %}
+        <ul>
+            {% for minecraft in crash.minecraft %}
+            <li>{{ minecraft }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <h4>FML</h4>
+        {% if crash.fml is defined and crash.fml|length > 0 %}
+        <ul>
+            {% for fml in crash.fml %}
+            <li>{{ fml }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+    
+<div class="row">
+    <div class="col-md-4">
+        <h4>MCP</h4>
+        {% if crash.mcp is defined and crash.mcp|length > 0 %}
+        <ul>
+            {% for mcp in crash.mcp %}
+            <li>{{ mcp }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <h4>Forge</h4>
+        {% if crash.forge is defined and crash.forge|length > 0 %}
+        <ul>
+            {% for forge in crash.forge %}
+            <li>{{ forge }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <h4>Branding</h4>
+        {% if crash.branding is defined and crash.branding|length > 0 %}
+        <ul>
+            {% for branding in crash.branding %}
+            <li>{{ branding }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
 </div>
 
 <div class="row" style="padding-top: 20px;">

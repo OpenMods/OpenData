@@ -12,16 +12,22 @@
     <div class="col-md-12">
         <form role="form" method="post" action="">
           <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                       <label for="form_mod">Mod:</label>
                       {{ form_widget(form.mod, { 'attr': {'class': 'form-control', 'autocomplete': 'off'} } ) }}
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                       <label for="form_version" style="display: block;">Version</label>
                       {{ form_widget(form.version, { 'attr': {'class': 'form-control'} } ) }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="form_tag" style="display: block;">Tag</label>
+                      {{ form_widget(form.tag, { 'attr': {'class': 'form-control'} } ) }}
                     </div>
                 </div>
           </div>
@@ -42,15 +48,16 @@
             
 <div class="row">
     <div class="col-md-12">
-        
         {% if page_count and page_count > 2 %}
-        <ul class="pagination">
-            <li{% if disablePrev %} class="disabled"{%endif %}><a href="{% if disablePrev %}#{% else %}?page={{ current_page - 1 }}{% endif %}">&laquo;</a></li>
-            {% for page in range(1, page_count) %}
-                <li{% if current_page == page %} class="active"{%endif %}><a href="?page={{ page }}">{{ page }}</a></li>
-            {% endfor %}
-            <li{% if disableNext %} class="disabled"{%endif %}><a href="{% if disableNext %}#{% else %}?page={{ current_page + 1 }}{% endif %}">&raquo;</a></li>
-        </ul>
+            {% set from = max(1, current_page - 8) %}
+            {% set to = min(page_count, from + 16) %}
+            <ul class="pagination">
+                <li{% if disablePrev %} class="disabled"{%endif %}><a href="{% if disablePrev %}#{% else %}?page={{ current_page - 1 }}{% endif %}">&laquo;</a></li>
+                {% for page in range(from, to) %}
+                    <li{% if current_page == page %} class="active"{%endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li{% if disableNext %} class="disabled"{%endif %}><a href="{% if disableNext %}#{% else %}?page={{ current_page + 1 }}{% endif %}">&raquo;</a></li>
+            </ul>
         {% endif %}
         
         <table class="table table-striped">
@@ -78,15 +85,16 @@
 
         </table>
         
-        
         {% if page_count and page_count > 2 %}
-        <ul class="pagination">
-            <li{% if disablePrev %} class="disabled"{%endif %}><a href="{% if disablePrev %}#{% else %}?page={{ current_page - 1 }}{% endif %}">&laquo;</a></li>
-            {% for page in range(1, page_count) %}
-                <li{% if current_page == page %} class="active"{%endif %}><a href="?page={{ page }}">{{ page }}</a></li>
-            {% endfor %}
-            <li{% if disableNext %} class="disabled"{%endif %}><a href="{% if disableNext %}#{% else %}?page={{ current_page + 1 }}{% endif %}">&raquo;</a></li>
-        </ul>
+            {% set from = max(1, current_page - 8) %}
+            {% set to = min(page_count, from + 16) %}
+            <ul class="pagination">
+                <li{% if disablePrev %} class="disabled"{%endif %}><a href="{% if disablePrev %}#{% else %}?page={{ current_page - 1 }}{% endif %}">&laquo;</a></li>
+                {% for page in range(from, to) %}
+                    <li{% if current_page == page %} class="active"{%endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li{% if disableNext %} class="disabled"{%endif %}><a href="{% if disableNext %}#{% else %}?page={{ current_page + 1 }}{% endif %}">&raquo;</a></li>
+            </ul>
         {% endif %}
         
     </div>

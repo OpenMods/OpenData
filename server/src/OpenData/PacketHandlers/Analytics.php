@@ -129,7 +129,7 @@ class Analytics implements IPacketHandler {
         
         if (count($newFilenames) > 0) {
             $redis = new \Predis\Client();
-            $redis->publish('file', 'New files detected: '.implode(", ", $newFilenames));
+            $redis->publish('file', implode(", ", $newFilenames));
         }
 
         return $responses;

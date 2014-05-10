@@ -119,15 +119,24 @@ class CrashesService extends BaseService {
             '_id' => $packet['stackhash']
         ));
         
-        $tags = array();
-        if (isset($packet['tags']) && is_array($packet['tags'])) {
-            $tags = $packet['tags'];
+        $summarize = array();
+        foreach (array('tags', 'javaVersion', 'side', 'minecraft', 'branding', 'location') as $key) {
+            $summarize[$key] = array();
+            if (isset($packet[$key])) {
+                if (is_array($packet[$key])) {
+                    $summarize[$key] = $packet[$key];
+                } else {
+                    $summarize[$key][] = $packet[$key];
+                }
+            }
+        }
+        foreach (array('mcp', 'fml', 'forge') as $key) {
+            $summarize[$key] = array();
+            if (isset($packet['runtime'][$key]) && is_string($packet['runtime'][$key])) {
+                $summarize[$key][] = $packet['runtime'][$key];
+            }
         }
         
-        $javaVersions = array();
-        if (isset($packet['javaVersion'])) {
-            $javaVersions[] = $packet['javaVersion'];
-        }
             
         if ($crash == null) {
             $this->db->crashes->insert(array(
@@ -135,14 +144,23 @@ class CrashesService extends BaseService {
                 'latest' => time(),
                 'exception' => $stackWithoutSignatures,
                 'involvedSignatures' => array_values($involvedSignatures),
-                'involvedMods' => array_values($involvedModIds),
+                'involvedMods'  => array_values($involvedModIds),
                 'allSignatures' => array_values($allSignatures),
-                'allMods' => array_values($allModIds),
-                'classes' => $crashData['classes'],
-                'count' => 1,
-                'tags' => $tags,
-                'javaVersions' => $javaVersions,
-                'hidden' => $shouldHide
+                'allMods'       => array_values($allModIds),
+                'classes'       => $crashData['classes'],
+                'count'         => 1,
+                'tags'          => $summarize['tags'],
+                'javaVersions'  => $summarize['javaVersion'],
+                'minecraft'     => $summarize['minecraft'],
+                'branding'      => $summarize['branding'],
+                'side'          => $summarize['side'],
+                'location'      => $summarize['location'],
+                'mcp'           => $summarize['mcp'],
+                'fml'           => $summarize['fml'],
+                'forge'         => $summarize['forge'],
+                'resolved'      => isset($packet['resolved']) ? $packet['resolved'] : true,
+                'obfuscated'    => isset($packet['obfuscated']) ? $packet['obfuscated'] : true,
+                'hidden'        => $shouldHide
             ));
             
             $this->db->crashes_index->insert(
@@ -158,7 +176,7 @@ class CrashesService extends BaseService {
                 $redis = new \Predis\Client();
                 $redis->publish('crash', json_encode(array(
                     'modIds' => $involvedModIds,
-                    'content' => 'New crash! '.$stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message'].' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
+                    'content' => 'New crash! '.self::reduceMessageForIRC($stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message']).' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
                 )));
             }
  
@@ -180,8 +198,8 @@ class CrashesService extends BaseService {
             
             //if ($indexResult['nUpserted'] == 1) {
 
-                $crash['involvedSignatures'] = array_intersect($crash['involvedSignatures'], $allSignatures);
-                $crash['involvedMods'] = array_intersect($crash['involvedMods'], $allModIds);
+                $crash['allSignatures'] = array_intersect($crash['allSignatures'], $allSignatures);
+                $crash['allMods'] = array_intersect($crash['allMods'], $allModIds);
 
                 if (isset($crash['note']) && isset($crash['note']['message'])) {
                     $note = $crash['note'];
@@ -197,10 +215,17 @@ class CrashesService extends BaseService {
                         ),
                         '$inc' => array('count' => 1),
                         '$addToSet' => array(
-                            'involvedSignatures' => array('$each' => $involvedSignatures),
-                            'involvedMods' => array('$each' => $involvedModIds),
-                            'tags' => array('$each' => $tags),
-                            'javaVersions' => array('$each' => $javaVersions)
+                            'involvedSignatures'    => array('$each' => $involvedSignatures),
+                            'involvedMods'          => array('$each' => $involvedModIds),
+                            'tags'                  => array('$each' => $summarize['tags']),
+                            'javaVersions'          => array('$each' => $summarize['javaVersion']),
+                            'side'                  => array('$each' => $summarize['side']),
+                            'minecraft'             => array('$each' => $summarize['minecraft']),
+                            'branding'              => array('$each' => $summarize['branding']),
+                            'location'              => array('$each' => $summarize['location']),
+                            'fml'                   => array('$each' => $summarize['fml']),
+                            'mcp'                   => array('$each' => $summarize['mcp']),
+                            'forge'                 => array('$each' => $summarize['forge'])
                         )
                     )
                 );
@@ -209,7 +234,7 @@ class CrashesService extends BaseService {
                     $redis = new \Predis\Client();
                     $redis->publish('crash', json_encode(array(
                         'modIds' => $involvedModIds,
-                        'content' => $crash['count'].' crashes: '.$stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message'].' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
+                        'content' => $crash['count'].' crashes: '.self::reduceMessageForIRC($stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message']).' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
                     )));
                 }
                 
@@ -220,6 +245,12 @@ class CrashesService extends BaseService {
             'stackhash' => $packet['stackhash'],
             'note'      => $note
         );
+    }
+    
+    public static function reduceMessageForIRC($message, $length = 100, $dots = '...') {
+        $message = trim(preg_replace('/\s+/', ' ', $message));
+        $message = (strlen($message) > $length) ? substr($message, 0, $length - strlen($dots)) . $dots : $message;
+        return $message;
     }
 
 
