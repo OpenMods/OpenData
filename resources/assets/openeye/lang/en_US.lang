@@ -1,4 +1,4 @@
-openeye.main_screen.dangerous_file=One of mod files was marked as dangerous by OpenEye
+openeye.main_screen.remove_file=OpenEye suggests removing file
 openeye.main_screen.known_crash=OpenEye has information about one or more of your recent crashes
 openeye.main_screen.crash_reported=Crashes stored to server
 openeye.main_screen.intro=DON'T PANIC! Click flashing button to find out what's going on.
@@ -8,7 +8,9 @@ openeye.notes.goto_page=Go to URL
 openeye.notes.title.resolved_crash=Resolution for recent crash available on site
 openeye.notes.title.reported_crash=Crash report sent to server
 openeye.notes.title.note=Note for file %s
-openeye.notes.title.dangerous_file=Dangerous file: %s
+openeye.notes.title.remove_file=Recall request for file: %s
+
+openeye.notes.content.remove_file=OpenEye suggests removing file %s, since it may be invalid or contain suspicious contents. Go to website for details.
 
 openeye.note.title.intro1=Welcome to Open Eye
 openeye.note.content.intro1=OpenEye is utility that collects anonymous data about mod usage and crash reports
@@ -28,8 +30,6 @@ openeye.note.content.intro5=OpenEye is open source mod. Source code available on
 openeye.note.title.intro6=Disabling & configuration
 openeye.note.content.intro6=OpenEye uses vanilla snooper setting. If you are not satisfied with it, you can also safely remove this mod.
 
-openeye.notes.content.dangerous_file=File %s is marked as dangerous (possibly malware) in OpenEye database. Go to website for details.
-
 openeye.chat.note=Note %s, type: %s
 openeye.chat.store_failed=Failed to store notes!
 openeye.chat.dumped=Dumped notes to file %s
@@ -39,6 +39,6 @@ openeye.category.alert=Alert
 openeye.category.warning=Warning
 openeye.category.info=Info
 openeye.category.system_info=System Info
-openeye.category.dangerous_file=Dangerous File
+openeye.category.remove_file=Remove file
 openeye.level.reported_crash=Reported Crash
 openeye.level.resolved_crash=Resolved Crash

@@ -101,7 +101,7 @@ public class TypedCollections {
 		RESPONSE_TYPES.put(ResponseFileInfo.TYPE, ResponseFileInfo.class);
 		RESPONSE_TYPES.put(ResponsePong.TYPE, ResponsePong.class);
 		RESPONSE_TYPES.put(ResponseFileContents.TYPE, ResponseFileContents.class);
-		RESPONSE_TYPES.put(ResponseDangerousFile.TYPE, ResponseDangerousFile.class);
+		RESPONSE_TYPES.put(ResponseRemoveFile.TYPE, ResponseRemoveFile.class);
 		RESPONSE_TYPES.put(ResponseModMsg.TYPE, ResponseModMsg.class);
 		RESPONSE_TYPES.put(ResponseError.TYPE, ResponseError.class);
 		RESPONSE_TYPES.put(ResponseKnownCrash.TYPE, ResponseKnownCrash.class);

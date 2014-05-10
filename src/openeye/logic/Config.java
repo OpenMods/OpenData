@@ -30,9 +30,6 @@ public class Config {
 	public static boolean dontSend = false;
 
 	@ConfigProperty(category = "features")
-	public static boolean haltOnDangerousFiles = false;
-
-	@ConfigProperty(category = "features")
 	public static Set<String> reportsBlacklist = ImmutableSet.of();
 
 	@ConfigProperty(category = "features")

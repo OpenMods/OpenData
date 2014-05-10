@@ -14,6 +14,7 @@ import openeye.reports.FileSignature;
 import openeye.reports.ReportCrash;
 import openeye.reports.ReportPing;
 import openeye.responses.IResponse;
+import openeye.responses.ResponseRemoveFile;
 import openeye.storage.IDataSource;
 import openeye.storage.IWorkingStorage;
 import openeye.struct.ITypedStruct;
@@ -138,7 +139,10 @@ public class SenderWorker implements Runnable {
 				filterStructs(currentReports, Config.reportsBlacklist);
 				store(currentReports, "request");
 
-				ResponseList response = Config.dontSend? null : sender.sendAndReceive(currentReports);
+				ResponseList response = Config.dontSend? new ResponseList() : sender.sendAndReceive(currentReports);
+				ResponseRemoveFile tmp = new ResponseRemoveFile();
+				tmp.url = "test";
+				response.add(tmp);
 				if (response == null || response.isEmpty()) break;
 
 				filterStructs(response, Config.responseBlacklist);

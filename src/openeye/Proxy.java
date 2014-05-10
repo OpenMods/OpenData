@@ -1,12 +1,10 @@
 package openeye;
 
-import java.util.Collection;
-
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
-import openeye.logic.*;
+import openeye.logic.Config;
+import openeye.logic.Sanitizer;
 import openeye.notes.GuiReplacer;
-import openeye.reports.FileSignature;
 
 import com.google.common.base.Strings;
 
@@ -18,11 +16,6 @@ public abstract class Proxy {
 		@Override
 		public boolean isSnooperEnabled() {
 			return Minecraft.getMinecraft().gameSettings.snooperEnabled;
-		}
-
-		@Override
-		public Throwable signalDangerousFiles(Collection<FileSignature> dangerousFiles) {
-			return new DangerousFileClientException(dangerousFiles);
 		}
 
 		@Override
@@ -48,11 +41,6 @@ public abstract class Proxy {
 		}
 
 		@Override
-		public Throwable signalDangerousFiles(Collection<FileSignature> dangerousFiles) {
-			return new DangerousFileServerException(dangerousFiles);
-		}
-
-		@Override
 		public void first() {}
 
 		@Override
@@ -64,8 +52,6 @@ public abstract class Proxy {
 	public abstract void first();
 
 	public abstract void init();
-
-	public abstract Throwable signalDangerousFiles(Collection<FileSignature> dangerousFiles);
 
 	private static Proxy instance;
 
