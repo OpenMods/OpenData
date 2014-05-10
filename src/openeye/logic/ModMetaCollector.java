@@ -185,8 +185,11 @@ public class ModMetaCollector {
 
 	private final long operationDuration;
 
+	private final ASMDataTable table;
+
 	ModMetaCollector(ASMDataTable table, LaunchClassLoader loader, Collection<ITweaker> tweakers) {
 		Log.info("Starting mod metadatadata collection");
+		this.table = table;
 		long start = System.nanoTime();
 		Collection<ModCandidate> allCandidates = stealCandidates(table);
 		collectFilesFromModCandidates(allCandidates);
@@ -422,8 +425,14 @@ public class ModMetaCollector {
 				packageName.startsWith("net.minecraftforge") ||
 				packageName.startsWith("cpw.mods.fml")) return result;
 
-		for (FileMeta m : files.values())
-			if (m.packages.contains(packageName)) result.add(m.signature());
+		Set<ModCandidate> candidates = table.getCandidatesFor(packageName);
+		for (ModCandidate c : candidates) {
+			File container = c.getModContainer();
+			if (container != null) {
+				FileMeta meta = files.get(container);
+				if (meta != null) result.add(meta.signature());
+			}
+		}
 
 		return result;
 	}
