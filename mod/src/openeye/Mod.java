@@ -6,9 +6,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.RunnableFuture;
 
+import net.minecraftforge.common.MinecraftForge;
 import openeye.logic.*;
 import openeye.notes.CommandNotes;
 import openeye.reports.FileSignature;
+import openeye.utils.WorldNameSanitizer;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -75,6 +77,7 @@ public class Mod extends DummyModContainer {
 			handleDangerousFiles();
 		}
 
+		MinecraftForge.EVENT_BUS.register(new WorldNameSanitizer());
 		Proxy.instance().init();
 	}
 
