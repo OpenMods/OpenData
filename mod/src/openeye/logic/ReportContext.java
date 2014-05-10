@@ -13,7 +13,7 @@ class ReportContext implements IContext {
 	private final ReportsList result = new ReportsList();
 	private final Set<String> addedFileInfos = Sets.newHashSet();
 	private final Set<String> addedFileContents = Sets.newHashSet();
-	private final Set<String> dangerousSignatures = Sets.newHashSet();
+	private final Set<String> unwantedSignatures = Sets.newHashSet();
 
 	public ReportContext(ModMetaCollector collector) {
 		this.collector = collector;
@@ -51,12 +51,12 @@ class ReportContext implements IContext {
 	}
 
 	@Override
-	public void markDangerousSignature(String signature) {
-		dangerousSignatures.add(signature);
+	public void markUnwantedSignature(String signature) {
+		unwantedSignatures.add(signature);
 	}
 
 	public Set<String> dangerousSignatures() {
-		return dangerousSignatures;
+		return unwantedSignatures;
 	}
 
 	public ReportsList reports() {

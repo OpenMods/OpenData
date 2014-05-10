@@ -7,7 +7,7 @@ public class NoteLevels {
 
 	static final int SYSTEM_NOTIFICATION_LEVEL = 256;
 
-	public static final int DANGEROUS_FILE_LEVEL = 128;
+	public static final int REMOVE_FILE_LEVEL = 128;
 
 	public static final int CRITICAL_LEVEL_THRESHOLD = 64;
 	public static final int ALERT_LEVEL_THRESHOLD = 32;

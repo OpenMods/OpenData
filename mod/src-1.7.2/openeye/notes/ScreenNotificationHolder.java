@@ -13,7 +13,7 @@ public class ScreenNotificationHolder {
 		}
 	}
 
-	private final ChatStyle DANGEROUS_FILE_STYLE = new ChatStyle().setBold(true).setColor(EnumChatFormatting.RED);
+	private final ChatStyle REMOVE_FILE_STYLE = new ChatStyle().setBold(true).setColor(EnumChatFormatting.RED);
 
 	private final ChatStyle KNOWN_CRASH_STYLE = new ChatStyle().setColor(EnumChatFormatting.GREEN);
 
@@ -26,7 +26,7 @@ public class ScreenNotificationHolder {
 	}
 
 	public void signalDangerousFile() {
-		addLine(64, new ChatComponentTranslation("openeye.main_screen.dangerous_file").setChatStyle(DANGEROUS_FILE_STYLE));
+		addLine(64, new ChatComponentTranslation("openeye.main_screen.remove_file").setChatStyle(REMOVE_FILE_STYLE));
 	}
 
 	public void signalCrashReported() {

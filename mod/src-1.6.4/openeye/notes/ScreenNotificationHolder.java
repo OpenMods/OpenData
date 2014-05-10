@@ -22,7 +22,7 @@ public class ScreenNotificationHolder {
 	}
 
 	public void signalDangerousFile() {
-		addLine(64, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.dangerous_file").setBold(true).setColor(EnumChatFormatting.RED));
+		addLine(64, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.remove_file").setBold(true).setColor(EnumChatFormatting.RED));
 	}
 
 	public void signalCrashReported() {

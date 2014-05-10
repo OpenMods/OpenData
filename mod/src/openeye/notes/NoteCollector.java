@@ -9,9 +9,9 @@ import openeye.logic.ModState;
 import openeye.logic.StateHolder;
 import openeye.logic.Storages;
 import openeye.notes.entries.*;
-import openeye.responses.ResponseDangerousFile;
 import openeye.responses.ResponseKnownCrash;
 import openeye.responses.ResponseModMsg;
+import openeye.responses.ResponseRemoveFile;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -53,8 +53,8 @@ public class NoteCollector {
 		addNote(entry);
 	}
 
-	public void addNote(File file, ResponseDangerousFile note) {
-		addNote(new DangerousFileEntry(file, note));
+	public void addNote(File file, ResponseRemoveFile note) {
+		addNote(new RemoveFileEntry(file, note));
 		menuLine.signalDangerousFile();
 	}
 
