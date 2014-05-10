@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.Enumeration;
 import java.util.Set;
 
+import net.minecraft.world.World;
 import openeye.Log;
 
 import com.google.common.base.Strings;
@@ -46,17 +47,34 @@ public class Sanitizer {
 	}
 
 	public static ITransformer replace(Object target, String value) {
-		return new SimpleReplace(target.toString(), value);
+		if (target != null) {
+			String s = target.toString();
+			if (!Strings.isNullOrEmpty(s)) return new SimpleReplace(s, value);
+		}
+		return null;
+	}
+
+	public static ITransformer replaceNoDuplicates(Object target, String value) {
+		if (target != null) {
+			String s = target.toString();
+			if (!Strings.isNullOrEmpty(s) && !ALREADY_REPLACED.contains(s)) {
+				ALREADY_REPLACED.add(s);
+				return new SimpleReplace(s, value);
+			}
+		}
+		return null;
 	}
 
 	private static final Deque<ITransformer> TRANSFORMERS = Lists.newLinkedList();
 
+	private static final Set<String> ALREADY_REPLACED = Sets.newHashSet();
+
 	static {
 		addLocalAddresses();
 
-		TRANSFORMERS.addLast(new PropertyReplace("user.dir", "[workdir]"));
-		TRANSFORMERS.addLast(new PropertyReplace("user.home", "[home]"));
-		TRANSFORMERS.addLast(new PropertyReplace("user.name", "[user]"));
+		addLast(new PropertyReplace("user.dir", "[workdir]"));
+		addLast(new PropertyReplace("user.home", "[home]"));
+		addLast(new PropertyReplace("user.name", "[user]"));
 	}
 
 	private static void addLocalAddresses() {
@@ -82,18 +100,26 @@ public class Sanitizer {
 		}
 
 		for (String ip : ips)
-			TRANSFORMERS.addLast(replace(ip, "[local ip]"));
+			addLast(replace(ip, "[local ip]"));
 
 		for (String host : hosts)
-			TRANSFORMERS.addLast(replace(host, "[host]"));
+			addLast(replace(host, "[host]"));
+	}
+
+	public static void addWorldNames(World world) {
+		String worldDir = world.getSaveHandler().getWorldDirectoryName();
+		Sanitizer.addFirst(replaceNoDuplicates(worldDir, "[save dir]"));
+
+		String worldName = world.getWorldInfo().getWorldName();
+		Sanitizer.addFirst(replaceNoDuplicates(worldName, "[world name]"));
 	}
 
 	public static void addFirst(ITransformer transformer) {
-		TRANSFORMERS.addFirst(transformer);
+		if (transformer != null) TRANSFORMERS.addFirst(transformer);
 	}
 
 	public static void addLast(ITransformer transformer) {
-		TRANSFORMERS.addLast(transformer);
+		if (transformer != null) TRANSFORMERS.addLast(transformer);
 	}
 
 	public static String sanitize(String input) {
