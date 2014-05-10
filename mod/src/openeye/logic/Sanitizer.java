@@ -53,7 +53,7 @@ public class Sanitizer {
 
 	static {
 		addLocalAddresses();
-		
+
 		TRANSFORMERS.addLast(new PropertyReplace("user.dir", "[workdir]"));
 		TRANSFORMERS.addLast(new PropertyReplace("user.home", "[home]"));
 		TRANSFORMERS.addLast(new PropertyReplace("user.name", "[user]"));
