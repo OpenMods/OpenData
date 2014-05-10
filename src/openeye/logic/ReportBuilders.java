@@ -69,6 +69,8 @@ public class ReportBuilders {
 
 		report.side = getSide();
 
+		report.obfuscated = Bootstrap.instance.isRuntimeDeobfuscationEnabled();
+
 		Set<String> tags = TAGS_COLLECTOR.getTags();
 
 		if (!tags.isEmpty()) report.tags = tags;

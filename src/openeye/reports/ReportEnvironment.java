@@ -26,4 +26,7 @@ public abstract class ReportEnvironment implements IReport {
 	@SerializedName("side")
 	public String side;
 
+	@SerializedName("obfuscated")
+	public boolean obfuscated;
+
 }
