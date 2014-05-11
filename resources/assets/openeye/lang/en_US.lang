@@ -13,13 +13,13 @@ openeye.notes.title.remove_file=Recall request for file: %s
 openeye.notes.content.remove_file=OpenEye suggests removing file %s, since it may be invalid or contain suspicious contents. Go to website for details.
 
 openeye.note.title.intro1=Welcome to Open Eye
-openeye.note.content.intro1=OpenEye is utility that collects anonymous data about mod usage and crash reports
+openeye.note.content.intro1=OpenEye is utility that collects anonymous data about mod usage and crash reports.
 
 openeye.note.title.intro2=Statistics
 openeye.note.content.intro2=Select this item and click "Go to URL" to see statistics collected by this tool. Other items also have assigned URLs.
 
 openeye.note.title.intro3=Collected data
-openeye.note.content.intro3=URL in this item contains summary of data collected by OpenEye
+openeye.note.content.intro3=URL in this item contains summary of data collected by OpenEye.
 
 openeye.note.title.intro4=Local data
 openeye.note.content.intro4=OpenEye stores all sent and received information in reports folder in your MC installation. Click Go to URL to open that folder.
