@@ -102,7 +102,9 @@
         {% if crash.branding is defined and crash.branding|length > 0 %}
         <ul>
             {% for branding in crash.branding %}
-            <li>{{ branding }}</li>
+                {% if 'loaded' not in branding %}
+                    <li>{{ branding }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
         {% endif %}

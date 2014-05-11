@@ -16,7 +16,8 @@ class BrowseController {
         'files',
         'mods',
         'reports',
-        'urls'
+        'urls',
+        'common_crashes'
     );
     
     public function __construct($twig, $mongo) {

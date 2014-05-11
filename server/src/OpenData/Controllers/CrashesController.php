@@ -3,6 +3,7 @@
 namespace OpenData\Controllers;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class CrashesController {
 
@@ -12,10 +13,12 @@ class CrashesController {
     private $serviceFiles;
     private $serviceCrashes;
     private $serviceForms;
+    private $app;
     
-    public function __construct($twig, $mods, $files, $crashes, $forms) {
+    public function __construct($twig, $app, $mods, $files, $crashes, $forms) {
         
         $this->twig = $twig;
+        $this->app = $app;
         $this->serviceMods = $mods;
         $this->serviceFiles = $files;
         $this->serviceCrashes = $crashes;
@@ -94,8 +97,10 @@ class CrashesController {
     
     public function search(Request $request) {
         
-        $data = array();
+        $session = new Session();
+        $session->start();
         
+        $data = $session->all();
         $form = $this->serviceForms->createBuilder('form', $data)
             ->add('mod', 'text', array('required' => false))
             ->add('version', 'text', array('required' => false))
@@ -104,18 +109,26 @@ class CrashesController {
             ->add('package', 'text', array('required' => false))
             ->getForm();
         
+        $submitted = false;
         if ($request->getMethod() == 'POST') {
             $form->handleRequest($request);
+            $submitted = true;
         } else {
             $params = $request->query->get('form', array());
             if (count($params) > 0) {
                 $form->submit($params, false);
+                $submitted = true;
             }
         }
-
+        
+        if ($submitted) {
+            $session->clear();
+            $session->replace($form->getData());
+            return $this->app->redirect('crashes');
+        }
+        
         $query = array('hidden' => array('$ne' => true));
         $invalid = false;
-        $data = $form->getData();
         if (count($data) > 0) {
             $query = array();
             if (!empty($data['package'])) {
