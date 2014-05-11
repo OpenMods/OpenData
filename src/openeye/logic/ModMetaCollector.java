@@ -2,6 +2,8 @@ package openeye.logic;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.security.CodeSource;
 import java.util.*;
 
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -420,11 +422,24 @@ public class ModMetaCollector {
 	public Set<String> identifyClassSource(String className) {
 		String packageName = extractPackage(className);
 
-		Set<String> result = Sets.newHashSet();
 		if (packageName.startsWith("net.minecraft") ||
 				packageName.startsWith("net.minecraftforge") ||
-				packageName.startsWith("cpw.mods.fml")) return result;
+				packageName.startsWith("cpw.mods.fml")) return ImmutableSet.of();
 
+		try {
+			Class<?> cls = Class.forName(className);
+			CodeSource src = cls.getProtectionDomain().getCodeSource();
+			if (src != null) {
+				URL sourceUrl = src.getLocation();
+				File sourceFile = new File(sourceUrl.toURI());
+				FileMeta meta = files.get(sourceFile);
+				if (meta != null) return ImmutableSet.of(meta.signature());
+			}
+		} catch (Throwable t) {
+			// NO-OP - nothing to save
+		}
+
+		Set<String> result = Sets.newHashSet();
 		Set<ModCandidate> candidates = table.getCandidatesFor(packageName);
 		for (ModCandidate c : candidates) {
 			File container = c.getModContainer();
