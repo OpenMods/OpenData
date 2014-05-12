@@ -12,21 +12,21 @@
 <div class="row">
     <div class="col-md-2">
       <ul class="nav nav-pills nav-stacked">
-        <li{% if table == 'analytics' %} class="active"{% endif %}><a href="{{ relative('browse/analytics') }}">Analytics</a></li>
-        <li{% if table == 'analytics_aggregated' %} class="active"{% endif %}><a href="{{ relative('browse/analytics_aggregated') }}">Aggregated Analytics</a></li>
-        <li{% if table == 'mods' %} class="active"{% endif %}><a href="{{ relative('browse/mods') }}">Mods</a></li>
-        <li{% if table == 'files' %} class="active"{% endif %}><a href="{{ relative('browse/files') }}">Files</a></li>
-        <li{% if table == 'crashes' %} class="active"{% endif %}><a href="{{ relative('browse/crashes') }}">Crashes</a></li>
-        <li{% if table == 'reports' %} class="active"{% endif %}><a href="{{ relative('browse/reports') }}">Reports</a></li>
-        <li{% if table == 'urls' %} class="active"{% endif %}><a href="{{ relative('browse/urls') }}">Urls</a></li>
-        <li{% if table == 'common_crashes' %} class="active"{% endif %}><a href="{{ relative('browse/common_crashes') }}">Common Crashes</a></li>
+        <li{% if table is defined and table == 'analytics' %} class="active"{% endif %}><a href="{{ relative('browse/analytics') }}">Analytics</a></li>
+        <li{% if table is defined and table == 'analytics_aggregated' %} class="active"{% endif %}><a href="{{ relative('browse/analytics_aggregated') }}">Aggregated Analytics</a></li>
+        <li{% if table is defined and table == 'mods' %} class="active"{% endif %}><a href="{{ relative('browse/mods') }}">Mods</a></li>
+        <li{% if table is defined and table == 'files' %} class="active"{% endif %}><a href="{{ relative('browse/files') }}">Files</a></li>
+        <li{% if table is defined and table == 'crashes' %} class="active"{% endif %}><a href="{{ relative('browse/crashes') }}">Crashes</a></li>
+        <li{% if table is defined and table == 'reports' %} class="active"{% endif %}><a href="{{ relative('browse/reports') }}">Reports</a></li>
+        <li{% if table is defined and table == 'urls' %} class="active"{% endif %}><a href="{{ relative('browse/urls') }}">Urls</a></li>
+        <li{% if table is defined and table == 'common_crashes' %} class="active"{% endif %}><a href="{{ relative('browse/common_crashes') }}">Common Crashes</a></li>
       </ul>
     </div>    
     <div class="col-md-10"> 
-        {% if total > 0 %}
+        {% if total is defined and total > 0 %}
             <h3>Showing {{ total|number_format(0, '.', ',') }} result{% if total > 1 %}s{% endif %}</h3>    
         {% endif %}
-        {% if page_count and page_count > 2 %}
+        {% if page_count is defined and page_count > 2 %}
             {% set from = max(1, current_page - 8) %}
             {% set to = min(page_count, from + 16) %}
             <ul class="pagination">
@@ -37,12 +37,12 @@
                 <li{% if disableNext %} class="disabled"{%endif %}><a href="{% if disableNext %}#{% else %}?page={{ current_page + 1 }}{% endif %}">&raquo;</a></li>
             </ul>
         {% endif %}
-        
+        {% if results is defined %}
         {% for result in results %}
         <pre><code>{{ result|json_encode(constant('JSON_PRETTY_PRINT')  b-or constant('JSON_UNESCAPED_SLASHES')) }}</code></pre>     
         {% endfor %}       
-        
-        {% if page_count and page_count > 2 %}
+        {% endif %}
+        {% if page_count is defined and page_count > 2 %}
         <ul class="pagination">
             <li{% if disablePrev %} class="disabled"{%endif %}><a href="{% if disablePrev %}#{% else %}?page={{ current_page - 1 }}{% endif %}">&laquo;</a></li>
             {% for page in range(from, to) %}

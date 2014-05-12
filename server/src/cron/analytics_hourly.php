@@ -25,25 +25,31 @@ $reportTypes = array();
 $fileStatMap = array();
 
 foreach ($db->reports->find() as $report) {
-    $reportTypes[] = $report['type'];
-    $docs = array();
-    $aggregate = $report['aggregate'];
-    $results = $db->analytics->aggregate($aggregate);
+    try {
+        $reportTypes[] = $report['type'];
+        $docs = array();
+        $aggregate = $report['aggregate'];
+        $results = $db->analytics->aggregate($aggregate);
 
-    foreach ($results['result'] as $result) {
-        $docs[] = array(
-            '_id' => array(
-                'key' => $result['_id'],
-                'type' => $report['type'],
-                'span' => 'hourly',
-                'time' => new \MongoDate($previousHour)
-            ),
-            'launches' => $result['launches']
-        );
-    }
-    
-    if (count($docs) > 0) {
-        $db->analytics_aggregated->batchInsert($docs);
+        foreach ($results['result'] as $result) {
+            $docs[] = array(
+                '_id' => array(
+                    'key' => $result['_id'],
+                    'type' => $report['type'],
+                    'span' => 'hourly',
+                    'time' => new \MongoDate($previousHour)
+                ),
+                'launches' => $result['launches']
+            );
+        }
+        if (count($docs) > 0) {
+            foreach (array_chunk($docs, 20) as $chunk) {
+                $db->analytics_aggregated->batchInsert($chunk);
+            }
+        }
+        echo "Finished report\n";
+    }catch (\Exception $e) {
+        var_dump($e);
     }
 }
 

@@ -11,8 +11,6 @@ use Silex\Provider\FormServiceProvider;
 
 date_default_timezone_set('Etc/UTC');
 
-ini_set('mongo.native_long', 0);
-
 define("ROOT_PATH", __DIR__ . "/..");
 
 $app->before(function (Request $request) {
@@ -50,7 +48,7 @@ $app->register(new ServiceControllerServiceProvider());
 $app->register(new MongoServiceProvider(), array(
     'mongo.connections' => array(
         'default' => array(
-            'server' => 'mongodb://'.$app['dbuser'].':'.$app['dbpass'].'@openeye.openmods.info:27017/hopper',
+            'server' => $app['mongo_connection'],
             'options' => array("connect" => true)
         )
     ),

@@ -40,7 +40,7 @@ var password = process.argv[4];
 
 var myNick = 'MissOpenEye';
 var mainChannel = '#OpenEye';
-var connectionString = 'mongodb://' + dbUser + ':' + dbPass + '@openeye.openmods.info:27017/hopper';
+var connectionString = 'mongodb://' + dbUser + ':' + dbPass + '@localhost:27017/hopper';
 
 var MongoClient = require('mongodb').MongoClient
 var irc = require('irc');

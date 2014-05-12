@@ -1,6 +1,6 @@
 {% extends 'base.twig' %}
 {% block first %}
-<img src="{% if modInfo.largeImage is not empty %}{{ relative(modInfo.largeImage) }}{% else %}{{ relative('largemodimages/default.jpg') }}{% endif %}" id="mod_image">
+<img src="{% if modInfo.largeImage is defined and modInfo.largeImage is not empty %}{{ relative(modInfo.largeImage) }}{% else %}{{ relative('largemodimages/default.jpg') }}{% endif %}" id="mod_image">
 {% endblock %}
 {% block main %}
 <div class="row">
@@ -8,7 +8,7 @@
     <div class="col-md-12">
         <div class="page-header" id="modheader">
             <div class="inner">
-            <h1><span class="wrapped"><img style="width: 32px;height:32px;margin-top:-8px;" src="{% if modInfo.image %}{{ relative(modInfo.image) }}{% else %}{{ relative('modimages/grass.png') }}{% endif %}" alt=""> {{ modInfo.name }}
+            <h1><span class="wrapped"><img style="width: 32px;height:32px;margin-top:-8px;" src="{% if modInfo.image is defined %}{{ relative(modInfo.image) }}{% else %}{{ relative('modimages/grass.png') }}{% endif %}" alt=""> {{ modInfo.name }}
             {% if modInfo.authors|length > 0 %}
                 <small>by {{ modInfo.authors|join(', ') }}</small>
             {% endif %}</span></h1>
@@ -26,13 +26,13 @@
         {% if modInfo.url|trim is not empty%}
             <p><strong>Url:</strong> <a href="{{ modInfo.url|fullurl }}" target="_blank">{{ modInfo.url|fullurl }}</a></p>
         {% endif %}
-        {% if modInfo.repository|trim is not empty %}
+        {% if modInfo.repository is defined and modInfo.repository|trim is not empty %}
             <p><strong>Source code:</strong> <a href="{{ modInfo.repository|fullurl }}" target="_blank">{{ modInfo.repository|fullurl }}</a></p>
         {% endif %}
-        {% if modInfo.irc is not empty %}
+        {% if modInfo.irc is defined and modInfo.irc is not empty %}
             <p><strong>IRC Chat:</strong> <a href="http://mibbit.com/?channel={{ modInfo.irc.channel|url_encode }}&server={{ modInfo.irc.host }}" target="_blank">{{ modInfo.irc.host }} {{ modInfo.irc.channel }}</a></p>
         {% endif %}
-        {% if modInfo.donation|trim is not empty %}
+        {% if modInfo.donation is defined and modInfo.donation|trim is not empty %}
             <p><strong>Donations:</strong> <a href="{{ modInfo.donation|fullurl }}" target="_blank">{{ modInfo.donation|fullurl }}</a></p>
         {% endif %}
 

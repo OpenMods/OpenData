@@ -68,14 +68,16 @@
             </thead>
             <tbody>
             {% for crash in crashes %}
-            {% set trace = crash.exception.stack|first %}
+            	{% set trace = crash.exception.stack|first %}
                 <tr>
                     <td>{{ crash.latest|round|date("Y-m-d H:i:s") }}</td>
                     <td style="overflow:hidden;">
                         <a href="{{ relative('crashes/' ~ crash._id) }}">{{ crash.exception.exception }}</a><br />
-                        {{ trace.class }}{% if trace.class %}.{% endif %}{% if trace.method %}<span>{{ trace.method }}()</span> {% endif %}{% if trace.line %}:{{ trace.line }}{% endif %}
-                        {% if crash.tags|length > 0 %}<br />{% for tag in crash.tags %}<span class="label label-info">{{ tag }}</span> {% endfor %}{% endif %}
-                        {% if crash.involvedMods|length > 0 %}<br />{% for mod in crash.involvedMods %}<span class="label label-primary">{{ mod }}</span> {% endfor %}{% endif %}
+                        {% if trace is defined %}
+                        	{% if trace.class is defined %}{{ trace.class }}.{% endif %}{% if trace.method is defined %}<span>{{ trace.method }}()</span> {% endif %}{% if trace.line is defined %}:{{ trace.line }}{% endif %}
+                        	{% if crash.tags|length > 0 %}<br />{% for tag in crash.tags %}<span class="label label-info">{{ tag }}</span> {% endfor %}{% endif %}
+                        	{% if crash.involvedMods|length > 0 %}<br />{% for mod in crash.involvedMods %}<span class="label label-primary">{{ mod }}</span> {% endfor %}{% endif %}
+                    	{% endif %}
                     </td>
                     <td>{% if crash.note is defined %}<strong>{{ crash.note.message }} - {{ crash.note.user }}{% endif %}</td>
                     <td>{{ crash.count }}</td>
