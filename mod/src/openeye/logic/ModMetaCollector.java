@@ -419,12 +419,18 @@ public class ModMetaCollector {
 		return meta != null? meta.container : null;
 	}
 
-	public Set<String> identifyClassSource(String className) {
+	public static class ClassSource {
+		public String loadedFrom;
+		public final Set<String> containingClasses = Sets.newHashSet();
+	}
+
+	public ClassSource identifyClassSource(String className) {
 		String packageName = extractPackage(className);
+		ClassSource result = new ClassSource();
 
 		if (packageName.startsWith("net.minecraft") ||
 				packageName.startsWith("net.minecraftforge") ||
-				packageName.startsWith("cpw.mods.fml")) return ImmutableSet.of();
+				packageName.startsWith("cpw.mods.fml")) return null;
 
 		try {
 			Class<?> cls = Class.forName(className);
@@ -433,19 +439,18 @@ public class ModMetaCollector {
 				URL sourceUrl = src.getLocation();
 				File sourceFile = new File(sourceUrl.toURI());
 				FileMeta meta = files.get(sourceFile);
-				if (meta != null) return ImmutableSet.of(meta.signature());
+				if (meta != null) result.loadedFrom = meta.signature();
 			}
 		} catch (Throwable t) {
 			// NO-OP - nothing to save
 		}
 
-		Set<String> result = Sets.newHashSet();
 		Set<ModCandidate> candidates = table.getCandidatesFor(packageName);
 		for (ModCandidate c : candidates) {
 			File container = c.getModContainer();
 			if (container != null) {
 				FileMeta meta = files.get(container);
-				if (meta != null) result.add(meta.signature());
+				if (meta != null) result.containingClasses.add(meta.signature());
 			}
 		}
 
