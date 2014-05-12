@@ -26,6 +26,9 @@ public class ReportCrash extends ReportEnvironment {
 		@SerializedName("line")
 		public int lineNumber;
 
+		@SerializedName("source")
+		public String source;
+
 		@SerializedName("signatures")
 		public Collection<String> signatures;
 	}
