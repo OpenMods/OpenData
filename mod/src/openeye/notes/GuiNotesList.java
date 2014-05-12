@@ -58,6 +58,6 @@ public class GuiNotesList extends GuiScrollingList {
 		String description = entry.content().getFormatted();
 
 		int width = right - left;
-		if (!Strings.isNullOrEmpty(description)) mc.fontRenderer.drawSplitString(description, left, top + 20, left + width, 0xCCCCCC);
+		if (!Strings.isNullOrEmpty(description)) mc.fontRenderer.drawSplitString(description, left, top + 20, left + width - 10, 0xCCCCCC);
 	}
 }

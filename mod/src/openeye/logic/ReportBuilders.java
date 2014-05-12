@@ -10,6 +10,7 @@ import java.util.zip.ZipFile;
 
 import net.minecraftforge.common.ForgeVersion;
 import openeye.Log;
+import openeye.logic.ModMetaCollector.ClassSource;
 import openeye.reports.*;
 import openeye.reports.ReportCrash.ExceptionInfo;
 import openeye.reports.ReportCrash.StackTrace;
@@ -109,7 +110,16 @@ public class ReportBuilders {
 		el.methodName = e.getMethodName();
 		el.lineNumber = e.getLineNumber();
 
-		if (collector != null) el.signatures = collector.identifyClassSource(clsName);
+		if (collector != null) {
+			ClassSource source = collector.identifyClassSource(clsName);
+			if (source != null) {
+				el.signatures = source.containingClasses;
+				if (source.loadedFrom != null) {
+					el.source = source.loadedFrom;
+					el.signatures.add(source.loadedFrom);
+				}
+			}
+		}
 		return el;
 	}
 
