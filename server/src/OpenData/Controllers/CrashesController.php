@@ -153,6 +153,8 @@ class CrashesController {
                             $query['involvedSignatures'] = array(
                                 '$in' => $signatures
                             );
+                        } else {
+                            $invalid = true;
                         }
                     }
                 } else {

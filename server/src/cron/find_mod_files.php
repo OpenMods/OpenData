@@ -62,55 +62,6 @@ $modUrls = array();
 
 
 try {
-    if ($parsed['host'] == 'minecraft.curseforge.com') {
-
-        // grab all the 'file page' links from curse forge
-        $dom = new DOMDocument('1.0');
-        $html = file_get_contents($updateUrl);
-        $dom->loadHTML($html);
-        $finder = new DomXPath($dom);
-        $nodes = $finder->query("//tbody/tr/td[contains(@class, 'col-file')]/a");
-        for ($i = 0; $i < $nodes->length; $i++) {
-            $node = $nodes->item($i);
-            if ($node->attributes->length > 0) {
-                $href = $node->attributes->item(0)->nodeValue;
-                if (preg_match("|\/files\/|U", $href)) {
-                    $fullUrl = 'http://minecraft.curseforge.com' . $href;
-                    $newlyChecked[] = $fullUrl;
-                }
-            }
-        }
-
-        $newlyChecked = reduceURLList($db, $newlyChecked);
-
-        $files = array();
-        foreach ($newlyChecked as $page) {
-            $dom = new DOMDocument('1.0');
-            $html = file_get_contents($page);
-            $dom->loadHTML($html);
-            $finder = new DomXPath($dom);
-            $nodes = $finder->query("//*[contains(@class, 'user-action')]//span/a");
-            for ($i = 0; $i < $nodes->length; $i++) {
-                $node = $nodes->item($i);
-                $href = $node->attributes->item(0)->nodeValue;
-                echo $href."\n";
-                $files[] = $href;
-            }
-        }
-
-        foreach ($files as $file) {
-            $ctx = stream_context_create(array('http'=>array('timeout' => 120)));
-            echo "Downloading ".$file."\n";
-            $contents = @file_get_contents($file, false, $ctx);
-            if ($contents != null) {
-                $signature = 'sha256:' . hash('sha256', $contents);
-                $modUrls[$signature] = array(
-                    'jarUrl' => $file,
-                    'url' => $file
-                );
-            }
-        }
-    } else {
 
         // get the page
         $contents = file_get_contents($updateUrl);
@@ -218,6 +169,7 @@ try {
                         substr_count(strtolower($jarUrl), '-src') == 0 && (
                         endsWith($jarUrl, '.jar') ||
                         endsWith($jarUrl, '.zip') ||
+                        (strpos($jarUrl, '/mc-mods/') !== false && endsWith($jarUrl, '/download')) ||
                         strpos($jarUrl, 'file=') !== false ||
                         strpos($jarUrl, 'f=') !== false
                         ) && strpos($jarUrl, '/archive/') === false;
@@ -293,7 +245,6 @@ try {
                 }
             }
         }
-    }
 } catch (\Exception $e) {
     // boq would kill me
 }

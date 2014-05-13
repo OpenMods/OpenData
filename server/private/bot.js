@@ -84,6 +84,11 @@ var actions = {
         secure: true,
         usage: '#mod:unset <modid> <field>'
     },
+    'mod:link': {
+        func: mods.link,
+        secure: false,
+        usage: '#mod:link <modid>'
+    },
     'mod:admins:add': {
         func: mods.addAdmin,
         secure: true,
@@ -148,10 +153,11 @@ MongoClient.connect(connectionString, function(err, db) {
     var bot = new irc.Client('irc.esper.net', myNick, {
         channels: [mainChannel],
         autoConnect: false,
-        debug: true
+        debug: true,
+        showErrors: true
     });
 
-    bot.connect(5, function() {
+    bot.connect(10, function() {
        bot.say('nickserv', 'identify OpenEye ' + password);
     });
 
@@ -210,9 +216,13 @@ MongoClient.connect(connectionString, function(err, db) {
 
         if (message.startsWith('#')) {
 
+            //bot.say(to, 'Sorry, right now I\'m in broadcast-only mode');
+            //return;
+
             var matches = message.match(/^#([a-z0-9\:]+)\s?(.*)?$/i);
 
             if (matches != null && matches.length > 0) {
+
 
                 var action = actions[matches[1]];
 
@@ -275,7 +285,7 @@ MongoClient.connect(connectionString, function(err, db) {
 
                             var isVoiced = info['channels'].indexOf('+#OpenEye') > -1 ||
                                     info['channels'].indexOf('@+#OpenEye') > -1;
-                            
+
                             console.log("isOp ? " + isOp);
                             console.log("isVoiced ? " + isVoiced);
 

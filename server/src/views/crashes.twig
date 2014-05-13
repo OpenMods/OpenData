@@ -20,7 +20,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                      <label for="form_version" style="display: block;">Version</label>
+                      <label for="form_version" style="display: block;">Mod version</label>
                       {{ form_widget(form.version, { 'attr': {'class': 'form-control'} } ) }}
                     </div>
                 </div>
@@ -67,13 +67,18 @@
             </tr>
             </thead>
             <tbody>
+            {% if crashes is defined %}
             {% for crash in crashes %}
-            	{% set trace = crash.exception.stack|first %}
+                {% if crash.exception is defined and crash.exception is not null %}
+                    {% set trace = crash.exception.stack|first %}
+                {% else %}
+                    {% set trace = null %}
+                {% endif %}
                 <tr>
                     <td>{{ crash.latest|round|date("Y-m-d H:i:s") }}</td>
                     <td style="overflow:hidden;">
-                        <a href="{{ relative('crashes/' ~ crash._id) }}">{{ crash.exception.exception }}</a><br />
-                        {% if trace is defined %}
+                        <a href="{{ relative('crashes/' ~ crash._id) }}">{% if crash.exception is not null %}{{ crash.exception.exception }}{% endif %}</a><br />
+                        {% if trace is defined and trace is not null %}
                         	{% if trace.class is defined %}{{ trace.class }}.{% endif %}{% if trace.method is defined %}<span>{{ trace.method }}()</span> {% endif %}{% if trace.line is defined %}:{{ trace.line }}{% endif %}
                         	{% if crash.tags|length > 0 %}<br />{% for tag in crash.tags %}<span class="label label-info">{{ tag }}</span> {% endfor %}{% endif %}
                         	{% if crash.involvedMods|length > 0 %}<br />{% for mod in crash.involvedMods %}<span class="label label-primary">{{ mod }}</span> {% endfor %}{% endif %}
@@ -83,6 +88,7 @@
                     <td>{{ crash.count }}</td>
                 </tr>                
             {% endfor %}
+            {% endif %}
             </tbody>
 
         </table>
@@ -106,6 +112,14 @@
 {% block javascript %}
     <script src="{{ relative('js/typeahead.js') }}"></script>
     <script type="text/javascript">
+        function disableVersion() {
+            if ($('#form_mod').val() == '') {
+                    $('#form_version').attr('disabled', 'disabled');
+                    $('#form_version').val('');
+                } else {
+                    $('#form_version').removeAttr('disabled');            
+                }
+        }
         $(function() {
             var mods = new Bloodhound({
                  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
@@ -118,6 +132,9 @@
                  displayKey: 'value',
                  source: mods.ttAdapter()
             });
+            $('input[type=text]').change(disableVersion);
+            $('input[type=text]').focus(disableVersion).blur(disableVersion);
+            disableVersion();
         });
     </script>
 {% endblock %}

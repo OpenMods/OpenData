@@ -18,7 +18,7 @@
             </div>
         </div>
         
-        {% if modInfo.tags|length > 0 %}{% for tag in modInfo.tags %}<span class="label label-info">{{ tag }}</span> {% endfor %}<br /><br />{% endif %}
+        {% if modInfo.tags is defined and modInfo.tags|length > 0 %}{% for tag in modInfo.tags %}<span class="label label-info">{{ tag }}</span> {% endfor %}<br /><br />{% endif %}
 
         {% if modInfo.credits|trim is not empty %}
             <p><strong>Credits:</strong> {{ modInfo.credits }}</p>

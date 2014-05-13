@@ -43,9 +43,9 @@ class ApiController {
         
         try {
             
-            if ($this->isUserFlooding($request)) {
-                throw new Exception('Flood protection - too many reports');
-            }
+            //if ($this->isUserFlooding($request)) {
+            //    throw new \Exception('Flood protection - too many reports');
+            //}
 
             $content = $request->get('api_request');
 
@@ -86,14 +86,14 @@ class ApiController {
 
         $content = $request->get('api_request', '[]');
         
-        if ($this->isUserFlooding($request)) {
-            return new JsonResponse(array());
-        }
+        //if ($this->isUserFlooding($request)) {
+        //    return new JsonResponse(array());
+        //}
 
         $data = json_decode(mb_convert_encoding($content, 'UTF-8', 'auto'), true);
         
         if (!is_array($data)) {
-            throw new \Exception('Array expected');
+            return new JsonResponse(array());
         }
 
         $responses = array();
