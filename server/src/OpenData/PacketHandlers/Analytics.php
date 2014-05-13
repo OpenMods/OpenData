@@ -27,7 +27,7 @@ class Analytics implements IPacketHandler {
 
         $packet['created_at'] = time();
         
-        $this->serviceAnalytics->add($packet);
+        //$this->serviceAnalytics->add($packet);
                 
         $signatureMap = array();
         
