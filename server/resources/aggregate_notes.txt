@@ -31,7 +31,7 @@ function () {
 
             ['locale', 'minecraft', 'language', 'javaVersion', 'timezone'].forEach(function (k) {
                 result[k] = {};
-                result[k][self[k]] = NumberInt(1);
+                result[k][self[k].replace(/\./g, '~')] = NumberInt(1);
             });
 
             this.branding.forEach(function (brand) {
@@ -41,12 +41,12 @@ function () {
             for (key in this.runtime) {
                 var version = this.runtime[key];
                 if (result['runtime'][key] == null) result['runtime'][key] = {};
-                result['runtime'][key][version] = NumberInt(1);
+                result['runtime'][key][version.replace(/\./g, '~')] = NumberInt(1);
             }
 
             if (this.tags != null) {
                 this.tags.forEach(function (tag) {
-                    result['tags'][tag] = NumberInt(1);
+                    result['tags'][tag.replace(/\./g, '~')] = NumberInt(1);
                 });
             }
             this.signatures.forEach(function (signature) {
@@ -92,38 +92,7 @@ function () {
             result.count = NumberInt(result.count);
             return result;
         }, {
-            finalize: function (key, doc) {
-                var result = {
-                    'locale': [],
-                    'minecraft': [],
-                    'language': [],
-                    'timezone': [],
-                    'javaVersion': [],
-                    'branding': [],
-                    'tags': [],
-                    'runtime': {},
-                    'count': NumberInt(doc.count)
-                };
-                ['locale', 'minecraft', 'language', 'timezone', 'javaVersion', 'branding', 'tags'].forEach(function (k) {
-                    for (key in doc[k]) {
-                        result[k].push({
-                            'key': key,
-                            'value': NumberInt(doc[k][key])
-                        });
-                    }
-                });
-                for (key in doc.runtime) {
-                    result['runtime'][key] = [];
-                    for (version in doc.runtime[key]) {
-                        result['runtime'][key].push({
-                            'key': version,
-                            'value': NumberInt(doc.runtime[key][version])
-                        });
-                    }
-                }
-                return result;
-            },
-            out: "signatures"
+            out: "analytics_signatures"
         }
     )
 

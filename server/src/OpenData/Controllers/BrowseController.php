@@ -61,7 +61,7 @@ class BrowseController {
             $formattedResults[] = $result;
         }
         
-        return $this->twig->render('browse.twig', array(
+        $response = array(
             'results' => $formattedResults,
             'page_count' => $pageCount,
             'current_page' => $page,
@@ -69,7 +69,12 @@ class BrowseController {
             'disablePrev' => $page <= 1,
             'disableNext' => $page + 1 >= $pageCount,
             'table' => $table
-        ));
+        );
+        if ($request->get('format') == 'json') {
+            return new \Symfony\Component\HttpFoundation\JsonResponse($response);
+        }
+        
+        return $this->twig->render('browse.twig', $response);
     }
     
     private function getPagination($results, $page = 1, $perPage = 20) {

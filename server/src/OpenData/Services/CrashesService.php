@@ -9,7 +9,6 @@ class CrashesService extends BaseService {
         $classes = array();
 	for ($i = 0; $i < count($arr['stack']); $i++) {
 		$signatures = array_merge($arr['stack'][$i]['signatures'], $signatures);
-                
                 // strip generated class names
                 $arr['stack'][$i]['class'] = preg_replace('@GeneratedMethodAccessor[0-9]+@', 'GeneratedMethodAccessor', $arr['stack'][$i]['class']);
                 $arr['stack'][$i]['class'] = preg_replace('@ASMEventHandler_[0-9]+_@', 'ASMEventHandler_0_', $arr['stack'][$i]['class']);
@@ -249,6 +248,7 @@ class CrashesService extends BaseService {
     
     public static function reduceMessageForIRC($message, $length = 100, $dots = '...') {
         $message = trim(preg_replace('/\s+/', ' ', $message));
+        $message = str_replace("\0", "[null]", $message);
         $message = (strlen($message) > $length) ? substr($message, 0, $length - strlen($dots)) . $dots : $message;
         return $message;
     }
