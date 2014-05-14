@@ -4,37 +4,37 @@
 namespace OpenData\PacketHandlers;
 
 class Analytics implements IPacketHandler {
-    
+
     private $serviceAnalytics;
     private $serviceFiles;
     private $serviceTags;
-    
+
     public function __construct($analytics, $files, $tags) {
         $this->serviceAnalytics = $analytics;
         $this->serviceFiles = $files;
         $this->serviceTags = $tags;
     }
-    
+
     public function getPacketType() {
         return 'analytics';
     }
-    
+
     public function getJsonSchema() {
         return 'analytics.json';
     }
-    
+
     public function execute($packet) {
 
         $packet['created_at'] = time();
-        
-        $this->serviceAnalytics->add($packet);
-                
+
+        //$this->serviceAnalytics->add($packet);
+
         $signatureMap = array();
-        
+
         foreach ($packet['signatures'] as $signature) {
             $signatureMap[$signature['signature']] = $signature['filename'];
         }
-        
+
         // find all the mods we already have in the database
         $filesData = $this->serviceFiles->findIn(array_keys($signatureMap));
 
@@ -47,13 +47,13 @@ class Analytics implements IPacketHandler {
         foreach ($filesData as $fileData) {
 
             $signature = $fileData['_id'];
-            
+
             $fileSignaturesFound[] = $signature;
 
             $fileNode = array(
                 'signature' => $signature
             );
-            
+
             if (isset($signatureMap[$signature])) {
                 $filename = $signatureMap[$signature];
                 if (!in_array($filename, $fileData['filenames'])) {
@@ -102,11 +102,11 @@ class Analytics implements IPacketHandler {
         }
 
         $newFilenames = array();
-        
+
         // loop through any mods we didn't find in the database,
         // add them in, then tell the client we need the rest of the packages
         foreach ($packet['signatures'] as $signature) {
-            
+
             if (!in_array($signature['signature'], $fileSignaturesFound)) {
                 if ($this->serviceFiles->create($signature)) {
                     if (!in_array($signature['filename'], array(
@@ -126,7 +126,7 @@ class Analytics implements IPacketHandler {
                 );
             }
         }
-        
+
         if (count($newFilenames) > 0) {
             $redis = new \Predis\Client();
             $redis->publish('file', implode(", ", $newFilenames));
@@ -134,7 +134,7 @@ class Analytics implements IPacketHandler {
 
         return $responses;
     }
-    
+
     private function shouldRequestFiles($fileData) {
         return isset($fileData['request_files']) &&
                 $fileData['request_files'] &&
