@@ -42,7 +42,7 @@ public abstract class GenericSender<I, O> {
 
 	private int retries = 2;
 
-	private int timeout = 10000;
+	private int timeout = 20000;
 
 	protected GenericSender(URL url) {
 		this.url = url;
