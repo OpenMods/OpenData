@@ -47,7 +47,7 @@
 </div>
             
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12{%if total is defined %} total-{{ total }}{% endif %}{% if page_count is defined %} pages-{{ page_count }}{% endif %}">
         {% if page_count and page_count > 2 %}
             {% set from = max(1, current_page - 8) %}
             {% set to = min(page_count, from + 16) %}

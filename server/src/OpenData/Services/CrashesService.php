@@ -22,6 +22,9 @@ class CrashesService extends BaseService {
 		$classes = array_merge($classes, $cause['classes']);
 		$arr['cause'] = $cause['exception'];
 	}
+        if (isset($arr['message'])) {
+            $arr['message'] = preg_replace("|([a-zA-Z0-9])@[a-f0-9]{1,8}(?![a-f0-9])|U", "$1[@ffffff]", $arr['message']);
+        }
 	return array(
             'signatures' => $signatures,
             'classes'   => $classes,
@@ -273,7 +276,7 @@ class CrashesService extends BaseService {
     }
 
     public function findLatest($query = array(), $skip = 0, $limit = 40) {
-        return $this->find($query)
+        return $this->find($query, array('resolved' => 1, 'tags' => 1, 'involvedMods' => 1, 'latest' => 1, 'exception' => 1))
                 ->sort(array('latest' => -1))
                 ->skip($skip)
                 ->limit($limit);

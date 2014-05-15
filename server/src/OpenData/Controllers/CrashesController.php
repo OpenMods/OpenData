@@ -168,6 +168,7 @@ class CrashesController {
         
         $results = array();
         if (!$invalid) {
+            $query['hidden'] = false;
             $results = $this->serviceCrashes->findLatest($query);
         }
 

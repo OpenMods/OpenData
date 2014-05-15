@@ -1,4 +1,5 @@
 {% extends 'base.twig' %}
+{% block title%} - {{ modInfo.name }}{% endblock %}
 {% block first %}
 <img src="{% if modInfo.largeImage is defined and modInfo.largeImage is not empty %}{{ relative(modInfo.largeImage) }}{% else %}{{ relative('largemodimages/default.jpg') }}{% endif %}" id="mod_image">
 {% endblock %}

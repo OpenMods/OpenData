@@ -2,7 +2,7 @@
 <strong>{{ crash.exception }}: {{ crash.message }}</strong>
 
 {% for trace in crash.stack %}
-    at <span class="highlight_class">{{ trace.class }}</span>.<span class="highlight_method">{{ trace.method }}</span>{% if trace.file is defined %}<span class="highlight_file">({{ trace.file }}:</span>{% endif %}<span class="highlight_line">{{ trace.line }})</span>
+    at <span class="highlight_class">{{ trace.class }}</span>.<span class="highlight_method">{{ trace.method }}</span>({% if trace.file is defined %}<span class="highlight_file">{{ trace.file }}:</span>{% endif %}<span class="highlight_line">{{ trace.line }}</span>)
 {% endfor %}
 {% if crash.cause is defined %}
 
