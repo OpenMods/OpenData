@@ -45,7 +45,7 @@ public class Bootstrap {
 		Storages storages = Storages.init(mcLocation);
 		StateHolder.init(storages);
 
-		Sanitizer.addFirst(Sanitizer.path(mcLocation.getAbsolutePath(), "[minecraft_dir]"));
+		Sanitizers.addMinecraftPath(mcLocation);
 		ThrowableLogger.init();
 	}
 

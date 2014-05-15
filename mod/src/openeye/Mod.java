@@ -1,6 +1,7 @@
 package openeye;
 
 import java.io.File;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -93,8 +94,8 @@ public class Mod extends DummyModContainer {
 	public static void crash1() {
 		try {
 			File mcDir = Bootstrap.instance.getMcLocation();
-			throw new RuntimeException("deep one: " + new File(mcDir, "hello.txt"));
-		} catch (RuntimeException e) {
+			throw new ProtocolException("128.0.0.1 deep one: " + new File(mcDir, "hello.txt"));
+		} catch (Exception e) {
 			throw new RuntimeException("u wot m8: 127.0.0.4:5262", e);
 		}
 	}
