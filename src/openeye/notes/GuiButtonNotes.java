@@ -10,16 +10,22 @@ public class GuiButtonNotes extends GuiButton {
 
 	public static final ResourceLocation TEXTURE = new ResourceLocation("openeye", "textures/gui/buttons.png");
 
-	private final NoteIcons icon;
+	private NoteIcons icon;
 
 	private boolean blink;
 
 	private int count;
 
-	public GuiButtonNotes(int id, int x, int y, NoteIcons icon, boolean blink) {
+	public GuiButtonNotes(int id, int x, int y) {
 		super(id, x, y, 20, 20, "");
+	}
+
+	public void setBlinking(boolean blinking) {
+		this.blink = blinking;
+	}
+
+	public void setIcon(NoteIcons icon) {
 		this.icon = icon;
-		this.blink = blink;
 	}
 
 	@Override
