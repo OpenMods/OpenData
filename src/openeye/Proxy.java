@@ -2,7 +2,7 @@ package openeye;
 
 import net.minecraft.client.Minecraft;
 import openeye.logic.Config;
-import openeye.logic.Sanitizer;
+import openeye.logic.Sanitizers;
 import openeye.notes.NotesButtonInjector;
 
 import com.google.common.base.Strings;
@@ -21,7 +21,7 @@ public abstract class Proxy {
 		public void first() {
 			try {
 				String username = Minecraft.getMinecraft().getSession().getUsername();
-				if (!Strings.isNullOrEmpty(username)) Sanitizer.addFirst(Sanitizer.replace(username, "[player]"));
+				if (!Strings.isNullOrEmpty(username)) Sanitizers.addPlayerName(username);
 			} catch (Throwable t) {
 				Log.warn(t, "Failed to get player username");
 			}

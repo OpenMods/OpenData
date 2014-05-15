@@ -133,7 +133,7 @@ public class ReportBuilders {
 		ExceptionInfo info = new ExceptionInfo();
 
 		info.exceptionCls = throwable.getClass().getName();
-		info.message = Sanitizer.sanitize(throwable.getMessage());
+		info.message = Sanitizers.getSanitizerForThrowable(throwable.getClass()).sanitize(throwable.getMessage());
 
 		alreadySerialized.add(throwable);
 
