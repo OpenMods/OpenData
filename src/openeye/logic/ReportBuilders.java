@@ -82,8 +82,12 @@ public class ReportBuilders {
 
 		fillEnvInfo(analytics);
 
-		analytics.language = FMLCommonHandler.instance().getCurrentLanguage();
-
+		try {
+			analytics.language = FMLCommonHandler.instance().getCurrentLanguage();
+		} catch (Throwable e) {
+			analytics.language = "invalid";
+			ThrowableLogger.processThrowable(e, "openeye");
+		}
 		analytics.locale = Locale.getDefault().toString();
 
 		TimeZone tz = Calendar.getInstance().getTimeZone();
