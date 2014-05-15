@@ -27,7 +27,7 @@ case '1.6.4':
     ext.src_extra = '1.6.4'
     break
 case '1.7.2':
-    ext.forge_version = '10.12.1.1060'
+    ext.forge_version = '10.12.1.1082'
     ext.src_extra = '1.7.2'
     break
 }
