@@ -17,7 +17,7 @@ public class Config {
 	@ConfigProperty(category = "data")
 	public static Set<String> tags = ImmutableSet.of();
 
-	@ConfigProperty(category = "data")
+	@ConfigProperty(category = "data", comment = "Send only information about files and crashes - no analytics")
 	public static boolean scanOnly = false;
 
 	@ConfigProperty(category = "data", comment = "Maximum number of crash reports from single category sent per single run")

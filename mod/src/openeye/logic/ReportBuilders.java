@@ -82,8 +82,12 @@ public class ReportBuilders {
 
 		fillEnvInfo(analytics);
 
-		analytics.language = FMLCommonHandler.instance().getCurrentLanguage();
-
+		try {
+			analytics.language = FMLCommonHandler.instance().getCurrentLanguage();
+		} catch (Throwable e) {
+			analytics.language = "invalid";
+			ThrowableLogger.processThrowable(e, "openeye");
+		}
 		analytics.locale = Locale.getDefault().toString();
 
 		TimeZone tz = Calendar.getInstance().getTimeZone();
@@ -129,7 +133,7 @@ public class ReportBuilders {
 		ExceptionInfo info = new ExceptionInfo();
 
 		info.exceptionCls = throwable.getClass().getName();
-		info.message = Sanitizer.sanitize(throwable.getMessage());
+		info.message = Sanitizers.getSanitizerForThrowable(throwable.getClass()).sanitize(throwable.getMessage());
 
 		alreadySerialized.add(throwable);
 

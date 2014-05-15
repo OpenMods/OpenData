@@ -112,6 +112,17 @@ public class SenderWorker implements Runnable {
 		final ReportsList result = new ReportsList();
 
 		try {
+			createAnalyticsReport(collector, result);
+			result.addAll(listPendingCrashes());
+		} catch (Exception e) {
+			logException(e, "Failed to create initial report");
+		}
+
+		return result;
+	}
+
+	protected void createAnalyticsReport(ModMetaCollector collector, final ReportsList result) {
+		try {
 			if (Config.scanOnly) {
 				result.add(ReportBuilders.buildKnownFilesReport(collector));
 			} else {
@@ -119,13 +130,9 @@ public class SenderWorker implements Runnable {
 			}
 
 			if (Config.pingOnInitialReport) result.add(new ReportPing());
-			result.addAll(listPendingCrashes());
-
 		} catch (Exception e) {
-			logException(e, "Failed to create initial report");
+			logException(e, "Failed to create analytics report");
 		}
-
-		return result;
 	}
 
 	private void sendReports(ModMetaCollector collector) {
