@@ -18,19 +18,21 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class Sanitizers {
-	public static final int PRIORITY_SAVE_DIR = 1100;
-	public static final int PRIORITY_MINECRAFT_DIR = 1000;
-	public static final int PRIORITY_WORK_DIR = 900;
-	public static final int PRIORITY_HOME = 800;
+	public static final int PRIORITY_SAVE_DIR = 1300;
+	public static final int PRIORITY_MINECRAFT_DIR = 1200;
+	public static final int PRIORITY_WORK_DIR = 1100;
+	public static final int PRIORITY_HOME = 1000;
 
-	public static final int PRIORITY_WORLD_NAME = 700;
+	public static final int PRIORITY_WORLD_NAME = 900;
 	public static final int PRIORITY_SAVE_DIR_NAME = 800;
 
-	public static final int PRIORITY_LOCAL_IP = 500;
-	public static final int PRIORITY_IP_PORT = 400;
+	public static final int PRIORITY_LOCAL_IP = 700;
+	public static final int PRIORITY_IP_PORT = 700;
 
-	public static final int PRIORITY_LOCAL_HOST = 300;
-	public static final int PRIORITY_PLAYER = 200;
+	public static final int PRIORITY_LOCAL_HOST = 500;
+	public static final int PRIORITY_LOCAL_PLAYER = 400;
+	public static final int PRIORITY_PLAYER_NAME = 300;
+	public static final int PRIORITY_PLAYER_ID = 200;
 	public static final int PRIORITY_SYSTEM_USER = 100;
 
 	static class SimpleReplace implements ITransformer {
@@ -226,6 +228,6 @@ public class Sanitizers {
 	}
 
 	public static void addPlayerName(String username) {
-		mainSanitizer.addPre(PRIORITY_PLAYER, Sanitizers.replace(username, "[player]"));
+		mainSanitizer.addPre(PRIORITY_LOCAL_PLAYER, Sanitizers.replace(username, "[local player]"));
 	}
 }
