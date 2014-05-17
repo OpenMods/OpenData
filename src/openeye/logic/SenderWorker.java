@@ -95,7 +95,8 @@ public class SenderWorker implements Runnable {
 				}
 			} catch (Exception e) {
 				// no point of sending those to server
-				Log.warn(e, "Failed to read crash %s", crash.getId());
+				Log.warn(e, "Failed to read crash %s, removing", crash.getId());
+				crash.delete();
 			}
 		}
 		return crashes.values();
