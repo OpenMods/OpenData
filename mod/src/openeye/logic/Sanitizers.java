@@ -27,7 +27,7 @@ public class Sanitizers {
 	public static final int PRIORITY_SAVE_DIR_NAME = 800;
 
 	public static final int PRIORITY_LOCAL_IP = 700;
-	public static final int PRIORITY_IP_PORT = 700;
+	public static final int PRIORITY_IP_PORT = 600;
 
 	public static final int PRIORITY_LOCAL_HOST = 500;
 	public static final int PRIORITY_LOCAL_PLAYER = 400;
