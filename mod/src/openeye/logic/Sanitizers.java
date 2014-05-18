@@ -142,7 +142,7 @@ public class Sanitizers {
 	public static ITransformer replace(Object target, String value) {
 		if (target != null) {
 			String s = target.toString();
-			if (!Strings.isNullOrEmpty(s)) return new Sanitizers.SimpleReplace(s, value);
+			if (s != null && s.length() > 2) return new Sanitizers.SimpleReplace(s, value);
 		}
 		return null;
 	}
@@ -150,7 +150,7 @@ public class Sanitizers {
 	public static ITransformer replaceNoDuplicates(Object target, String value) {
 		if (target != null) {
 			String s = target.toString();
-			if (!Strings.isNullOrEmpty(s) && !ALREADY_REPLACED.contains(s)) {
+			if (s != null && s.length() > 2 && !ALREADY_REPLACED.contains(s)) {
 				ALREADY_REPLACED.add(s);
 				return new Sanitizers.SimpleReplace(s, value);
 			}
