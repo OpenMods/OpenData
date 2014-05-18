@@ -1,0 +1,44 @@
+openeye.main_screen.remove_file=OpenEye советует удалить файл
+openeye.main_screen.known_crash=OpenEye имеет информацию об одном или нескольких из Ваших недавних вылетов
+openeye.main_screen.crash_reported=Вылеты хранятся на сервере
+openeye.main_screen.intro=НЕ ПАНИКУЙТЕ! Нажмите мигающую кнопку, чтобы выяснить, что происходит.
+
+openeye.notes.goto_page=Перейти по ссылке
+
+openeye.notes.title.resolved_crash=Решение для недавнего вылета доступно на сайте
+openeye.notes.title.reported_crash=Отчёт о вылете отправлен на сервер
+openeye.notes.title.note=Примечание для файла %s
+openeye.notes.title.remove_file=Повторное напоминание для файла: %s
+
+openeye.notes.content.remove_file=OpenEye советует удалить файл %s, так как он может быть недействительным или содержать подозрительный контент. Перейдите на сайт для информации.
+
+openeye.note.title.intro1=Добро пожаловать в Open Eye
+openeye.note.content.intro1=OpenEye - утилита, которая собирает анонимные данные о использовании модификаций и отчёты о вылетах
+
+openeye.note.title.intro2=Статистика
+openeye.note.content.intro2=Выберите этот пункт и нажмите "Перейти по ссылке", чтобы увидеть статистику, собранную этим инструментом. Другие пункты также имеют назначенные ссылки.
+
+openeye.note.title.intro3=Собранные данные
+openeye.note.content.intro3=Ссылка в этом пункте содержит сводку данных, собранных OpenEye
+
+openeye.note.title.intro4=Локальные данные
+openeye.note.content.intro4=OpenEye хранит всю отправленную и принятую информацию в папке отчётов, в Вашей папке MC. Нажмите "Перейти по ссылке", чтобы открыть эту папку.
+
+openeye.note.title.intro5=Исходный код
+openeye.note.content.intro5=OpenEye - модификация с открытым исходным кодом. Исходный код доступен на GitHub.
+
+openeye.note.title.intro6=Отключение и конфигурация
+openeye.note.content.intro6=OpenEye использует настройки сбора информации. Если Вы не удовлетворены ими, Вы также можете безопасно удалить эту модификацию.
+
+openeye.chat.note=Примечание %s, тип: %s
+openeye.chat.store_failed=Не удалось сохранить примечания!
+openeye.chat.dumped=Примечания сохранены в файл %s
+
+openeye.category.critical=Критический
+openeye.category.alert=Тревога
+openeye.category.warning=Предупреждение
+openeye.category.info=Информация
+openeye.category.system_info=Информация о системе
+openeye.category.remove_file=Удалить файл
+openeye.level.reported_crash=Сообщённый вылет
+openeye.level.resolved_crash=Исправленный вылет
