@@ -48,6 +48,38 @@ function findModsBy(context, query) {
     });
 }
 
+function stats(context) {
+
+    var args = context.args;
+
+    if (args.length != 1) {
+        return false;
+    }
+
+    var regex = null;
+
+    try {
+        regex = new RegExp(args[0], 'i');
+    } catch (e) {
+        return false;
+    }
+
+    context.db.collection('mods').findOne(
+      {'$or': [{_id: regex}, {name: regex}]},
+      function(err, result) {
+          if (result == null) {
+              context.bot.say(
+                      context.channel,
+                      colors.red('Mod not found')
+                      );
+              return true;
+          } else {
+			  context.bot.say(context.channel, colors.navy("http://openeye.openmods.info/stats.php?mod="+result._id));
+		  }
+          return true;
+     });
+     return true;
+}
 function link(context) {
 
     var args = context.args;
@@ -546,4 +578,4 @@ module.exports.unsetField = unsetField;
 module.exports.addAdmin = addAdmin;
 module.exports.removeAdmin = removeAdmin;
 module.exports.findModsByAuthor = findModsByAuthor;
-module.exports.getStats = getStats;
+module.exports.stats = stats;

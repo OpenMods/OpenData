@@ -25,7 +25,6 @@ class CrashLog implements IPacketHandler {
     }
     
     public function execute($packet) {
-        
         if ($commonCrash = $this->serviceCrashes->getCommonCrashDetails($packet)) {
             $crashDetails = $this->serviceCrashes->add($packet, true);
             return array(array(

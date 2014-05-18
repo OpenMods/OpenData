@@ -1,5 +1,5 @@
 {% extends 'base.twig' %}
-{% block title%} - {{ modInfo.name }}{% endblock %}
+{% block title %} - {{ modInfo.name }} Minecraft mod{% if modInfo.authors is defined and modInfo.authors|length > 0 %} by {{ modInfo.authors|join(', ') }}{% endif %}{% if modInfo.tags is defined %} - {{ modInfo.tags|join(', ') }}{% endif %}{% endblock %}
 {% block first %}
 <img src="{% if modInfo.largeImage is defined and modInfo.largeImage is not empty %}{{ relative(modInfo.largeImage) }}{% else %}{{ relative('largemodimages/default.jpg') }}{% endif %}" id="mod_image">
 {% endblock %}
@@ -59,16 +59,24 @@
                     <table class="table table-striped">
                     {% for file in files %}
                         <tr>
-                            <td>
+                            <td class="col-md-8">
                                 <div style="padding-top: 7px;">
                                     {{ file.filenames|first|lower }} ({{ file.size }} bytes)
-                                    
-                                    {% if file._id in downloads|keys %}
-                                       &nbsp;&nbsp;&nbsp; <a href="{{ downloads[file._id].url }}" style="text-decoration: none!important;"><span class="glyphicon glyphicon-download"></span>&nbsp;Download</a>
-                                    {% endif %}
                                 </div>
                             </td>
-                            <td>
+                            <td class="col-md-2">
+                                {% if file._id in downloads|keys %}
+                                <div style="padding-top: 7px;">
+                                   &nbsp;&nbsp;&nbsp; <a href="{{ downloads[file._id].url }}" style="text-decoration: none!important;"><span class="glyphicon glyphicon-download"></span>&nbsp;Download</a>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="col-md-2">
+                                <div style="padding-top: 7px;">
+                                    {% if file.minecraft is defined %}<span class="label label-info">{{ file.minecraft }}</span>{% endif %}
+                                </div>
+                            </td>
+                            <td class="col-md-2">
                                 <div class="btn-group pull-right">
                                     <a href="{{ relative('file/' ~ file._id) }}" data-target="#myModal" class="btn btn-default"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;View details</a>
                                 </div>

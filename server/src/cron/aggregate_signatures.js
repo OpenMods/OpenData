@@ -35,7 +35,9 @@ MongoClient.connect(connectionString, function (err, db) {
             var result = {
                 'branding': {},
                 'packsize' : {},
-                'runtime': {},
+                'fml': {},
+                'forge': {},
+                'mcp': {},
                 'tags': {},
                 'count': NumberInt(1)
             };
@@ -50,18 +52,18 @@ MongoClient.connect(connectionString, function (err, db) {
             result['packsize'][this.signatures.length] = NumberInt(1);
 
             this.branding.forEach(function (brand) {
-				if (brand != null) {
-					var matches = brand.match(/^[0-9]+ mods loaded, [0-9]+ mods active$/i);
-					if (matches == null || matches.length == 0) {
-            	    	result['branding'][brand] = NumberInt(1);
-					}
-				}
+                    if (brand != null) {
+                            var matches = brand.match(/^[0-9]+ mods loaded, [0-9]+ mods active$/i);
+                            if (matches == null || matches.length == 0) {
+                                result['branding'][brand] = NumberInt(1);
+                            }
+                    }
             });
 
             for (key in this.runtime) {
                 var version = this.runtime[key];
-                if (result['runtime'][key] == null) result['runtime'][key] = {};
-                result['runtime'][key][version] = NumberInt(1);
+                if (result[key] == null) result[key] = {};
+                result[key][version] = NumberInt(1);
             }
 
             if (this.tags != null) {
@@ -96,29 +98,28 @@ MongoClient.connect(connectionString, function (err, db) {
                 'branding': {},
                 'tags': {},
                 'runtime': {},
-                'count': 0
+                'count': 0,
+                'added': 0,
+                'removed': 0,
+                'fml': {},
+                'forge': {},
+                'mcp' : {}
             };
             docs.forEach(function (doc) {
-                ['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'tags', 'packsize'].forEach(function (k) {
+                ['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'tags', 'packsize', 'forge', 'fml', 'mcp'].forEach(function (k) {
                     for (x in doc[k]) {
                         if (result[k][x] == null) result[k][x] = 0;
                         result[k][x] += doc[k][x];
                         result[k][x] = NumberInt(result[k][x]);
                     }
                 });
-                for (ware in doc.runtime) {
-                    for (version in doc.runtime[ware]) {
-                        if (result['runtime'][ware] == null) result['runtime'][ware] = {};
-                        if (result['runtime'][ware][version] == null) {
-                            result['runtime'][ware][version] = 0;
-                        }
-                        result['runtime'][ware][version] += 1;
-                        result['runtime'][ware][version] = NumberInt(result['runtime'][ware][version]);
-                    }
-                }
                 result.count += doc.count;
+                result.added += doc.added;
+                result.removed += doc.removed;
             });
             result.count = NumberInt(result.count);
+            result.added = NumberInt(result.added);
+            result.removed = NumberInt(result.removed);
             return result;
         }, {
 			finalize: function(key, reducedVal) {
@@ -128,18 +129,17 @@ MongoClient.connect(connectionString, function (err, db) {
 					'key': 'count',
 					'value' : NumberInt(reducedVal.count)
 				});
-				if (reducedVal['runtime'] != null) {
-  				  for (ware in reducedVal['runtime']) {
-					  for (version in reducedVal['runtime'][ware]) {
-					    reduced.push({
-						    'type' : ware,
-						    'key': version,
-						    'value' : NumberInt(reducedVal['runtime'][ware][version])
-					    });
-				     }
-				  }
-			    }
-				['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'tags', 'packsize'].forEach(function(type) {
+				reduced.push({
+					'type' : 'added',
+					'key': 'added',
+					'value' : NumberInt(reducedVal.added)
+				});
+				reduced.push({
+					'type' : 'removed',
+					'key': 'removed',
+					'value' : NumberInt(reducedVal.removed)
+				});
+				['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'tags', 'packsize', 'forge', 'fml', 'mcp'].forEach(function(type) {
 					if (reducedVal[type] != null) {
 						for (key in reducedVal[type]) {
 							reduced.push({

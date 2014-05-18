@@ -50,6 +50,10 @@ $app->register(new MongoServiceProvider(), array(
         'default' => array(
             'server' => $app['mongo_connection'],
             'options' => array("connect" => true)
+        ),
+        'analytics' => array(
+            'server' => $app['mongo_analytics_connection'],
+            'options' => array("connect" => false)
         )
     ),
 ));

@@ -69,15 +69,15 @@ var actions = {
     		'donation', 'authors', 'releasesPage',
     		'tags', 'repository', 'irc', 'credits', 'admins', ].join(', ') + ')'
     },
-    'stats': {
-        func: mods.getStats,
-        secure: false,
-        usage: '#stats <span> <type> <key> <from> <to>'
-    },
     'mod:update': {
         func: mods.setField,
         secure: true,
         usage: '#mod:update <modid> <field> <value>'
+    },
+    'mod:stats': {
+        func: mods.stats,
+        secure: false,
+        usage: '#mod:stats <modid>'
     },
     'mod:unset': {
         func: mods.unsetField,

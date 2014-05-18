@@ -13,13 +13,12 @@
     <div class="col-md-2">
       <ul class="nav nav-pills nav-stacked">
         <li{% if table is defined and table == 'analytics' %} class="active"{% endif %}><a href="{{ relative('browse/analytics') }}">Analytics</a></li>
-        <li{% if table is defined and table == 'analytics_aggregated' %} class="active"{% endif %}><a href="{{ relative('browse/analytics_aggregated') }}">Aggregated Analytics</a></li>
         <li{% if table is defined and table == 'mods' %} class="active"{% endif %}><a href="{{ relative('browse/mods') }}">Mods</a></li>
         <li{% if table is defined and table == 'files' %} class="active"{% endif %}><a href="{{ relative('browse/files') }}">Files</a></li>
         <li{% if table is defined and table == 'crashes' %} class="active"{% endif %}><a href="{{ relative('browse/crashes') }}">Crashes</a></li>
-        <li{% if table is defined and table == 'reports' %} class="active"{% endif %}><a href="{{ relative('browse/reports') }}">Reports</a></li>
         <li{% if table is defined and table == 'urls' %} class="active"{% endif %}><a href="{{ relative('browse/urls') }}">Urls</a></li>
         <li{% if table is defined and table == 'common_crashes' %} class="active"{% endif %}><a href="{{ relative('browse/common_crashes') }}">Common Crashes</a></li>
+        <li{% if table is defined and table == 'packages' %} class="active"{% endif %}><a href="{{ relative('browse/packages') }}">Packages</a></li>
       </ul>
     </div>    
     <div class="col-md-10"> 
