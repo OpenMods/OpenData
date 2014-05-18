@@ -32,7 +32,7 @@ case '1.7.2':
     break
 }
 
-ext.mod_version = '0.4'
+ext.mod_version = '0.5'
 ext.mod_group = 'com.openmods.openeye'
 ext.jar_name = 'OpenEye'
 ext.mod_class = 'openeye/Mod.java'

@@ -29,6 +29,9 @@ public class Config {
 	@ConfigProperty(category = "debug")
 	public static boolean dontSend = false;
 
+	@ConfigProperty(category = "debug")
+	public static boolean debugSanitizer = false;
+
 	@ConfigProperty(category = "features")
 	public static Set<String> reportsBlacklist = ImmutableSet.of();
 
