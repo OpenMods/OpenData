@@ -1,41 +1,18 @@
 package openeye.logic;
 
-import java.util.SortedSet;
+import java.util.*;
+
+import openeye.Log;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import com.google.common.base.Supplier;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 public class Sanitizer {
 
 	public interface ITransformer {
 		public String transform(String input);
-	}
-
-	private static class TransformerWrapper implements Comparable<TransformerWrapper>, ITransformer {
-
-		private final int priority;
-
-		private final ITransformer transformer;
-
-		private TransformerWrapper(int priority, ITransformer transformer) {
-			this.priority = priority;
-			this.transformer = transformer;
-		}
-
-		@Override
-		public int compareTo(TransformerWrapper o) {
-			return o.priority - priority;
-		}
-
-		@Override
-		public String transform(String input) {
-			return transformer.transform(input);
-		}
-
-		@Override
-		public String toString() {
-			return "[" + priority + "]" + transformer;
-		}
 	}
 
 	public Sanitizer() {
@@ -48,27 +25,52 @@ public class Sanitizer {
 
 	private final Sanitizer parent;
 
-	private final SortedSet<TransformerWrapper> pre = Sets.newTreeSet();
-	private final SortedSet<TransformerWrapper> post = Sets.newTreeSet();
+	private static final Comparator<Integer> REVERSED = new Comparator<Integer>() {
+		@Override
+		public int compare(Integer o1, Integer o2) {
+			return o2 - o1;
+		}
+	};
+
+	private static <V> Multimap<Integer, V> createPriorityList() {
+		return Multimaps.newMultimap(new TreeMap<Integer, Collection<V>>(REVERSED), new Supplier<Collection<V>>() {
+			@Override
+			public Collection<V> get() {
+				return new ArrayList<V>();
+			}
+		});
+	}
+
+	private final Multimap<Integer, ITransformer> pre = createPriorityList();
+
+	private final Multimap<Integer, ITransformer> post = createPriorityList();
 
 	public void addPre(int priority, ITransformer transformer) {
-		if (transformer != null) pre.add(new TransformerWrapper(priority, transformer));
+		if (transformer != null) pre.put(priority, transformer);
 	}
 
 	public void addPost(int priority, ITransformer transformer) {
-		if (transformer != null) post.add(new TransformerWrapper(priority, transformer));
+		if (transformer != null) post.put(priority, transformer);
 	}
 
 	public String sanitize(String input) {
 		if (Strings.isNullOrEmpty(input)) return "";
 
-		for (ITransformer transformer : pre)
-			input = transformer.transform(input);
+		for (Map.Entry<Integer, Collection<ITransformer>> transformers : pre.asMap().entrySet()) {
+			for (ITransformer transformer : transformers.getValue()) {
+				if (Config.debugSanitizer) Log.info("%d %s", transformers.getKey(), transformer);
+				input = transformer.transform(input);
+			}
+		}
 
 		if (parent != null) input = parent.sanitize(input);
 
-		for (ITransformer transformer : post)
-			input = transformer.transform(input);
+		for (Map.Entry<Integer, Collection<ITransformer>> transformers : post.asMap().entrySet()) {
+			for (ITransformer transformer : transformers.getValue()) {
+				if (Config.debugSanitizer) Log.info("%d %s", transformers.getKey(), transformer);
+				input = transformer.transform(input);
+			}
+		}
 
 		return input;
 	}

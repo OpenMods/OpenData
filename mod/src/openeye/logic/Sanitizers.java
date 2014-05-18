@@ -23,8 +23,8 @@ public class Sanitizers {
 	public static final int PRIORITY_WORK_DIR = 1100;
 	public static final int PRIORITY_HOME = 1000;
 
-	public static final int PRIORITY_WORLD_NAME = 900;
-	public static final int PRIORITY_SAVE_DIR_NAME = 800;
+	public static final int PRIORITY_SAVE_DIR_NAME = 900;
+	public static final int PRIORITY_WORLD_NAME = 800;
 
 	public static final int PRIORITY_LOCAL_IP = 700;
 	public static final int PRIORITY_IP_PORT = 600;
@@ -94,7 +94,7 @@ public class Sanitizers {
 
 		@Override
 		public String toString() {
-			return String.format("'%s'->'%s'", targetNormal, value);
+			return String.format("path '%s'->'%s'", targetNormal, value);
 		}
 	}
 
@@ -121,6 +121,15 @@ public class Sanitizers {
 
 	private static final Set<String> ALREADY_REPLACED = Sets.newHashSet();
 
+	private static final Set<String> DONT_REPLACE = Sets.newHashSet();
+
+	static {
+		DONT_REPLACE.add("player");
+		DONT_REPLACE.add("MpServer");
+		DONT_REPLACE.add("none");
+		DONT_REPLACE.add("null");
+	}
+
 	private static final Map<Class<? extends Throwable>, Sanitizer> THROWABLE_SANITIZERS = Maps.newHashMap();
 
 	public static final Sanitizer mainSanitizer = new Sanitizer();
@@ -139,10 +148,18 @@ public class Sanitizers {
 		return null;
 	}
 
+	public static ITransformer pathNoDuplicate(String target, String value) {
+		if (!Strings.isNullOrEmpty(target) && !ALREADY_REPLACED.contains(target)) {
+			ALREADY_REPLACED.add(target);
+			return new PathReplace(target, value);
+		}
+		return null;
+	}
+
 	public static ITransformer replace(Object target, String value) {
 		if (target != null) {
 			String s = target.toString();
-			if (s != null && s.length() > 2) return new Sanitizers.SimpleReplace(s, value);
+			if (s != null && s.length() > 2 && !DONT_REPLACE.contains(s)) return new Sanitizers.SimpleReplace(s, value);
 		}
 		return null;
 	}
@@ -150,7 +167,7 @@ public class Sanitizers {
 	public static ITransformer replaceNoDuplicates(Object target, String value) {
 		if (target != null) {
 			String s = target.toString();
-			if (s != null && s.length() > 2 && !ALREADY_REPLACED.contains(s)) {
+			if (s != null && s.length() > 2 && !ALREADY_REPLACED.contains(s) && !DONT_REPLACE.contains(s)) {
 				ALREADY_REPLACED.add(s);
 				return new Sanitizers.SimpleReplace(s, value);
 			}
@@ -198,8 +215,8 @@ public class Sanitizers {
 		try {
 			File dummy = saveHandler.getMapFileFromName("dummy");
 			if (dummy != null) {
-				String parent = dummy.getParent();
-				if (parent != null) mainSanitizer.addPre(PRIORITY_SAVE_DIR, new PathReplace(parent, "[save dir]"));
+				String parent = dummy.getParentFile().getParent();
+				if (parent != null) mainSanitizer.addPre(PRIORITY_SAVE_DIR, pathNoDuplicate(parent, "[save dir]"));
 			}
 		} catch (Throwable t) {
 			Log.warn(t, "Failed to get sanitizer name for world");
