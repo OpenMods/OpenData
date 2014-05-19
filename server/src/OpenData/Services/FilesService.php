@@ -12,23 +12,22 @@ class FilesService extends BaseService {
         }
         if ($onlyLinkData) {
             return $this->db->files->find(
-               array('_id' => array('$in' => $signatures)),
-               array(
-                    '_id' => 1,
-                    'filenames' => 1,
-                    'mods.modId' => 1,
-                    'mods.name' => 1
-                )
+                            array('_id' => array('$in' => $signatures)), array(
+                        '_id' => 1,
+                        'filenames' => 1,
+                        'mods.modId' => 1,
+                        'mods.name' => 1
+                            )
             );
         } else {
             return $this->db->files->find(
-               array('_id' => array('$in' => $signatures))
+                            array('_id' => array('$in' => $signatures))
             );
         }
     }
 
     public function create($signature) {
-        
+
         try {
             $this->db->files->insert(array(
                 '_id' => $signature['signature'],
@@ -37,19 +36,19 @@ class FilesService extends BaseService {
         } catch (\MongoCursorException $e) {
             return false;
         }
-        
+
         return true;
     }
 
     public function findByModId($modId) {
         return $this->db->files->find(
-            array('mods.modId' => strtolower($modId))
+                        array('mods.modId' => strtolower($modId))
         );
     }
 
     public function findByPackage($package) {
         return $this->db->files->find(
-            array('packages' =>  new \MongoRegex('/^'.preg_quote($package).'/i'))
+                        array('packages' => new \MongoRegex('/^' . preg_quote($package) . '/i'))
         );
     }
 
@@ -59,12 +58,9 @@ class FilesService extends BaseService {
         if ($onlyChildren) {
             $suffix = '\.';
         }
-        
+
         $results = $this->db->files->aggregate(
-            array('$project' => array('packages' => 1)),
-            array('$unwind' => '$packages'),
-            array('$match' => array('packages' => new \MongoRegex('/^'.preg_quote($package).$suffix.'/'))),
-            array('$group' => array('_id' => '$packages')));
+                array('$project' => array('packages' => 1)), array('$unwind' => '$packages'), array('$match' => array('packages' => new \MongoRegex('/^' . preg_quote($package) . $suffix . '/'))), array('$group' => array('_id' => '$packages')));
 
         $packages = array();
         foreach ($results['result'] as $result) {
@@ -81,11 +77,8 @@ class FilesService extends BaseService {
     public function findUniqueModIdsForPackage($package) {
 
         $results = $this->db->files->aggregate(
-                array('$match' => array('packages' => $package)),
-                array('$project' => array('mods' => 1)),
-                array('$unwind' => '$mods'),
-                array('$group' => array('_id' => '$mods.modId'))
-                );
+                array('$match' => array('packages' => $package)), array('$project' => array('mods' => 1)), array('$unwind' => '$mods'), array('$group' => array('_id' => '$mods.modId'))
+        );
 
         $mods = array();
         foreach ($results['result'] as $result) {
@@ -130,13 +123,12 @@ class FilesService extends BaseService {
 
     public function update($fileId, $query) {
         $this->db->files->update(
-            array('_id' => $fileId),
-            array(
-                '$set' => $query
-            )
+                array('_id' => $fileId), array(
+            '$set' => $query
+                )
         );
     }
-    
+
     public function findUniquePackages() {
         return $this->db->files->distinct('packages');
     }
@@ -147,14 +139,14 @@ class FilesService extends BaseService {
 
     public function findByVersion($modId, $version) {
         return $this->db->files->find(
-            array(
-                'mods' => array(
-                    '$elemMatch' => array(
-                        'modId' => $modId,
-                        'version' => new \MongoRegex('/^'.preg_quote($version).'/i')
-                    )
-                )
-            )
+                        array(
+                            'mods' => array(
+                                '$elemMatch' => array(
+                                    'modId' => $modId,
+                                    'version' => new \MongoRegex('/^' . preg_quote($version) . '/i')
+                                )
+                            )
+                        )
         );
     }
 
