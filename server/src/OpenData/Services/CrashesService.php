@@ -169,7 +169,7 @@ class CrashesService extends BaseService {
             }
         }
 
-        if (self::skipOpenEyeVersion($involvedSignatures)) {
+        if (self::skipOpenEyeVersion($allSignatures)) {
             return null;
         }
 
