@@ -4,39 +4,61 @@ namespace OpenData\Services;
 
 class CrashesService extends BaseService {
 
-    public static function stripSignatures($arr) {
-	$signatures = array();
-        $classes = array();
-	for ($i = 0; $i < count($arr['stack']); $i++) {
-            if (isset($arr['stack'][$i]['signatures'])) {
-		$signatures = array_merge($arr['stack'][$i]['signatures'], $signatures);
-            }
-            // strip generated class names
-            $arr['stack'][$i]['class'] = preg_replace('@GeneratedMethodAccessor[0-9]+@', 'GeneratedMethodAccessor', $arr['stack'][$i]['class']);
-            $arr['stack'][$i]['class'] = preg_replace('@ASMEventHandler_[0-9]+_@', 'ASMEventHandler_0_', $arr['stack'][$i]['class']);
+	public static function sanitizeGeneratedMethodNames($klazz) {
 
-            $classes[] = $arr['stack'][$i]['class'];
-            unset($arr['stack'][$i]['signatures']);
+		$klazz =  preg_replace('@GeneratedMethodAccessor[0-9]+@', 'GeneratedMethodAccessor', $klazz);
+        $klazz = preg_replace('@ASMEventHandler_[0-9]+_@', 'ASMEventHandler_0_', $klazz);
+
+        return $klazz;
 	}
-	if (isset($arr['cause'])) {
-            $cause = self::stripSignatures($arr['cause']);
-            $signatures = array_merge($signatures, $cause['signatures']);
-            $classes = array_merge($classes, $cause['classes']);
-            $arr['cause'] = $cause['exception'];
-	}
+
+	public static function sanitizeMessage($arr) {
+
         if (isset($arr['message'])) {
             $arr['message'] = preg_replace("|([a-zA-Z0-9])@[a-f0-9]{1,8}(?![a-f0-9])|U", "$1[@ffffff]", $arr['message']);
         }
+
         if (isset($arr['exception']) && $arr['exception'] == 'java.net.UnknownHostException') {
             $arr['message'] = '';
         }
-	return array(
-            'signatures' => $signatures,
-            'classes'   => $classes,
-            'exception' => $arr
-	);
+
+        return $arr['message'];
+	}
+
+    public static function stripSignatures($arr) {
+
+		$signatures = array();
+        $classes = array();
+
+		for ($i = 0; $i < count($arr['stack']); $i++) {
+
+            if (isset($arr['stack'][$i]['signatures'])) {
+				$signatures = array_merge($arr['stack'][$i]['signatures'], $signatures);
+            }
+
+            $arr['stack'][$i]['class'] = self::sanitizeGeneratedMethodNames($arr['stack'][$i]['class']);
+            $classes[] = $arr['stack'][$i]['class'];
+
+            unset($arr['stack'][$i]['signatures']);
+
+		}
+
+		if (isset($arr['cause'])) {
+				$cause = self::stripSignatures($arr['cause']);
+				$signatures = array_merge($signatures, $cause['signatures']);
+				$classes = array_merge($classes, $cause['classes']);
+				$arr['cause'] = $cause['exception'];
+		}
+
+		$arr['message'] = self::sanitizeMessage($arr);
+
+		return array(
+				'signatures' => $signatures,
+				'classes'   => $classes,
+				'exception' => $arr
+		);
     }
-    
+
     public static function getExceptionMessages($arr) {
         $messages[] = $arr['exception'].' '.$arr['message'];
         while (isset($arr['cause'])) {
@@ -45,11 +67,15 @@ class CrashesService extends BaseService {
         }
         return $messages;
     }
-    
+
+    public static function skipOpenEyeVersion($signatures) {
+    	return in_array('sha256:7a0786ce8c4666a685e92c9418d682ebd934274e5d150267067410639fb5a928', $signatures);
+    }
+
     public function getCommonCrashDetails($packet) {
-        
+
         $crashMessages = self::getExceptionMessages($packet['exception']);
-        
+
         foreach ($this->db->common_crashes->find() as $commonCrash) {
             foreach ($commonCrash['regex'] as $regex) {
                 foreach ($crashMessages as $msg) {
@@ -60,23 +86,23 @@ class CrashesService extends BaseService {
             }
         }
     }
-    
+
     public function getCommonCrashBySlug($slug) {
         return $this->db->common_crashes->findOne(array(
             'url' => $slug
         ));
     }
-    
+
     public function add($packet, $shouldHide = false) {
 
         $note = null;
-        
+
         $involvedSignatures = array();
         $involvedModIds = array();
-        
+
         $allSignatures = array();
         $allModIds = array();
-        
+
         // get all the modids and states from the mod states
         foreach ($packet['states'] as $state) {
             $errored = false;
@@ -97,7 +123,7 @@ class CrashesService extends BaseService {
         $crashData = self::stripSignatures($packet['exception']);
         $stackSignatures = $crashData['signatures'];
         $stackWithoutSignatures = $crashData['exception'];
-        
+
         // if we've got stack signatures, lets get the modids for those
         // signatures
         if (count($stackSignatures) > 0) {
@@ -113,19 +139,19 @@ class CrashesService extends BaseService {
             // merge the stack signatures in
             $involvedSignatures = array_merge($involvedSignatures, $stackSignatures);
         }
-       
+
         // get unique lists of both
         $involvedSignatures = array_unique($involvedSignatures);
         $involvedModIds = array_unique($involvedModIds);
-        
+
         // find the hash of the stacktrace
         $packet['stackhash'] = md5(serialize($stackWithoutSignatures));
-        
+
         // look for the stacktrace
         $crash = $this->db->crashes->findOne(array(
             '_id' => $packet['stackhash']
         ));
-        
+
         $summarize = array();
         foreach (array('tags', 'javaVersion', 'side', 'minecraft', 'branding', 'location') as $key) {
             $summarize[$key] = array();
@@ -137,14 +163,18 @@ class CrashesService extends BaseService {
                 }
             }
         }
+
         foreach (array('mcp', 'fml', 'forge') as $key) {
             $summarize[$key] = array();
             if (isset($packet['runtime'][$key]) && is_string($packet['runtime'][$key])) {
                 $summarize[$key][] = $packet['runtime'][$key];
             }
         }
-        
-            
+
+		if (self::skipOpenEyeVersion($involvedSignatures)) {
+			return null;
+		}
+
         if ($crash == null) {
             $this->db->crashes->insert(array(
                 '_id' => $packet['stackhash'],
@@ -169,7 +199,7 @@ class CrashesService extends BaseService {
                 'obfuscated'    => isset($packet['obfuscated']) ? $packet['obfuscated'] : true,
                 'hidden'        => $shouldHide
             ));
-            
+
             if (!$shouldHide && class_exists('\\Predis\\Client')) {
                 $redis = new \Predis\Client();
                 $redis->publish('crash', json_encode(array(
@@ -177,9 +207,9 @@ class CrashesService extends BaseService {
                     'content' => 'New crash! '.self::reduceMessageForIRC($stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message']).' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
                 )));
             }
- 
+
         } else {
-            
+
             $crash['allSignatures'] = array_intersect($crash['allSignatures'], $allSignatures);
             $crash['allMods'] = array_intersect($crash['allMods'], $allModIds);
 
@@ -219,15 +249,15 @@ class CrashesService extends BaseService {
                     'content' => $crash['count'].' crashes: '.self::reduceMessageForIRC($stackWithoutSignatures['exception'].': '.$stackWithoutSignatures['message']).' - http://openeye.openmods.info/crashes/'.$packet['stackhash']
                 )));
             }
-                
+
         }
-        
+
         return array(
             'stackhash' => $packet['stackhash'],
             'note'      => $note
         );
     }
-    
+
     public static function reduceMessageForIRC($message, $length = 100, $dots = '...') {
         $message = trim(preg_replace('/\s+/', ' ', $message));
         $message = str_replace("\0", "[null]", $message);
@@ -249,7 +279,7 @@ class CrashesService extends BaseService {
                 array('$in' => $signatures)
             ))->sort(array('latest' => -1));
     }
-    
+
     public function findByStackhash($stackhash) {
         return $this->db->crashes->findOne(array('_id' => $stackhash));
     }
