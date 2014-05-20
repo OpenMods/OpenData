@@ -36,7 +36,8 @@ class FileInfo implements IPacketHandler {
                         'name' => $mod['name'],
                         'parent' => $mod['parent'],
                         'url' => $mod['url'],
-                        'updateUrl' => $mod['updateUrl']
+                        'updateUrl' => $mod['updateUrl'],
+                        'originalModId' => $mod['modId']
                     ));
                 }
             }
