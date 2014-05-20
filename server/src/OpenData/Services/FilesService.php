@@ -33,6 +33,17 @@ class FilesService extends BaseService {
                 '_id' => $signature['signature'],
                 'filenames' => array($signature['filename'])
             ));
+            
+            if ($url = $this->db->urls->findOne(array('_id' => $signature['signature']))) {
+                $this->db->files->update(
+                    array('_id' => $signature['signature']),
+                    array('$set' => array(
+                        'downloadUrl' => $url['url'],
+                        'jarUrl' => $url['jarUrl']
+                    ))
+                );
+                $this->db->urls->remove(array('_id' => $signature['signature']));
+            }
         } catch (\MongoCursorException $e) {
             return false;
         }

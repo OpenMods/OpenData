@@ -58,10 +58,8 @@ class ModController {
         }
         
         $versions = array();
-        $signatures = array();
 
         foreach ($files as $file) {
-            $signatures[] = $file['_id'];
             foreach ($file['mods'] as $mod) {
                 if ($mod['modId'] == $modId) {
                     $version = $mod['version'];
@@ -92,8 +90,7 @@ class ModController {
         
         return $this->twig->render('mod.twig', array(
             'versions' => $groupedVersions,
-            'modInfo' => $modInfo,
-            'downloads' => $this->serviceFiles->findDownloadsForSignatures($signatures)
+            'modInfo' => $modInfo
         ));
     }
 

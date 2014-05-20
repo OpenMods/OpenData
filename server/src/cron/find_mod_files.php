@@ -259,12 +259,27 @@ foreach ($modUrls as $k => $mod) {
 }
 
 foreach ($allModFiles as $modToInsert) {
-    echo "inserting ".$modToInsert['_id']."\n";
-    $db->urls->update(
-        array('_id' => $modToInsert['_id']),
-        $modToInsert,
-        array('upsert' => true)
-    );
+    
+    if ($file = $db->files->findOne(array('_id' => $modToInsert['_id']))) {
+        
+        $db->files->update(
+            array('_id' => $modToInsert['_id']),
+            array(
+                '$set' => array(
+                    'downloadUrl' => $modToInsert['url'],
+                    'jarUrl' => $modToInsert['jarUrl']
+                )
+            )
+        );
+        
+    } else {
+        echo "inserting ".$modToInsert['_id']."\n";
+        $db->urls->update(
+            array('_id' => $modToInsert['_id']),
+            $modToInsert,
+            array('upsert' => true)
+        );
+    }
 }
 
 $db->mods->update(

@@ -65,9 +65,9 @@
                                 </div>
                             </td>
                             <td class="col-md-2">
-                                {% if file._id in downloads|keys %}
+                                {% if file.downloadUrl is defined %}
                                 <div style="padding-top: 7px;">
-                                   &nbsp;&nbsp;&nbsp; <a href="{{ downloads[file._id].url }}" style="text-decoration: none!important;"><span class="glyphicon glyphicon-download"></span>&nbsp;Download</a>
+                                   &nbsp;&nbsp;&nbsp; <a href="{{ file.downloadUrl }}" style="text-decoration: none!important;"><span class="glyphicon glyphicon-download"></span>&nbsp;Download</a>
                                 </div>
                                 {% endif %}
                             </td>
