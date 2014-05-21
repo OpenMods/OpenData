@@ -260,8 +260,11 @@ foreach ($modUrls as $k => $mod) {
 
 foreach ($allModFiles as $modToInsert) {
     
-    if ($file = $db->files->findOne(array('_id' => $modToInsert['_id']))) {
+    $existingFile = $db->files->findOne(array('_id' => $modToInsert['_id']));
+    
+    if ($existingFile != null) {
         
+        echo "updating ".$modToInsert['_id']."\n";
         $db->files->update(
             array('_id' => $modToInsert['_id']),
             array(

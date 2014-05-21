@@ -22,23 +22,24 @@ class ModsService extends BaseService {
 
     public function updateMod($modId, $data) {
         $this->db->mods->update(
-                array('_id' => $modId), array(
-            '$set' => $data
-                )
+            array('_id' => $modId),
+            array(
+                '$set' => $data
+            )
         );
     }
 
     public function findAll() {
         return $this->db->mods->find(
-                        array(
-                            'hide' => array(
-                                '$ne' => true
-                            )
-                        )
-                )->sort(
-                        array(
-                            'name' => 1
-                        )
+            array(
+                'hide' => array(
+                    '$ne' => true
+                )
+            )
+        )->sort(
+            array(
+                'name' => 1
+            )
         );
     }
 
@@ -54,17 +55,17 @@ class ModsService extends BaseService {
 
     public function findForHomepage() {
         return $this->db->mods->find(
-                        array(
-                            'hide' => array('$ne' => true),
-                            'unlisted' => array('$ne' => true),
-                            'tags' => array('$ne' => 'library'),
-                            '_id' => array('$ne' => 'openeye')
-                        )
-                )->sort(
-                        array(
-                            'launches' => -1
-                        )
-                )->limit(50);
+            array(
+                'hide' => array('$ne' => true),
+                'unlisted' => array('$ne' => true),
+                'tags' => array('$ne' => 'library'),
+                '_id' => array('$ne' => 'openeye')
+            )
+        )->sort(
+            array(
+                'launches' => -1
+            )
+        )->limit(50);
     }
 
     public function findByIds($modIds = array()) {
@@ -72,9 +73,17 @@ class ModsService extends BaseService {
     }
 
     public function upsert($modId, $data) {
-        return $this->db->mods->findAndModify(
-                        array('_id' => $modId), array('$setOnInsert' => $data), null, array('new' => true, 'upsert' => true)
+        
+        $ret = $this->db->mods->findAndModify(
+            array('_id' => $modId), array('$setOnInsert' => $data), null, array('new' => true, 'upsert' => true)
         );
+        
+        $this->db->mods->update(
+            array('_id' => $modId),
+            array('$set' => array('originalModId' => $mod['modId']))
+        );
+        
+        return $ret;
     }
 
     public function getDistinctTags() {
@@ -84,27 +93,27 @@ class ModsService extends BaseService {
     public function findByLetter($letter) {
         $letter = substr($letter, 0, 1);
         return $this->db->mods->find(array(
-                    'hide' => array('$ne' => true),
-                    'name' => new \MongoRegex('/^' . $letter . '/i')
-                ))->sort(array('name' => 1));
+            'hide' => array('$ne' => true),
+            'name' => new \MongoRegex('/^' . $letter . '/i')
+        ))->sort(array('name' => 1));
     }
 
     public function findModsWithoutField($field, $skip = 0, $limit = 20) {
         return $this->db->mods->find(array(
-                    'hide' => array('$ne' => true),
-                    '$or' => array(
-                        array($field => array('$exists' => false)),
-                        array($field => '')
-                    )
-                ))->skip($skip)->limit($limit);
+            'hide' => array('$ne' => true),
+            '$or' => array(
+                array($field => array('$exists' => false)),
+                array($field => '')
+            )
+        ))->skip($skip)->limit($limit);
     }
 
     public function findByTag($tag) {
         $tag = trim($tag);
         return $this->db->mods->find(array(
-                    'hide' => array('$ne' => true),
-                    'tags' => new \MongoRegex('/^' . $tag . '/i')
-                ))->sort(array('name' => 1));
+            'hide' => array('$ne' => true),
+            'tags' => new \MongoRegex('/^' . $tag . '/i')
+        ))->sort(array('name' => 1));
     }
 
     public static function sanitizeModId($modId) {

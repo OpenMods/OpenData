@@ -106,14 +106,7 @@ class CrashesService extends BaseService {
         foreach ($packet['states'] as $state) {
             $errored = false;
             foreach ($state['mods'] as $mod) {
-                $sanitized = ModsService::sanitizeModId($mod['modId']);
-                
-                // temporary, while we refill the database
-                $this->db->mods->update(
-                        array('_id' => $sanitized),
-                        array('$set' => array('originalModId' => $mod['modId']))
-                );
-                
+                $sanitized = ModsService::sanitizeModId($mod['modId']);                
                 if ($mod['state'] == 'Errored') {
                     $errored = true;
                     $involvedModIds[] = $sanitized;

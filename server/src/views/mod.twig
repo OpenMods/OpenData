@@ -88,28 +88,13 @@
                     </div>
                 {% endfor %}   
             </div>
-            <div class="tab-pane" id="analytics" style="padding-top:20px;">
-                <div class="well">
-                    <form class="form-horizontal" role="form">
-                        <div class="form-group" style="margin-bottom:0">
-                            <label for="inputEmail3" class="col-sm-1 control-label">File</label>
-                            <div class="col-sm-11">
-                                <select class="form-control" id="select_hourly_file">
-                                    <option value="{{ relative('mod/' ~ modInfo._id ~ '/analytics') }}">All files</option>
-                                    {% for version, files in versions %}
-                                        <option value="{{ relative('mod/' ~ modInfo._id ~ '/analytics/' ~ version) }}">{{ version }}</option>
-                                        {% for file in files %}
-                                            <option value="{{ relative('mod/' ~ modInfo._id ~ '/analytics/' ~ file._id) }}">&nbsp;&nbsp;&nbsp;- {{ file.filenames|first|lower }}&nbsp; &nbsp; &nbsp;({{ file._id }})</option>
-                                        {% endfor %}
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                
+            <div class="tab-pane" id="analytics" style="padding-top:20px;">               
                 <div id="analytics_content">
-                    {{ render(relative('mod/'~modInfo._id~'/analytics')) }}
+                    
+                    <h3>Past day</h3>
+                    
+                    <div id="pie_charts"></div>
+                    
                 </div>
             </div>
         </div>
@@ -126,28 +111,102 @@
 {% endblock %}
 
 {% block javascript %}
-<script src="{{ relative('js/jquery.flot.js') }}"></script>
-<script src="{{ relative('js/jquery.flot.time.js') }}"></script>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
-    function plotHourly() {
-        $.plot("#stats_hour", hourly, {
-            xaxis: {
-                minTickSize: [1, "hour"],
-                twelveHourClock: true,
-                mode: "time",
-                timezone: "browser"
-            }
-        });
-    }
+    google.load("visualization", "1", {packages:["corechart"]});    
+    
+    var response = null;
+    var tables = null;
     $(function() {
-        $('#select_hourly_file').change(function() {
-            $( "#analytics_content" ).load($(this).val(), function() {
-                plotHourly();
-            });
+
+        tables = [
+            {
+                table: 'files',
+                type: google.visualization.PieChart
+            },
+            {
+                table: 'times',
+                type: google.visualization.AreaChart
+            },
+            {
+                table: 'minecraft',
+                type: google.visualization.PieChart
+            },
+            {
+                table: 'locale',
+                type: google.visualization.PieChart
+            },
+            {
+                table: 'language',
+                type: google.visualization.PieChart
+            },
+            {
+                table: 'javaVersion',
+                type: google.visualization.PieChart
+            },
+            {
+                table: 'timezone',
+                type: google.visualization.PieChart
+            },
+            {
+                table: 'forge',
+                type: google.visualization.PieChart
+            },
+            {
+                table: 'mcp',
+                type: google.visualization.PieChart
+            },
+            {
+                table: 'tags',
+                type: google.visualization.BarChart
+            }
+        ];
+        $.get('/stats.php?mod={{ modInfo._id }}', function(r) {
+            response = r; 
+            redraw();
         });
-        $('a[href="#analytics"]').on('shown.bs.tab', function (e) {
-           plotHourly(); 
-        });
+    });
+
+    function redraw() {
+        if (response == null) return;
+        
+        for (var i = 0; i < tables.length; i++) {
+            var item = tables[i];
+            var table = item.table;
+
+            if ($('#pie_' +table).length == 0) {
+                $('#pie_charts').append('<div style="height: 500px" id="pie_' +table + '" />');
+            }
+
+            var arrs = [[table, 'Users']];
+            for (k in response[table]) {
+              var k2 = k;
+              if (table == 'times') {
+                 k2 = new Date(parseInt(k2) * 1000);
+              }
+              arrs.push([k2, response[table][k]]);    
+            }
+            if (table == 'tags') {
+                $('#pie_tags').css('height', Math.max(300, arrs.length * 40));
+            }
+
+            var data = google.visualization.arrayToDataTable(arrs);
+
+            var options = {
+              title: table,
+              is3D: true,
+            };
+
+            var chart = new item.type(document.getElementById('pie_'+table));
+            chart.draw(data, options);
+
+        }
+    }
+
+</script>
+<script type="text/javascript">
+    $(function() {
         $("a[data-target=#myModal]").click(function(ev) {
             ev.preventDefault();
             var target = $(this).attr("href");
@@ -163,6 +222,7 @@
           var scrollmem = $('body').scrollTop();
           window.location.hash = this.hash;
           $('html,body').scrollTop(scrollmem);
+          redraw();
         });
     });
 </script>

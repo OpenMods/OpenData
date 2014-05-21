@@ -30,13 +30,13 @@ if ($mod == null) {
 }
 
 $files = $defaultDb->files->find(array(
-	'mods.modId' => $modId,
-	'minecraft' => array(
-            '$exists' => true
-        ),
-        'downloadUrl' => array(
-            '$exists' => true
-        )
+    'mods.modId' => $modId,
+    'minecraft' => array(
+        '$exists' => true
+    ),
+    'downloadUrl' => array(
+        '$exists' => true
+    )
 ));
 
 if (count($files) == 0) {
@@ -46,17 +46,17 @@ if (count($files) == 0) {
 $useId = isset($mod['originalModId']) ? $mod['originalModId'] : $mod['_id'];
 
 $quickMod = array(
-	'formatVersion'	=> 1,
-	'uid' 			=> $mod['_id'],
-	'repo' 			=> 'openeye',
-	'modId' 		=> isset($mod['originalModId']) ? $mod['originalModId'] : $mod['_id'],
-	'name' 			=> $mod['name'],
-	'description'           => $mod['description'],
-	'updateUrl'             => 'http://openeye.openmods.info'.$_SERVER['REQUEST_URI'],
-	'tags' 			=> isset($mod['tags']) ? $mod['tags'] : array(),
-	'categories'            => isset($mod['tags']) ? $mod['tags'] : array(),
-	'references'            => array(),
-	'versions'		=> array()
+    'formatVersion'	=> 1,
+    'uid' 			=> $mod['_id'],
+    'repo' 			=> 'openeye',
+    'modId' 		=> isset($mod['originalModId']) ? $mod['originalModId'] : $mod['_id'],
+    'name' 			=> $mod['name'],
+    'description'           => $mod['description'],
+    'updateUrl'             => 'http://openeye.openmods.info'.$_SERVER['REQUEST_URI'],
+    'tags' 			=> isset($mod['tags']) ? $mod['tags'] : array(),
+    'categories'            => isset($mod['tags']) ? $mod['tags'] : array(),
+    'references'            => array(),
+    'versions'		=> array()
 );
 
 $references = array();
@@ -77,37 +77,43 @@ foreach ($files as $file) {
     );
 }
 
+$checkedMods = array();
+
 foreach ($filesToList as $list) {
     
     $modDefinition = $list['mod'];
     $file = $list['file'];
     
     $version = array(
-            'name' => $modDefinition['version'],
-            'url' => $file['downloadUrl'],
-            'downloadType' => $file['jarUrl'] == $file['downloadUrl'] ? 'parallel' : 'sequential',
-            'mcCompat' => array(str_replace('Minecraft ', '', $file['minecraft']))
+        'name' => $modDefinition['version'],
+        'url' => $file['downloadUrl'],
+        'downloadType' => $file['jarUrl'] == $file['downloadUrl'] ? 'parallel' : 'sequential',
+        'mcCompat' => array(str_replace('Minecraft ', '', $file['minecraft']))
     );
 
     if (isset($modDefinition['requiredMods'])) {
-            $version['references'] = array();
-            foreach ($modDefinition['requiredMods'] as $requirement) {
-                    $sanitized = strtolower(preg_replace("@[^a-z0-9_ ]+@i", '', $requirement['label']));
-                    if ($requirement['version'] == 'any') {
-                            $requirement['version'] = '(,)';
-                    }
-                    if ($sanitized == 'forge') {
-                            $version['forgeCompat'] = $requirement['version'];
-                    } else {
-                        $version['references'][] = array(
-                                'uid' => $sanitized,
-                                'type' => 'depends',
-                                'version' => $requirement['version']
-                        );
-                        $quickMod['references'][$sanitized] = 'http://openeye.openmods.info/quickmod.php?mod='.$sanitized;
-                    }
-
+        $version['references'] = array();
+        foreach ($modDefinition['requiredMods'] as $requirement) {
+            $sanitized = strtolower(preg_replace("@[^a-z0-9_ ]+@i", '', $requirement['label']));
+            if ($requirement['version'] == 'any') {
+                $requirement['version'] = '(,)';
             }
+            if ($sanitized == 'forge') {
+                $version['forgeCompat'] = $requirement['version'];
+            } else {
+                if (!isset($checkedMods[$sanitized])) {
+                    $checkedMods[$sanitized] = $defaultDb->mods->findOne(array('_id' => $sanitized));
+                }
+                if ($checkedMods[$sanitized] != null) {
+                    $version['references'][] = array(
+                        'uid' => $sanitized,
+                        'type' => 'depends',
+                        'version' => $requirement['version']
+                    );
+                    $quickMod['references'][$sanitized] = 'http://openeye.openmods.info/quickmod.php?mod='.$sanitized;
+                }
+            }
+        }
     }
 
     $quickMod['versions'][] = $version;
