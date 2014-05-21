@@ -172,7 +172,6 @@ MongoClient.connect(connectionString, function (err, db) {
 
             db.collection('analytics').remove({
                     created_at: {
-                        '$gte': startTime,
                         '$lt': endTime
                     }
                 },
