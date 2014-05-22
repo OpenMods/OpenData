@@ -180,8 +180,8 @@
             if ($('#pie_' +table).length == 0) {
                 $('#pie_charts').append('<div style="height: 500px" id="pie_' +table + '" />');
             }
-
-            var arrs = [[table, 'Users']];
+            
+            var arrs = [[table, 'Uses']];
             for (k in response[table]) {
               var k2 = k;
               if (table == 'times') {
@@ -194,6 +194,7 @@
             }
 
             var data = google.visualization.arrayToDataTable(arrs);
+            
 
             var options = {
               title: table,

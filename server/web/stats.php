@@ -102,4 +102,7 @@ $master['times'] = $timesCount;
 foreach ($master as $k => $v) {
     arsort($master[$k]);
 }
+
+ksort($master['times']);
+
 echo json_encode($master, JSON_PRETTY_PRINT);
