@@ -11,8 +11,11 @@ require __DIR__ . '/../../resources/config/prod.php';
 require __DIR__ . '/../app.php';
 
 $mongo = $app['mongo'];
-$conn = $mongo['default'];
-$db = $conn->hopper;
+$conn = $mongo['analytics'];
+$conn->connect();
+$db = $conn->analytics;
+
+$client = new Predis\Client();
 
 /* * ***********************************************
  * Hourly stats
@@ -21,122 +24,39 @@ $db = $conn->hopper;
 $currentHour = strtotime(date("Y-m-d H:00:00"));
 $previousHour = $currentHour - 3600;
 
-$reportTypes = array();
-$fileStatMap = array();
+$keys = array('language', 'locale', 'timezone', 'minecraft', 'javaVersion', 'fml', 'mcp', 'forge');
 
-foreach ($db->reports->find() as $report) {
-    try {
-        $reportTypes[] = $report['type'];
-        $docs = array();
-        $aggregate = $report['aggregate'];
-        $results = $db->analytics->aggregate($aggregate);
-
-        foreach ($results['result'] as $result) {
-            $docs[] = array(
-                '_id' => array(
-                    'key' => $result['_id'],
-                    'type' => $report['type'],
-                    'span' => 'hourly',
-                    'time' => new \MongoDate($previousHour)
-                ),
-                'launches' => $result['launches']
+foreach ($client->smembers('signatures') as $signature) {
+    $items = array();
+    $items[] = array(
+        'type' => 'count',
+        'key' => 'count',
+        'value' => (int)$client->get($signature)
+    );
+    foreach ($keys as $key) {
+        foreach ($client->hgetall($signature.':'.$key) as $item => $count) {
+            $items[] = array(
+                'type' => $key,
+                'key' => $item,
+                'value' => (int)$count
             );
         }
-        if (count($docs) > 0) {
-            foreach (array_chunk($docs, 20) as $chunk) {
-                $db->analytics_aggregated->batchInsert($chunk);
-            }
-        }
-        echo "Finished report\n";
-    }catch (\Exception $e) {
-        var_dump($e);
     }
+    $allEntries[] = array(
+        '_id' => array(
+            'type' => 'signature',
+            'key' => $signature,
+            'time' => new \MongoDate($previousHour),
+            'span' => 'hourly'
+        ),
+        'value' => $items
+    );
 }
 
-$db->analytics->drop();
-$db->createCollection('analytics', array('autoIndexId' => true));
-$db->analytics->createIndex(array('created_at' => 1));
-$db->analytics->createIndex(array('signatures.signature' => 1));
-$db->analytics->createIndex(array('addedSignatures' => 1));
-$db->analytics->createIndex(array('removedSignatures' => 1));
 
-/**************************************************
- * Daily stats
- **************************************************/
+$db->analytics_signatures->batchInsert($allEntries);
 
-
-if ((int) date('G', $currentHour) == 0) {
-
-    $today = strtotime(date("Y-m-d 00:00:00"));
-    $yesterday = $today - 86400;
-    $oYesterday = new \MongoDate($yesterday);
-    
-    foreach ($reportTypes as $type) {
-        $docs = array();
-        $results = $db->analytics_aggregated->aggregate(
-            array(
-                array(
-                    '$match' => array(
-                        '_id.time' => array('$gte' => $oYesterday),
-                        '_id.type' => $type,
-                        '_id.span' => 'hourly'
-                    )
-                ),
-                array('$group' => array('_id' => '$_id.key', 'launches' => array('$sum' => '$launches')))
-            )
-        );
-        
-        foreach ($results['result'] as $result) {
-            if ($type == 'signatures') {
-                $fileStatMap[$result['_id']] = $result['launches'];
-            }
-            
-            $docs[] = array(
-                '_id' => array(
-                    'key' => $result['_id'],
-                    'type' => $type,
-                    'span' => 'daily',
-                    'time' => $oYesterday
-                ),
-                'launches' => $result['launches']
-            );
-        }
-        
-        if (count($docs) > 0) {
-            $db->analytics_aggregated->batchInsert($docs);
-        }
-    }
-    
-    /***********************************************
-     * Update mod stats for homepage listing
-     **********************************************/
-    $mods = array();
-    $files = $db->files->find(array(
-        '_id' => array('$in' => array_keys($fileStatMap))
-    ));
-    foreach ($files as $file) {
-        if (isset($fileStatMap[$file['_id']]) && isset($file['mods'])) {
-            foreach ($file['mods'] as $mod) {
-                if (!isset($mods[$mod['modId']])) {
-                    $mods[$mod['modId']] = 0;
-                }
-                $mods[$mod['modId']] += $fileStatMap[$file['_id']];
-            }
-        }
-    }
-
-    $db->mods->update(array(), array('$set' => array('launches' => 0)), array('multiple' => true));
-    
-    foreach ($mods as $mod => $launches) {
-        $db->mods->update(
-                array('_id' => $mod),
-                array('$set' => array(
-                    'launches' => $launches
-                )
-            )
-        );
-    }
-}
+$client->flushall();
 
 
 function rutime($ru, $rus, $index) {

@@ -26,9 +26,27 @@ class Analytics implements IPacketHandler {
     public function execute($packet) {
 
         $packet['created_at'] = time();
-
-        $this->serviceAnalytics->add($packet);
-
+        
+        $client = new \Predis\Client();
+        
+        $client->pipeline(function ($pipe) use ($packet) {
+            $keys = array('language', 'locale', 'timezone', 'minecraft', 'javaVersion');
+            foreach ($packet['signatures'] as $signature) {
+                $sig = $signature['signature'];
+                $pipe->sadd('signatures', $sig);
+                $pipe->incrby($sig, 1);
+                foreach ($keys as $key) {
+                    $pipe->hincrby($sig.':'.$key, $packet[$key], 1);
+                }
+                foreach ($packet['branding'] as $brand) {
+                    $pipe->hincrby($sig.':branding', $brand, 1);
+                }
+                foreach ($packet['runtime'] as $ware => $version) {
+                    $pipe->hincrby($sig.':'.$ware, $version, 1);
+                }
+            }
+	});
+        
         $signatureMap = array();
 
         foreach ($packet['signatures'] as $signature) {

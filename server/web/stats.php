@@ -39,7 +39,7 @@ if (count($signatures) == 0) {
 	exit;
 }
 
-$timer = strtotime(date('Y-m-d H:00:00')) - (3600 * 2);
+$timer = strtotime(date('Y-m-d H:00:00', time() - 30)) - 3600;
 
 $signatureCounts = array();
 $timesCount = array();
@@ -57,8 +57,8 @@ foreach ($db->analytics_signatures->find(array(
     if (!isset($signatureCounts[$hour['_id']['key']])) {
         $signatureCounts[$hour['_id']['key']] = 0;
     }
-    if (!isset($timesCount[$hour['_id']['time']->sec])) {
-        $timesCount[$hour['_id']['time']->sec] = 0;
+    if (!isset($timesCount[$hour['_id']['time']->sec + 3600])) {
+        $timesCount[$hour['_id']['time']->sec + 3600] = 0;
     }    
     foreach ($hour['value'] as $set) {
         if (!isset($master[$set['type']])) {
@@ -71,10 +71,21 @@ foreach ($db->analytics_signatures->find(array(
         
         if ($set['type'] == 'count') {
             $signatureCounts[$hour['_id']['key']] += $set['value'];
-            $timesCount[$hour['_id']['time']->sec] += $set['value'];
+            $timesCount[$hour['_id']['time']->sec + 3600] += $set['value'];
         }
     }
 }
+
+
+$client = new \Predis\Client();
+$currentStats = 0;
+foreach ($client->mget($signatures) as $res) {
+    if (!empty($res)) {
+        $currentStats += (int)$res;
+    }
+}
+$master['count']['count'] += $currentStats;
+$timesCount[$timer + 3600] = (int)floor($currentStats / ((int)date('i') / 60));
 
 $filenameCounts = array();
 

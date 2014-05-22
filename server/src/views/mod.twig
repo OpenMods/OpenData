@@ -91,7 +91,7 @@
             <div class="tab-pane" id="analytics" style="padding-top:20px;">               
                 <div id="analytics_content">
                     
-                    <h3>Past day</h3>
+                    <h3>Past day <span id="launches"></span></h3>
                     
                     <div id="pie_charts"></div>
                     
@@ -170,6 +170,8 @@
 
     function redraw() {
         if (response == null) return;
+        
+        $('#launches').html('('+response.count.count + ' launches)');
         
         for (var i = 0; i < tables.length; i++) {
             var item = tables[i];
