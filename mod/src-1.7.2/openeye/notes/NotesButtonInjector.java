@@ -36,7 +36,7 @@ public class NotesButtonInjector {
 
 		@SubscribeEvent
 		public void onActionPerformed(ActionPerformedEvent evt) {
-			if (evt.gui instanceof GuiMainMenu) GuiMainMenuAddon.onActionPerformed(evt.gui.mc, evt.gui);
+			if (evt.gui instanceof GuiMainMenu) GuiMainMenuAddon.onActionPerformed(evt.gui.mc, evt.gui, evt.button);
 		}
 	}
 
