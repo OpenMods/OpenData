@@ -63,7 +63,11 @@ public class GuiMainMenuAddon extends GuiMainMenu {
 		else super.actionPerformed(button);
 	}
 
-	public static void onActionPerformed(Minecraft mc, GuiScreen screen) {
+	public static void onActionPerformed(Minecraft mc, GuiScreen screen, GuiButton button) {
+		if (button.id == BUTTON_NOTES_ID) onActionPerformed(mc, screen);
+	}
+
+	private static void onActionPerformed(Minecraft mc, GuiScreen screen) {
 		mc.displayGuiScreen(new GuiNotes(screen, NoteCollector.INSTANCE.getNotes()));
 	}
 
