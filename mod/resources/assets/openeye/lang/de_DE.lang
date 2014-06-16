@@ -1,4 +1,4 @@
-openeye.main_screen.dangerous_file=Eine der Mod-Dateien wurde von OpenEye als gefährlich eingestuft
+openeye.main_screen.remove_file=OpenEye empfiehlt das Löschen einer Datei
 openeye.main_screen.known_crash=OpenEye hat Informationen über einen oder mehrere deiner letzten Programmabstürze
 openeye.main_screen.crash_reported=Abstürze auf Server gespeichert
 openeye.main_screen.intro=Keine Panik! Klicke auf den blinkenden Knopf, um zu sehen, was los ist.
@@ -8,16 +8,18 @@ openeye.notes.goto_page=Gehe zu URL
 openeye.notes.title.resolved_crash=Lösung für kürzlichen Absturz auf der Seite verfügbar
 openeye.notes.title.reported_crash=Absturzbericht zu Server gesendet
 openeye.notes.title.note=Anmerkung zu Datei %s
-openeye.notes.title.dangerous_file=Gefährliche Datei: %s
+openeye.notes.title.remove_file=Rückruf-Forderung für Datei: %s
+
+openeye.notes.content.remove_file=OpenEye empfiehlt das Löschen der Datei %s, da sie fehlerhaft sein oder verdächtigen Inhalt haben könnte. Gehe zur Website für Details.
 
 openeye.note.title.intro1=Willkommen zu OpenEye
-openeye.note.content.intro1=OpenEye ist ein Werkzeug, das anonyme Daten über Mod-Nutzung und Absturzberichte sammelt
+openeye.note.content.intro1=OpenEye ist ein Werkzeug, das anonyme Daten über Mod-Nutzung und Absturzberichte sammelt.
 
 openeye.note.title.intro2=Statistiken
 openeye.note.content.intro2=Wähle dieses Feld und klicke "Gehe zu URL", um von diesem Werkzeug gesammelte Statistiken einzusehen. Andere Felder haben auch entsprechende URLs.
 
 openeye.note.title.intro3=Gesammelte Daten
-openeye.note.content.intro3=Die URL dieses Feldes beinhaltet eine Zusammenfassung der Daten, die von OpenEye gesammelt werden
+openeye.note.content.intro3=Die URL dieses Feldes beinhaltet eine Zusammenfassung der Daten, die von OpenEye gesammelt werden.
 
 openeye.note.title.intro4=Lokale Daten
 openeye.note.content.intro4=OpenEye speichert alle gesendeten und empfangenen Informationen in dem Ordner "reports" deiner Minecraft-Installation. Klicke "Gehe zu URL", um diesesn Ordner zu öffnen.
@@ -28,8 +30,6 @@ openeye.note.content.intro5=OpenEye ist eine quelloffene Modifikation. Der Quell
 openeye.note.title.intro6=Deaktivierung & Konfiguration
 openeye.note.content.intro6=OpenEye nutzt die gewöhnlichen Datenerhebungseinstellungen. Sollte dir das nicht reichen, kannst du diese Modifikation auch problemlos entfernen.
 
-openeye.notes.content.dangerous_file=Die Datei %s ist in der OpenEye-Datenbank als gefährlich (möglicherweise Malware) markiert. Gehe zur Website für Details.
-
 openeye.chat.note=Anmerkung %s, Typ: %s
 openeye.chat.store_failed=Speichern der Anmerkungen fehlgeschlagen!
 openeye.chat.dumped=Anmerkungen in Datei gespeichert: %s
@@ -39,6 +39,6 @@ openeye.category.alert=Alarm
 openeye.category.warning=Warnung
 openeye.category.info=Info
 openeye.category.system_info=System-Info
-openeye.category.dangerous_file=Gefährliche Datei
+openeye.category.remove_file=Datei entfernen
 openeye.level.reported_crash=Berichteter Programmabsturz
 openeye.level.resolved_crash=Gelöster Programmabsturz
