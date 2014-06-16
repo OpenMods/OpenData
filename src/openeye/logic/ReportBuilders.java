@@ -10,6 +10,7 @@ import java.util.zip.ZipFile;
 
 import net.minecraftforge.common.ForgeVersion;
 import openeye.Log;
+import openeye.Proxy;
 import openeye.logic.ModMetaCollector.ClassSource;
 import openeye.reports.*;
 import openeye.reports.ReportCrash.ExceptionInfo;
@@ -82,12 +83,9 @@ public class ReportBuilders {
 
 		fillEnvInfo(analytics);
 
-		try {
-			analytics.language = FMLCommonHandler.instance().getCurrentLanguage();
-		} catch (Throwable e) {
-			analytics.language = "invalid";
-			ThrowableLogger.processThrowable(e, "openeye");
-		}
+		String language = Proxy.instance().getLanguage();
+		analytics.language = Strings.isNullOrEmpty(language)? "invalid" : language;
+
 		analytics.locale = Locale.getDefault().toString();
 
 		TimeZone tz = Calendar.getInstance().getTimeZone();
