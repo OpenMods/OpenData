@@ -34,7 +34,51 @@ case '1.7.2':
 
 ext.mod_version = '0.6'
 ext.mod_group = 'com.openmods.openeye'
-ext.jar_name = 'OpenEye'
-ext.mod_class = 'openeye/Mod.java'
 
-apply from: 'common.gradle'
+archivesBaseName = 'OpenEye'
+version = "${mod_version}-${minecraft_version}"
+
+ext.env = System.getenv()
+if (env.BUILD_NUMBER != null) {
+    version += "-snapshot-" + env.BUILD_NUMBER
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "src"
+            srcDir "src-${src_extra}"
+        }
+        resources {
+            srcDir "resources"
+        }
+    }
+}
+
+processResources {
+    inputs.property "version", mod_version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': mod_version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+minecraft {
+    version = minecraft_version + "-" + forge_version
+    assetDir = "run/assets"
+
+    replaceIn 'openeye/Mod.java'
+    replace "@VERSION@", mod_version
+}
+
+jar {
+    manifest {
+        attributes 'FMLCorePlugin': 'openeye.CorePlugin'
+    }
+}
+
