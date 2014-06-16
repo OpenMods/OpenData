@@ -7,7 +7,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import openeye.Log;
-import openeye.Proxy;
 import openeye.net.GenericSender.FailedToReceive;
 import openeye.net.GenericSender.FailedToSend;
 import openeye.net.ReportSender;
@@ -114,7 +113,7 @@ public class SenderWorker implements Runnable {
 		final ReportsList result = new ReportsList();
 
 		try {
-			if (Proxy.instance().isSnooperEnabled()) createAnalyticsReport(collector, result);
+			createAnalyticsReport(collector, result);
 			result.addAll(listPendingCrashes());
 		} catch (Exception e) {
 			logException(e, "Failed to create initial report");
