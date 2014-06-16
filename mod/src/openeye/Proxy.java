@@ -18,6 +18,11 @@ public abstract class Proxy {
 		}
 
 		@Override
+		public String getLanguage() {
+			return Minecraft.getMinecraft().gameSettings.language;
+		}
+
+		@Override
 		public void first() {
 			try {
 				String username = Minecraft.getMinecraft().getSession().getUsername();
@@ -40,6 +45,11 @@ public abstract class Proxy {
 		}
 
 		@Override
+		public String getLanguage() {
+			return "n/a";
+		}
+
+		@Override
 		public void first() {}
 
 		@Override
@@ -47,6 +57,8 @@ public abstract class Proxy {
 	}
 
 	public abstract boolean isSnooperEnabled();
+
+	public abstract String getLanguage();
 
 	public abstract void first();
 
