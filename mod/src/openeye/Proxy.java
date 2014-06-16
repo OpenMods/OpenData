@@ -53,11 +53,13 @@ public abstract class Proxy {
 		public boolean isSnooperEnabled() {
 			try {
 				File settings = new File("server.properties");
-				Log.info("%s", settings.getAbsolutePath());
-				InputStream input = new FileInputStream(settings);
 				Properties props = new Properties();
-				props.load(input);
-
+				InputStream input = new FileInputStream(settings);
+				try {
+					props.load(input);
+				} finally {
+					input.close();
+				}
 				String flag = props.getProperty("snooper-enabled");
 				// default value for vanilla is also true
 				return flag != null? flag.equalsIgnoreCase("true") : true;
