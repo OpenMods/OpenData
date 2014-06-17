@@ -8,6 +8,7 @@ import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.EventPriority;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import openeye.logic.Sanitizers;
@@ -25,12 +26,12 @@ public class NameCollector {
 	}
 
 	public static class ForgeHooks {
-		@ForgeSubscribe
+		@ForgeSubscribe(priority = EventPriority.HIGHEST)
 		public void onWorldLoad(WorldEvent.Load evt) {
 			Sanitizers.addWorldNames(evt.world);
 		}
 
-		@ForgeSubscribe
+		@ForgeSubscribe(priority = EventPriority.HIGHEST)
 		public void onEntityJoin(EntityJoinWorldEvent evt) {
 			tryAddPlayer(evt.entity);
 		}
