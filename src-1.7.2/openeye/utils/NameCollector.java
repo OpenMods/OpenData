@@ -9,6 +9,7 @@ import openeye.logic.Sanitizers;
 import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 
@@ -23,19 +24,19 @@ public abstract class NameCollector {
 	}
 
 	public static class ForgeHooks {
-		@SubscribeEvent
+		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void onWorldLoad(WorldEvent.Load evt) {
 			Sanitizers.addWorldNames(evt.world);
 		}
 
-		@SubscribeEvent
+		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void onEntityJoin(EntityJoinWorldEvent evt) {
 			if (evt.entity instanceof EntityPlayer) tryAddPlayer((EntityPlayer)evt.entity);
 		}
 	}
 
 	public static class FmlHooks {
-		@SubscribeEvent
+		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent evt) {
 			tryAddPlayer(evt.player);
 		}
