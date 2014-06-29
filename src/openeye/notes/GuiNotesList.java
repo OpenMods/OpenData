@@ -16,10 +16,10 @@ public class GuiNotesList extends GuiScrollingList {
 
 	private static final int ENTRY_HEIGHT = 50;
 	private final List<NoteEntry> notes;
-	private final GuiNotes owner;
+	private final GuiNotesBase owner;
 	private final Minecraft mc;
 
-	public GuiNotesList(GuiNotes owner, Minecraft mc, int width, int height, int top, int bottom, List<NoteEntry> notes) {
+	public GuiNotesList(GuiNotesBase owner, Minecraft mc, int width, int height, int top, int bottom, List<NoteEntry> notes) {
 		super(mc, width, height, top, bottom, 0, ENTRY_HEIGHT);
 		this.mc = mc;
 		this.owner = owner;

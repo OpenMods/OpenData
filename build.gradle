@@ -1,3 +1,7 @@
+if (!project.hasProperty('minecraft_version')) {
+    throw new GradleException('Usage: gradle build -Pminecraft_version=... ')
+}
+
 buildscript {
     repositories {
         mavenCentral()
@@ -11,10 +15,16 @@ buildscript {
         }
     }
     dependencies {
-        if (minecraft_version == '1.6.4') {
+        switch (minecraft_version) {
+        case '1.6.4':
             classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
-        } else {
+            break
+        case '1.7.2':
+        case '1.7.10':
             classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+            break
+        default:
+            throw new GradleException('Invalid Minecraft version ' + minecraft_version)
         }
     }   
 }
@@ -24,11 +34,15 @@ apply plugin: 'forge'
 switch (minecraft_version) {
 case '1.6.4':
     ext.forge_version = '9.11.1.964'
-    ext.src_extra = '1.6.4'
+    ext.src_extra = ['1.6.4']
     break
 case '1.7.2':
     ext.forge_version = '10.12.2.1121'
-    ext.src_extra = '1.7.2'
+    ext.src_extra = ['1.7', '1.7.2']
+    break
+case '1.7.10':
+    ext.forge_version = '10.13.0.1152'
+    ext.src_extra = ['1.7', '1.7.10']
     break
 }
 
@@ -47,7 +61,9 @@ sourceSets {
     main {
         java {
             srcDir "src"
-            srcDir "src-${src_extra}"
+            for (extra_src in src_extra) {
+                srcDir "src-${extra_src}"
+            }
         }
         resources {
             srcDir "resources"

@@ -5,7 +5,6 @@ import java.net.URI;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiConfirmOpenLink;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.StatCollector;
 import openeye.Log;
@@ -13,7 +12,7 @@ import openeye.notes.entries.NoteEntry;
 
 import com.google.common.base.Strings;
 
-public class GuiNotes extends GuiScreen {
+public abstract class GuiNotesBase extends GuiScreen {
 
 	private static final int ACTION_GOTO_URL = 0;
 	private static final int BUTTON_FINISHED_ID = 0;
@@ -31,7 +30,7 @@ public class GuiNotes extends GuiScreen {
 
 	private String gotoUrl;
 
-	GuiNotes(GuiScreen prevGui, List<NoteEntry> notes) {
+	GuiNotesBase(GuiScreen prevGui, List<NoteEntry> notes) {
 		this.prevGui = prevGui;
 		this.notes = notes;
 	}
@@ -59,9 +58,11 @@ public class GuiNotes extends GuiScreen {
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == BUTTON_FINISHED_ID) mc.displayGuiScreen(prevGui);
 		else if (button.id == BUTTON_GOTO_ID) {
-			mc.displayGuiScreen(new GuiConfirmOpenLink(this, gotoUrl, ACTION_GOTO_URL, false));
+			displayConfirmation(gotoUrl, ACTION_GOTO_URL);
 		}
 	}
+
+	protected abstract void displayConfirmation(String url, int actionId);
 
 	private static void openURI(String uri) {
 		try {
