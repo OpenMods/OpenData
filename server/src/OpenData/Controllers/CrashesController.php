@@ -12,17 +12,17 @@ class CrashesController {
     private $serviceMods;
     private $serviceFiles;
     private $serviceCrashes;
-    private $service    ;
+    private $serviceForms;
     private $app;
 
-    public function __construct($twig, $app, $mods, $files, $crashes, $    ) {
+    public function __construct($twig, $app, $mods, $files, $crashes, $forms) {
 
         $this->twig = $twig;
         $this->app = $app;
         $this->serviceMods = $mods;
         $this->serviceFiles = $files;
         $this->serviceCrashes = $crashes;
-        $this->service     = $    ;
+        $this->serviceForms = $forms;
     }
 
     public function commoncrash(Request $request, $slug) {
@@ -115,7 +115,7 @@ class CrashesController {
         $session->start();
 
         $data = $session->all();
-        $form = $this->service    ->createBuilder('form', $data)
+        $form = $this->serviceForms->createBuilder('form', $data)
             ->add('mod', 'text', array('required' => false))
             ->add('version', 'text', array('required' => false))
             ->add('signature', 'text', array('required' => false))

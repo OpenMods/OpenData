@@ -111,7 +111,7 @@ class ModController {
         
         $today = strtotime(date("Y-m-d 00:00:00"));
         $yesterday = $today - 86400;
-    $oYesterday = new \MongoDate($yesterday);
+        $oYesterday = new \MongoDate($yesterday);
         
         $signatures = array();
         if ($fileId != null) {
