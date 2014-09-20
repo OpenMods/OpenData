@@ -8,14 +8,14 @@ class Analytics implements IPacketHandler {
     private $serviceAnalytics;
     private $serviceFiles;
     private $serviceTags;
-	private static $invalidFilenames = array(
-			'minecraft.jar',
-			'1.6.4-Forge9.11.1.965.jar',
-			'1.7.2-Forge10.12.1.1060.jar',
-			'scala-compiler-2.10.2.jar',
-			'scala-library-2.10.2.jar',
-			'1.7.2-Forge10.12.0.1047.jar'
-		);
+    private static $invalidFilenames = array(
+            'minecraft.jar',
+            '1.6.4-Forge9.11.1.965.jar',
+            '1.7.2-Forge10.12.1.1060.jar',
+            'scala-compiler-2.10.2.jar',
+            'scala-library-2.10.2.jar',
+            '1.7.2-Forge10.12.0.1047.jar'
+        );
 
     public function __construct($analytics, $files, $tags) {
         $this->serviceAnalytics = $analytics;
@@ -58,13 +58,13 @@ class Analytics implements IPacketHandler {
                     }
                 }
 
-				if (isset($packet['runtime'])) {
+                if (isset($packet['runtime'])) {
                     foreach ($packet['runtime'] as $ware => $version) {
                         $pipe->hincrby($sig.':'.$ware, $version, 1);
                     }
                 }
             }
-		});
+        });
 
 
         $signatureMap = array();
@@ -144,15 +144,15 @@ class Analytics implements IPacketHandler {
         // loop through any mods we didn't find in the database,
         // add them in, then tell the client we need the rest of the packages
         foreach ($packet['signatures'] as $signature) {
-			if (!in_array($signature['signature'], $fileSignaturesFound) && !in_array($signature['filename'], self::$invalidFilenames)) {
-				if ($this->serviceFiles->create($signature)) {
-					$newFilenames[] = $signature['filename'];
-					$responses[] = array(
-						'type' => 'file_info',
-						'signature' => $signature['signature']
-					);
-				}
-			}
+            if (!in_array($signature['signature'], $fileSignaturesFound) && !in_array($signature['filename'], self::$invalidFilenames)) {
+                if ($this->serviceFiles->create($signature)) {
+                    $newFilenames[] = $signature['filename'];
+                    $responses[] = array(
+                        'type' => 'file_info',
+                        'signature' => $signature['signature']
+                    );
+                }
+            }
         }
 
         if (count($newFilenames) > 0) {

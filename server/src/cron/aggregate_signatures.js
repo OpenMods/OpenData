@@ -74,8 +74,8 @@ MongoClient.connect(connectionString, function (err, db) {
 
             this.signatures.forEach(function (signature) {
 
-            	result['added'] = self.addedSignatures.indexOf(signature.signature) > -1 ? 1 : 0;
-            	result['removed'] = self.removedSignatures.indexOf(signature.signature) > -1 ? 1 : 0;
+                result['added'] = self.addedSignatures.indexOf(signature.signature) > -1 ? 1 : 0;
+                result['removed'] = self.removedSignatures.indexOf(signature.signature) > -1 ? 1 : 0;
 
                 print('emit!');
                 this.emit({
@@ -122,36 +122,36 @@ MongoClient.connect(connectionString, function (err, db) {
             result.removed = NumberInt(result.removed);
             return result;
         }, {
-			finalize: function(key, reducedVal) {
-				var reduced = [];
-				reduced.push({
-					'type' : 'count',
-					'key': 'count',
-					'value' : NumberInt(reducedVal.count)
-				});
-				reduced.push({
-					'type' : 'added',
-					'key': 'added',
-					'value' : NumberInt(reducedVal.added)
-				});
-				reduced.push({
-					'type' : 'removed',
-					'key': 'removed',
-					'value' : NumberInt(reducedVal.removed)
-				});
-				['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'tags', 'packsize', 'forge', 'fml', 'mcp'].forEach(function(type) {
-					if (reducedVal[type] != null) {
-						for (key in reducedVal[type]) {
-							reduced.push({
-								'type': type,
-								'key' : key,
-								'value' : NumberInt(reducedVal[type][key])
-							});
-						}
-					}
-				});
-				return reduced;
-			},
+            finalize: function(key, reducedVal) {
+                var reduced = [];
+                reduced.push({
+                    'type' : 'count',
+                    'key': 'count',
+                    'value' : NumberInt(reducedVal.count)
+                });
+                reduced.push({
+                    'type' : 'added',
+                    'key': 'added',
+                    'value' : NumberInt(reducedVal.added)
+                });
+                reduced.push({
+                    'type' : 'removed',
+                    'key': 'removed',
+                    'value' : NumberInt(reducedVal.removed)
+                });
+                ['locale', 'minecraft', 'language', 'javaVersion', 'timezone', 'branding', 'tags', 'packsize', 'forge', 'fml', 'mcp'].forEach(function(type) {
+                    if (reducedVal[type] != null) {
+                        for (key in reducedVal[type]) {
+                            reduced.push({
+                                'type': type,
+                                'key' : key,
+                                'value' : NumberInt(reducedVal[type][key])
+                            });
+                        }
+                    }
+                });
+                return reduced;
+            },
             verbose: true,
             query: {
                 created_at: {

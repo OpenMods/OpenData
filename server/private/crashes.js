@@ -17,21 +17,21 @@ function getCrash(context, crashId, callback) {
 
 function setNote(context) {
     
-	var args = context.args;
+    var args = context.args;
 
-	if (args.length != 2) {
-		return false;
-	}
+    if (args.length != 2) {
+        return false;
+    }
         
         var crashId = args[0];
         var note = args[1];
         
         if (!context.isOp && !context.isVoiced) {
-		context.bot.say(
-			context.bot.channel,
-			'Insufficient permissions'		
-		);
-		return true;
+        context.bot.say(
+            context.bot.channel,
+            'Insufficient permissions'        
+        );
+        return true;
         }
         getCrash(context, crashId, function(crash) {
            context.db.collection('crashes').update(
@@ -40,7 +40,7 @@ function setNote(context) {
                    function(err) {
                         context.bot.say(
                                 context.channel,
-                                'Note added!'		
+                                'Note added!'        
                         );
                    }
             );
@@ -49,20 +49,20 @@ function setNote(context) {
         
 }
 function removeNote(context) {
-	var args = context.args;
+    var args = context.args;
 
-	if (args.length != 1) {
-		return false;
-	}
+    if (args.length != 1) {
+        return false;
+    }
         
         var crashId = args[0];
         
         if (!context.isOp && !context.isVoiced) {
-		context.bot.say(
-			context.channel,
-			'Insufficient permissions'		
-		);
-		return;
+        context.bot.say(
+            context.channel,
+            'Insufficient permissions'        
+        );
+        return;
         }
         getCrash(context, crashId, function(crash) {
            context.db.collection('crashes').update(
@@ -71,7 +71,7 @@ function removeNote(context) {
                    function(err) {
                         context.bot.say(
                                 context.channel,
-                                'Note removed!'		
+                                'Note removed!'        
                         );
                    }
             );

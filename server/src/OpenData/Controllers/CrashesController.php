@@ -80,26 +80,26 @@ class CrashesController {
 
                 $linkFile = true;
                 if (isset($file['mods'])) {
-					foreach ($file['mods'] as $mod) {
-						if (in_array($mod['modId'], $response['unlisted'])) {
-							$linkFile = false;
-						}
-					}
+                    foreach ($file['mods'] as $mod) {
+                        if (in_array($mod['modId'], $response['unlisted'])) {
+                            $linkFile = false;
+                        }
+                    }
                 }
 
                 if (isset($file['classTransformers'])) {
-					if ($file['classTransformers'] != null) {
-						foreach ($file['classTransformers'] as $transformer) {
-							$response['classTransformers'][$transformer] = $linkFile ? $file['_id'] : '';
-						}
-					}
+                    if ($file['classTransformers'] != null) {
+                        foreach ($file['classTransformers'] as $transformer) {
+                            $response['classTransformers'][$transformer] = $linkFile ? $file['_id'] : '';
+                        }
+                    }
                 }
                 if (isset($file['tweakers'])) {
-					if ($file['tweakers'] != null) {
-						foreach ($file['tweakers'] as $tweaker) {
-							$response['tweakers'][$tweaker['class']] = $linkFile ? $file['_id'] : '';
-						}
-					}
+                    if ($file['tweakers'] != null) {
+                        foreach ($file['tweakers'] as $tweaker) {
+                            $response['tweakers'][$tweaker['class']] = $linkFile ? $file['_id'] : '';
+                        }
+                    }
                 }
             }
             $response['allSignatures_count'] = $response['allSignatures']->count();

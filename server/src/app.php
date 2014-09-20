@@ -31,14 +31,14 @@ $app->after(function (Request $request, Response $response) use ($app, $time_sta
     $response->headers->set("Access-Control-Allow-Origin", "*");
     $response->headers->set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
 
-	$time_end = microtime(true);
-	$timeTaken = $time_end - $time_start;
-	if ($timeTaken > 20) {
-		$app['mongo']['default']->hopper->slow_requests->insert(array(
-			'time' => $timeTaken,
-			'request' => json_decode($request->get('api_request', '[]'), true)
-		));
-	}
+    $time_end = microtime(true);
+    $timeTaken = $time_end - $time_start;
+    if ($timeTaken > 20) {
+        $app['mongo']['default']->hopper->slow_requests->insert(array(
+            'time' => $timeTaken,
+            'request' => json_decode($request->get('api_request', '[]'), true)
+        ));
+    }
 
 });
 
@@ -47,7 +47,7 @@ $app->before(function (Request $request) use ($app) {
     if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
         $content = $request->getContent();
         if (0 === strpos($request->headers->get('Content-Encoding'), 'gzip')) {
-           	$content = @gzinflate(substr($content, 10, -8));
+               $content = @gzinflate(substr($content, 10, -8));
         }
         // no idea what it was doing here? JSON was parsed in controller too
         //$data = json_decode($content, true);

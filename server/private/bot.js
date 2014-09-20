@@ -66,8 +66,8 @@ var actions = {
         func: mods.getFields,
         secure: false,
         usage: '#mod:get <modid> <field1> <field2>... (' + [    'name', 'description', 'url',
-    		'donation', 'authors', 'releasesPage',
-    		'tags', 'repository', 'irc', 'credits', 'admins', ].join(', ') + ')'
+            'donation', 'authors', 'releasesPage',
+            'tags', 'repository', 'irc', 'credits', 'admins', ].join(', ') + ')'
     },
     'mod:update': {
         func: mods.setField,
@@ -299,7 +299,7 @@ MongoClient.connect(connectionString, function(err, db) {
                                 channel: to,
                                 args: args
                             })) {
-            			bot.say(to, 'Usage: ' + action.usage);
+                        bot.say(to, 'Usage: ' + action.usage);
                             }
 
                         });
@@ -315,7 +315,7 @@ MongoClient.connect(connectionString, function(err, db) {
                             channel: to,
                             args: args
                         })) {
-            			bot.say(to, 'Usage: ' + action.usage);
+                        bot.say(to, 'Usage: ' + action.usage);
                         }
                     }
 

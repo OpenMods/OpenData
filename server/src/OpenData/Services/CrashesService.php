@@ -73,19 +73,19 @@ class CrashesService extends BaseService {
 
     public function getCommonCrashDetails($packet) {
 
-		if (isset($packet['exception'])) {
+        if (isset($packet['exception'])) {
 
-			$crashMessages = self::getExceptionMessages($packet['exception']);
+            $crashMessages = self::getExceptionMessages($packet['exception']);
 
-			foreach ($this->db->common_crashes->find() as $commonCrash) {
-				foreach ($commonCrash['regex'] as $regex) {
-					foreach ($crashMessages as $msg) {
-						if (preg_match("@" . $regex . "@i", $msg)) {
-							return $commonCrash;
-						}
-					}
-				}
-			}
+            foreach ($this->db->common_crashes->find() as $commonCrash) {
+                foreach ($commonCrash['regex'] as $regex) {
+                    foreach ($crashMessages as $msg) {
+                        if (preg_match("@" . $regex . "@i", $msg)) {
+                            return $commonCrash;
+                        }
+                    }
+                }
+            }
 
         }
     }
@@ -98,9 +98,9 @@ class CrashesService extends BaseService {
 
     public function add($packet, $shouldHide = false) {
 
-		if (!isset($packet['exception'])) {
-			return;
-		}
+        if (!isset($packet['exception'])) {
+            return;
+        }
 
         $note = null;
 
@@ -112,24 +112,24 @@ class CrashesService extends BaseService {
 
         // get all the modids and states from the mod states
         if (isset($packet['states'])) {
-			foreach ($packet['states'] as $state) {
-				if (isset($state['signature'])) {
-					$errored = false;
-					foreach ($state['mods'] as $mod) {
-						$sanitized = ModsService::sanitizeModId($mod['modId']);
-						if ($mod['state'] == 'Errored') {
-							$errored = true;
-							$involvedModIds[] = $sanitized;
-						}
-						$allModIds[] = $sanitized;
-					}
-					if ($errored) {
-						$involvedSignatures[] = $state['signature'];
-					}
-					$allSignatures[] = $state['signature'];
-				}
-			}
-		}
+            foreach ($packet['states'] as $state) {
+                if (isset($state['signature'])) {
+                    $errored = false;
+                    foreach ($state['mods'] as $mod) {
+                        $sanitized = ModsService::sanitizeModId($mod['modId']);
+                        if ($mod['state'] == 'Errored') {
+                            $errored = true;
+                            $involvedModIds[] = $sanitized;
+                        }
+                        $allModIds[] = $sanitized;
+                    }
+                    if ($errored) {
+                        $involvedSignatures[] = $state['signature'];
+                    }
+                    $allSignatures[] = $state['signature'];
+                }
+            }
+        }
 
         $crashData = self::stripSignatures($packet['exception']);
         $stackSignatures = $crashData['signatures'];
@@ -142,11 +142,11 @@ class CrashesService extends BaseService {
                     array('_id' => array('$in' => $stackSignatures)), array('mods.modId' => 1)
             );
             foreach ($results as $result) {
-            	if (isset($result['mods'])) {
-					foreach ($result['mods'] as $mod) {
-						$involvedModIds[] = $mod['modId'];
-					}
-				}
+                if (isset($result['mods'])) {
+                    foreach ($result['mods'] as $mod) {
+                        $involvedModIds[] = $mod['modId'];
+                    }
+                }
             }
             // merge the stack signatures in
             $involvedSignatures = array_merge($involvedSignatures, $stackSignatures);

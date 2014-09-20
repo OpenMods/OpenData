@@ -74,8 +74,8 @@ function stats(context) {
                       );
               return true;
           } else {
-			  context.bot.say(context.channel, colors.navy("http://openeye.openmods.info/stats.php?mod="+result._id));
-		  }
+              context.bot.say(context.channel, colors.navy("http://openeye.openmods.info/stats.php?mod="+result._id));
+          }
           return true;
      });
      return true;
@@ -106,8 +106,8 @@ function link(context) {
                       );
               return true;
           } else {
-			  context.bot.say(context.channel, colors.navy("http://openeye.openmods.info/mod/"+result._id));
-		  }
+              context.bot.say(context.channel, colors.navy("http://openeye.openmods.info/mod/"+result._id));
+          }
           return true;
      });
      return true;
