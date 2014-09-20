@@ -34,10 +34,16 @@ $app->after(function (Request $request, Response $response) use ($app, $time_sta
     $time_end = microtime(true);
     $timeTaken = $time_end - $time_start;
     if ($timeTaken > 20) {
-        $app['mongo']['default']->hopper->slow_requests->insert(array(
-            'time' => $timeTaken,
-            'request' => $request->get('api_request', '[]')
-        ));
+        $slow_report = fopen(ROOT_PATH . "/storage/slow-logs/" . date('Y-m-d') . ".log", "a");
+        try {
+            $current_date = date("Y-m-d H:i:s");
+            fwrite($slow_report, "[{$current_date}] {$response->getClientIp()} {$timeTaken}\n");
+            fwrite($slow_report, $request->get('api_request', '[]'));
+            fwrite($slow_report, "\n");
+        } catch (\Exception $e) {
+            error_log("Failed to log slow request: " . $e);
+        }
+        fclose($slow_report);
     }
 
 });
