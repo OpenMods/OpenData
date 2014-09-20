@@ -165,9 +165,9 @@ class ApiController {
 
             $index++;
             // EMERGENCY HACK -boq
-            if ($index > 256)
+            if ($index > 1024)
             {
-                error_log("Too much data in packet: " .  count($data));
+                error_log("Too much entries in packet: " .  count($data));
                 break;
             }
         }

@@ -36,7 +36,7 @@ $app->after(function (Request $request, Response $response) use ($app, $time_sta
     if ($timeTaken > 20) {
         $app['mongo']['default']->hopper->slow_requests->insert(array(
             'time' => $timeTaken,
-            'request' => json_decode($request->get('api_request', '[]'), true)
+            'request' => $request->get('api_request', '[]')
         ));
     }
 
