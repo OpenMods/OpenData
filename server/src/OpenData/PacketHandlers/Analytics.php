@@ -8,6 +8,14 @@ class Analytics implements IPacketHandler {
     private $serviceAnalytics;
     private $serviceFiles;
     private $serviceTags;
+	private static $invalidFilenames = array(
+			'minecraft.jar',
+			'1.6.4-Forge9.11.1.965.jar',
+			'1.7.2-Forge10.12.1.1060.jar',
+			'scala-compiler-2.10.2.jar',
+			'scala-library-2.10.2.jar',
+			'1.7.2-Forge10.12.0.1047.jar'
+		);
 
     public function __construct($analytics, $files, $tags) {
         $this->serviceAnalytics = $analytics;
@@ -26,27 +34,39 @@ class Analytics implements IPacketHandler {
     public function execute($packet) {
 
         $packet['created_at'] = time();
-        
+
         $client = new \Predis\Client();
-        
+
         $client->pipeline(function ($pipe) use ($packet) {
-            $keys = array('language', 'locale', 'timezone', 'minecraft', 'javaVersion');
+            $singleKeys = array('language', 'locale', 'timezone', 'minecraft', 'javaVersion');
+            $multipleKeys = array('branding', 'tags');
             foreach ($packet['signatures'] as $signature) {
                 $sig = $signature['signature'];
                 $pipe->sadd('signatures', $sig);
                 $pipe->incrby($sig, 1);
-                foreach ($keys as $key) {
-                    $pipe->hincrby($sig.':'.$key, $packet[$key], 1);
+                foreach ($singleKeys as $key) {
+                    if (isset($packet[$key])) {
+                        $pipe->hincrby($sig.':'.$key, $packet[$key], 1);
+                    }
                 }
-                foreach ($packet['branding'] as $brand) {
-                    $pipe->hincrby($sig.':branding', $brand, 1);
+
+                foreach ($multipleKeys as $key) {
+                    if (isset($packet[$key])) {
+                        foreach ($packet[$key] as $item) {
+                                $pipe->hincrby($sig.':'.$key, $item, 1);
+                        }
+                    }
                 }
-                foreach ($packet['runtime'] as $ware => $version) {
-                    $pipe->hincrby($sig.':'.$ware, $version, 1);
+
+				if (isset($packet['runtime'])) {
+                    foreach ($packet['runtime'] as $ware => $version) {
+                        $pipe->hincrby($sig.':'.$ware, $version, 1);
+                    }
                 }
             }
-	});
-        
+		});
+
+
         $signatureMap = array();
 
         foreach ($packet['signatures'] as $signature) {
@@ -124,25 +144,15 @@ class Analytics implements IPacketHandler {
         // loop through any mods we didn't find in the database,
         // add them in, then tell the client we need the rest of the packages
         foreach ($packet['signatures'] as $signature) {
-
-            if (!in_array($signature['signature'], $fileSignaturesFound)) {
-                if ($this->serviceFiles->create($signature)) {
-                    if (!in_array($signature['filename'], array(
-                        'minecraft.jar',
-                        '1.6.4-Forge9.11.1.965.jar',
-                        '1.7.2-Forge10.12.1.1060.jar',
-                        'scala-compiler-2.10.2.jar',
-                        'scala-library-2.10.2.jar',
-                        '1.7.2-Forge10.12.0.1047.jar'
-                    ))) {
-                        $newFilenames[] = $signature['filename'];
-                    }
-                }
-                $responses[] = array(
-                    'type' => 'file_info',
-                    'signature' => $signature['signature']
-                );
-            }
+			if (!in_array($signature['signature'], $fileSignaturesFound) && !in_array($signature['filename'], self::$invalidFilenames)) {
+				if ($this->serviceFiles->create($signature)) {
+					$newFilenames[] = $signature['filename'];
+					$responses[] = array(
+						'type' => 'file_info',
+						'signature' => $signature['signature']
+					);
+				}
+			}
         }
 
         if (count($newFilenames) > 0) {

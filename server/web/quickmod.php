@@ -26,7 +26,7 @@ $modId = isset($_REQUEST['mod']) ? $_REQUEST['mod'] : 'openeye';
 $mod = $defaultDb->mods->findOne(array('_id' => $modId));
 
 if ($mod == null) {
-	exit;
+    exit;
 }
 
 $files = $defaultDb->files->find(array(
@@ -46,17 +46,17 @@ if (count($files) == 0) {
 $useId = isset($mod['originalModId']) ? $mod['originalModId'] : $mod['_id'];
 
 $quickMod = array(
-    'formatVersion'	=> 1,
-    'uid' 			=> $mod['_id'],
-    'repo' 			=> 'openeye',
-    'modId' 		=> isset($mod['originalModId']) ? $mod['originalModId'] : $mod['_id'],
-    'name' 			=> $mod['name'],
+    'formatVersion'    => 1,
+    'uid'             => $mod['_id'],
+    'repo'             => 'openeye',
+    'modId'         => isset($mod['originalModId']) ? $mod['originalModId'] : $mod['_id'],
+    'name'             => $mod['name'],
     'description'           => $mod['description'],
     'updateUrl'             => 'http://openeye.openmods.info'.$_SERVER['REQUEST_URI'],
-    'tags' 			=> isset($mod['tags']) ? $mod['tags'] : array(),
+    'tags'             => isset($mod['tags']) ? $mod['tags'] : array(),
     'categories'            => isset($mod['tags']) ? $mod['tags'] : array(),
     'references'            => array(),
-    'versions'		=> array()
+    'versions'        => array()
 );
 
 $references = array();
@@ -73,17 +73,17 @@ foreach ($files as $file) {
 
     $filesToList[$modDefinition['version']] = array(
         'mod' => $modDefinition,
-        'file' => $file            
+        'file' => $file
     );
 }
 
 $checkedMods = array();
 
 foreach ($filesToList as $list) {
-    
+
     $modDefinition = $list['mod'];
     $file = $list['file'];
-    
+
     $version = array(
         'name' => $modDefinition['version'],
         'url' => $file['downloadUrl'],

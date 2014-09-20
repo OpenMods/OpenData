@@ -73,16 +73,16 @@ class ModsService extends BaseService {
     }
 
     public function upsert($modId, $data) {
-        
+
         $ret = $this->db->mods->findAndModify(
             array('_id' => $modId), array('$setOnInsert' => $data), null, array('new' => true, 'upsert' => true)
         );
-        
+
         $this->db->mods->update(
             array('_id' => $modId),
-            array('$set' => array('originalModId' => $mod['modId']))
+            array('$set' => array('originalModId' => $data['originalModId']))
         );
-        
+
         return $ret;
     }
 

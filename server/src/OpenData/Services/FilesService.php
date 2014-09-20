@@ -33,7 +33,7 @@ class FilesService extends BaseService {
                 '_id' => $signature['signature'],
                 'filenames' => array($signature['filename'])
             ));
-            
+
             if ($url = $this->db->urls->findOne(array('_id' => $signature['signature']))) {
                 $this->db->files->update(
                     array('_id' => $signature['signature']),
@@ -55,56 +55,6 @@ class FilesService extends BaseService {
         return $this->db->files->find(
                         array('mods.modId' => strtolower($modId))
         );
-    }
-
-    public function findByPackage($package) {
-        return $this->db->files->find(
-                        array('packages' => new \MongoRegex('/^' . preg_quote($package) . '/i'))
-        );
-    }
-
-    public function findSubPackages($package, $onlyChildren = true) {
-
-        $suffix = '';
-        if ($onlyChildren) {
-            $suffix = '\.';
-        }
-
-        $results = $this->db->files->aggregate(
-            array(
-                '$project' => array('packages' => 1)
-            ),
-            array('$unwind' => '$packages'),
-            array('$match' =>
-                array('packages' => new \MongoRegex('/^' . preg_quote($package) . $suffix . '/'))),
-                array('$group' => array('_id' => '$packages')
-            )
-        );
-
-        $packages = array();
-        foreach ($results['result'] as $result) {
-            $packages[] = $result['_id'];
-        }
-
-        return $packages;
-    }
-
-    public function hasPackage($package) {
-        return $this->findByPackage($package)->count() > 0;
-    }
-
-    public function findUniqueModIdsForPackage($package) {
-
-        $results = $this->db->files->aggregate(
-                array('$match' => array('packages' => $package)), array('$project' => array('mods' => 1)), array('$unwind' => '$mods'), array('$group' => array('_id' => '$mods.modId'))
-        );
-
-        $mods = array();
-        foreach ($results['result'] as $result) {
-            $mods[] = $result['_id'];
-        }
-
-        return $mods;
     }
 
     public function append($file, $overwrite = false) {

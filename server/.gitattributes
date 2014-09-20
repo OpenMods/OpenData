@@ -1,0 +1,19 @@
+*.js  text
+*.xml   text
+*.txt   text
+*.php   text
+*.twig  text
+*.css   text
+*.map   text
+*.svg   text
+*.json  text
+.htaccess   text
+
+*.png   -text
+*.jpg   -text
+*.gif   -text
+*.ico   -text
+*.phar   -text
+*.eot   -text
+*.ttf   -text
+*.woff  -text

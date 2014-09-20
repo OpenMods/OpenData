@@ -30,7 +30,7 @@
 
 {% endif %}{{ crash.exception }}
 {% for trace in crash.stack %}
-	at {{ trace.class }}.{{ trace.method }}({{ trace.file }}:{{ trace.line }})
+    at {{ trace.class }}.{{ trace.method }}({{ trace.file }}:{{ trace.line }})
 {% endfor %}
 </pre>
                     </div>

@@ -11,11 +11,11 @@ use OpenData\PacketHandlers\IPacketHandler;
 class ApiController {
 
     private static $FLOOD_LIMIT = 100; // during dev
-    
+
     protected $memcache;
-    
+
     private $schemas = array();
-    
+
     /**
      *
      * @var type IPacketHandler[]
@@ -27,22 +27,22 @@ class ApiController {
     }
 
     public function registerPacketHandler(IPacketHandler $handler) {
-        
+
         $this->packetHandlers[$handler->getPacketType()] = $handler;
-        
+
         $schema = $handler->getJsonSchema();
-        
+
         if (!isset($this->schemas[$schema])) {
             $retriever = new UriRetriever();
             $this->schemas[$schema] = $retriever->retrieve('file://' . __DIR__ . '/../Schemas/'.$schema);
         }
-        
+
     }
-    
+
     public function crash(Request $request) {
-        
+
         try {
-            
+
             //if ($this->isUserFlooding($request)) {
             //    throw new \Exception('Flood protection - too many reports');
             //}
@@ -56,11 +56,11 @@ class ApiController {
             $data = json_decode(mb_convert_encoding($content, 'UTF-8', 'auto'), true);
 
             $handler = $this->packetHandlers['crashlog'];
-            
+
             $data['type'] = 'crashlog';
 
             $errors = $this->getErrors($data, $handler->getJsonSchema());
-  
+
             unset($data['type']);
 
             if ($errors != null) {
@@ -68,7 +68,7 @@ class ApiController {
             }
 
             return new JsonResponse($handler->execute($data));
-                
+
         } catch (\Exception $e) {
             return new JsonResponse(array(array(
                 'type' => 'error',
@@ -81,32 +81,51 @@ class ApiController {
             )));
         }
     }
-    
+
+    public function error_response($excuse)
+    {
+        return new JsonResponse(array(array('type' => 'error', 'msg' => $excuse)));
+    }
+
     public function main(Request $request) {
 
         $content = $request->get('api_request', '[]');
-        
+
         //if ($this->isUserFlooding($request)) {
         //    return new JsonResponse(array());
         //}
 
-        $data = json_decode(mb_convert_encoding($content, 'UTF-8', 'auto'), true);
-        
+        $raw_size = strlen($content);
+        if ($raw_size > 1024 * 1024) {
+            error_log("Big message: " . $raw_size);
+            if ($raw_size > 10 * 1024 * 1024) {
+                error_log("Too much, man, too much! aborting");
+                return $this->error_response("I just can't your data");
+            }
+        }
+
+        try {
+            $data = json_decode(mb_convert_encoding($content, 'UTF-8', 'auto'), true);
+        } catch (\Exception $e) {
+            error_log("Failed to parse JSON ");
+            return $this->error_response('Failed to parse JSON');
+        }
+
         if (!is_array($data)) {
             return new JsonResponse(array());
         }
 
         $responses = array();
-        
+
         $index = 0;
 
         foreach ($data as $packet) {
-            
+
             $type = isset($packet['type']) && is_string($packet['type']) ?
                     $packet['type'] : null;
-            
+
             try {
-                
+
                 if ($type == null) {
                     throw new \Exception('Packet type not defined');
                 }
@@ -130,8 +149,8 @@ class ApiController {
                 if ($response = $handler->execute($packet)) {
                     $responses = array_merge($responses, $response);
                 }
-                
-            }catch (\Exception $e) {
+
+            } catch (\Exception $e) {
                 $responses = array_merge($responses, array(array(
                     'type' => 'error',
                     'reportType' => $type == null ? 'unknown' : $type,
@@ -143,13 +162,19 @@ class ApiController {
                     )
                 )));
             }
-            
+
             $index++;
+            // EMERGENCY HACK -boq
+            if ($index > 256)
+            {
+                error_log("Too much data in packet: " .  count($data));
+                break;
+            }
         }
 
         return new JsonResponse($responses);
     }
-    
+
     private function isUserFlooding(Request $request) {
 
         if ($this->memcache == null)
@@ -178,7 +203,7 @@ class ApiController {
 
         $validator = new Validator();
         $validator->check($packet, $this->schemas[$schema]);
-        
+
         if (!$validator->isValid()) {
             $errors = array();
             foreach ($validator->getErrors() as $error) {

@@ -13,6 +13,8 @@ date_default_timezone_set('Etc/UTC');
 
 define("ROOT_PATH", __DIR__ . "/..");
 
+$time_start = microtime(true);
+
 $app->before(function (Request $request) {
     if ($request->getMethod() === "OPTIONS") {
         $response = new Response();
@@ -25,20 +27,31 @@ $app->before(function (Request $request) {
 }, Application::EARLY_EVENT);
 
 //handling CORS respons with right headers
-$app->after(function (Request $request, Response $response) {
+$app->after(function (Request $request, Response $response) use ($app, $time_start) {
     $response->headers->set("Access-Control-Allow-Origin", "*");
     $response->headers->set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+
+	$time_end = microtime(true);
+	$timeTaken = $time_end - $time_start;
+	if ($timeTaken > 20) {
+		$app['mongo']['default']->hopper->slow_requests->insert(array(
+			'time' => $timeTaken,
+			'request' => json_decode($request->get('api_request', '[]'), true)
+		));
+	}
+
 });
 
 //accepting JSON
-$app->before(function (Request $request) {
+$app->before(function (Request $request) use ($app) {
     if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
         $content = $request->getContent();
         if (0 === strpos($request->headers->get('Content-Encoding'), 'gzip')) {
-            $content = gzinflate(substr($content, 10, -8));
+           	$content = @gzinflate(substr($content, 10, -8));
         }
-        $data = json_decode($content, true);
-        $request->request->replace(is_array($data) ? $data : array());
+        // no idea what it was doing here? JSON was parsed in controller too
+        //$data = json_decode($content, true);
+        //$request->request->replace(is_array($data) ? $data : array());
         $request->request->set('api_request', $content);
     }
 });

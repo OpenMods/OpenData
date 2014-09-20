@@ -90,10 +90,12 @@
             </div>
             <div class="tab-pane" id="analytics" style="padding-top:20px;">               
                 <div id="analytics_content">
-                    
+                <p>Analytics temporarily disabled! Sorry about that. #BlameMikee</p>
+                    <!--
                     <h3>Past day <span id="launches"></span></h3>
                     
                     <div id="pie_charts"></div>
+                    -->
                     
                 </div>
             </div>
@@ -114,6 +116,7 @@
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
+/*
     google.load("visualization", "1", {packages:["corechart"]});    
     
     var response = null;
@@ -122,12 +125,12 @@
 
         tables = [
             {
-                table: 'files',
-                type: google.visualization.PieChart
-            },
-            {
                 table: 'times',
                 type: google.visualization.AreaChart
+            },
+            {
+                table: 'files',
+                type: google.visualization.PieChart
             },
             {
                 table: 'minecraft',
@@ -206,9 +209,10 @@
 
         }
     }
-
+*/
 </script>
 <script type="text/javascript">
+
     $(function() {
         $("a[data-target=#myModal]").click(function(ev) {
             ev.preventDefault();
@@ -225,8 +229,9 @@
           var scrollmem = $('body').scrollTop();
           window.location.hash = this.hash;
           $('html,body').scrollTop(scrollmem);
-          redraw();
+          //redraw();
         });
     });
+
 </script>
 {% endblock %}

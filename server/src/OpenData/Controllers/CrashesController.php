@@ -8,107 +8,121 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class CrashesController {
 
     private $twig;
-    
+
     private $serviceMods;
     private $serviceFiles;
     private $serviceCrashes;
-    private $serviceForms;
+    private $service    ;
     private $app;
-    
-    public function __construct($twig, $app, $mods, $files, $crashes, $forms) {
-        
+
+    public function __construct($twig, $app, $mods, $files, $crashes, $    ) {
+
         $this->twig = $twig;
         $this->app = $app;
         $this->serviceMods = $mods;
         $this->serviceFiles = $files;
         $this->serviceCrashes = $crashes;
-        $this->serviceForms = $forms;
+        $this->service     = $    ;
     }
-    
+
     public function commoncrash(Request $request, $slug) {
         $commonCrash = $this->serviceCrashes->getCommonCrashBySlug($slug);
         if ($commonCrash == null) {
             throw new \Exception();
         }
-        
+
         return $this->twig->render('commoncrash.twig', $commonCrash);
     }
-    
+
     public function view(Request $request, $stackhash) {
-        
+
         $crash = $this->serviceCrashes->findByStackhash($stackhash);
         if ($crash == null) {
             throw new \Exception();
         }
-        
+
         $response = array(
-            'crash' => $crash
+            'crash' => $crash,
+            'allMods' => array(),
+            'allMods_count' => 0,
+            'involvedMods' => array(),
+            'involvedMods_count' => 0,
+            'allSignatures' => array(),
+            'allSignatures_count' => 0,
+            'involvedSignatures' => array(),
+            'involvedSignatures_count' => 0
         );
-        
-        
+
+
         if (count($crash['involvedMods']) > 0) {
             $response['involvedMods'] = $this->serviceMods->findByIds($crash['involvedMods']);
             $response['involvedMods_count'] = $response['involvedMods']->count();
         }
-        
+
         if (count($crash['allMods']) > 0) {
             $response['allMods'] = $this->serviceMods->findByIds($crash['allMods']);
             $response['allMods_count'] = $response['allMods']->count();
         }
-        
+
         if (count($crash['involvedSignatures']) > 0) {
             $response['involvedSignatures'] = $this->serviceFiles->findIn($crash['involvedSignatures']);
             $response['involvedSignatures_count'] = $response['involvedSignatures']->count();
         }
-        
+
         $response['classTransformers'] = array();
         $response['tweakers'] = array();
-        
+
         $response['unlisted'] = $this->serviceMods->findUnlistedModIds();
-        
+
         if (count($crash['allSignatures']) > 0) {
             $response['allSignatures'] = $this->serviceFiles->findIn($crash['allSignatures']);
             foreach ($response['allSignatures'] as $file) {
-                
+
                 $linkFile = true;
-                foreach ($file['mods'] as $mod) {
-                    if (in_array($mod['modId'], $response['unlisted'])) {
-                        $linkFile = false;
-                    }
+                if (isset($file['mods'])) {
+					foreach ($file['mods'] as $mod) {
+						if (in_array($mod['modId'], $response['unlisted'])) {
+							$linkFile = false;
+						}
+					}
                 }
-                
-                if ($file['classTransformers'] != null) {
-                    foreach ($file['classTransformers'] as $transformer) {
-                        $response['classTransformers'][$transformer] = $linkFile ? $file['_id'] : '';
-                    }
+
+                if (isset($file['classTransformers'])) {
+					if ($file['classTransformers'] != null) {
+						foreach ($file['classTransformers'] as $transformer) {
+							$response['classTransformers'][$transformer] = $linkFile ? $file['_id'] : '';
+						}
+					}
                 }
-                if ($file['tweakers'] != null) {
-                    foreach ($file['tweakers'] as $tweaker) {
-                        $response['tweakers'][$tweaker['class']] = $linkFile ? $file['_id'] : '';
-                    }
+                if (isset($file['tweakers'])) {
+					if ($file['tweakers'] != null) {
+						foreach ($file['tweakers'] as $tweaker) {
+							$response['tweakers'][$tweaker['class']] = $linkFile ? $file['_id'] : '';
+						}
+					}
                 }
             }
             $response['allSignatures_count'] = $response['allSignatures']->count();
         }
-        
+
         return $this->twig->render('crash.twig', $response);
-        
+
     }
-    
+
     public function search(Request $request) {
-        
+
         $session = new Session();
         $session->start();
-        
+
         $data = $session->all();
-        $form = $this->serviceForms->createBuilder('form', $data)
+        $form = $this->service    ->createBuilder('form', $data)
             ->add('mod', 'text', array('required' => false))
             ->add('version', 'text', array('required' => false))
             ->add('signature', 'text', array('required' => false))
             ->add('tag', 'text', array('required' => false))
             ->add('package', 'text', array('required' => false))
             ->getForm();
-        
+
         $submitted = false;
         if ($request->getMethod() == 'POST') {
             $form->handleRequest($request);
@@ -120,19 +134,19 @@ class CrashesController {
                 $submitted = true;
             }
         }
-        
+
         if ($submitted) {
             $session->clear();
             $session->replace($form->getData());
             return $this->app->redirect('crashes');
         }
-        
+
         $query = array('hidden' => array('$ne' => true));
         $invalid = false;
         if (count($data) > 0) {
             $query = array();
             if (!empty($data['package'])) {
-                $query['classes'] = new \MongoRegex('/^'.preg_quote($data['package']).'/i');
+                //$query['classes'] = new \MongoRegex('/^'.preg_quote($data['package']).'/i');
             }
             if (!empty($data['tag'])) {
                 $query['tags'] = $data['tag'];
@@ -165,7 +179,7 @@ class CrashesController {
                 $query['involvedSignatures'] = $data['signature'];
             }
         }
-        
+
         $results = array();
         if (!$invalid) {
             $query['hidden'] = false;
@@ -179,23 +193,23 @@ class CrashesController {
                 )
         ));
     }
-    
-    
+
+
     private function getPagination($iterator, $page = 1, $perPage = 50) {
-        
+
         if ($iterator == null) {
             return array('crashes' => array());
         }
-        
+
         $skip = ($page - 1) * $perPage;
         $total = $iterator->count();
-        
+
         $pageCount = max(1, ((int) ($total - 1) / $perPage) + 1);
-        
+
         if ($page > $pageCount || $page < 1) {
             throw new \Exception('nope');
         }
-        
+
         return array(
             'crashes' => $iterator->skip($skip)->limit($perPage),
             'page_count' => $pageCount,

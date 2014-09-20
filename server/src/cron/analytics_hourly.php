@@ -24,7 +24,7 @@ $client = new Predis\Client();
 $currentHour = strtotime(date("Y-m-d H:00:00"));
 $previousHour = $currentHour - 3600;
 
-$keys = array('language', 'locale', 'timezone', 'minecraft', 'javaVersion', 'fml', 'mcp', 'forge');
+$keys = array('language', 'locale', 'timezone', 'minecraft', 'javaVersion', 'fml', 'mcp', 'forge', 'tags');
 
 foreach ($client->smembers('signatures') as $signature) {
     $items = array();
@@ -54,8 +54,11 @@ foreach ($client->smembers('signatures') as $signature) {
 }
 
 
-$db->analytics_signatures->batchInsert($allEntries);
-
+foreach (array_chunk($allEntries, 20) as $batch) {
+  try {
+    $db->analytics_signatures->batchInsert($batch, array('continueOnError' => true));
+  } catch (Exception $e) { }
+}
 $client->flushall();
 
 

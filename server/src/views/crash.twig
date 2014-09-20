@@ -116,7 +116,7 @@
     <div class="col-md-12">
         <h4>Likely involved mods</h4>
     </div>
-    {% if involvedMods is defined %}
+    {% if involvedMods is defined and involvedMods_count > 0 %}
     {% set chunks = involvedMods|batch(involvedMods_count/2) %}
     {% for chunk in chunks %}
         <div class="col-md-5">
@@ -133,7 +133,7 @@
     <div class="col-md-12">
         <h4>Likely involved files</h4>
     </div>
-    {% if involvedSignatures is defined %}
+    {% if involvedSignatures is defined and involvedSignatures_count > 0 %}
     {% set chunks = involvedSignatures|batch(involvedSignatures_count/2) %}
     {% for chunk in chunks %}
         <div class="col-md-5">
@@ -160,6 +160,7 @@
     <div class="col-md-12">
         <h4>Mods that have been installed during every crash</h4>
     </div>
+    {% if allMods is defined and allMods_count > 0 %}
     {% set chunks = allMods|batch(allMods_count/3) %}
     {% for chunk in chunks %}
         <div class="col-md-4">
@@ -168,12 +169,14 @@
             </ul>
         </div>
     {% endfor %}
+    {% endif %}
 </div>
 
 <div class="row" style="padding-top: 40px;">
     <div class="col-md-12">
         <h4>Files that have been installed during every crash</h4>
     </div>
+    {% if allSignatures is defined and allSignatures_count > 0 %}
     {% set chunks = allSignatures|batch(allSignatures_count/3) %}
     {% for chunk in chunks %}
         <div class="col-md-4">
@@ -194,6 +197,7 @@
             </ul>
         </div>
     {% endfor %}
+    {% endif %}
 </div>
 
 <div class="row" style="padding-top: 40px;">
