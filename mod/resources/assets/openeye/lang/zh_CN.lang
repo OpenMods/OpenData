@@ -1,0 +1,49 @@
+openeye.main_screen.remove_file=OpenEye 建议移除文件openeye.main_screen.known_crash=OpenEye有关于你最近崩溃的一些信息openeye.main_screen.crash_reported=崩溃报告已储存至服务器
+openeye.main_screen.intro=别慌! 按下闪烁的按钮并找出出什么事了.
+
+openeye.notes.goto_page=打开连接
+
+openeye.notes.title.resolved_crash=现场解决最近的崩溃
+openeye.notes.title.reported_crash=崩溃报告已传至服务器
+openeye.notes.title.note=文件注释 %s
+openeye.notes.title.remove_file=召回请求的文件: %s
+
+openeye.notes.content.remove_file=OpenEye建议移除文件 %s, 因为它可能是无效的或含有可疑的内容，去网站了解详情。
+openeye.note.title.intro1=欢迎使用Open Eye
+openeye.note.content.intro1=OpenEye是实用的程序,收集匿名数据是关于MOD使用和崩溃报告.
+
+openeye.note.title.intro2=统计数据
+
+openeye.note.content.intro2=选择这项并点击"打开链接" 来查看这个工具收集的信息，其他项目也有指定的url。
+openeye.note.title.intro3=已收集数据
+
+openeye.note.content.intro3=OpenEye在这个项目包含的总结收集的数据链接地址
+openeye.note.title.intro4=本地数据
+
+openeye.note.content.intro4=OpenEye 在你mc安装文件夹储存了所有收发数据。按下打开链接来打开文件夹
+openeye.note.title.intro5=源代码
+
+openeye.note.content.intro5=OpenEye是个开源mod. 在GitHub上可找到源码.
+
+openeye.note.title.intro6=禁用 & configuration
+openeye.note.content.intro6=OpenEye使用原版观察者设置.如果你不满意,你也可以安全地删除这个mod.
+
+
+openeye.chat.note=注释 %s, type: %s
+openeye.chat.store_failed=储存注释失败!
+openeye.chat.dumped=倾泻注释文件 %s
+
+openeye.category.critical=至关重要的
+openeye.category.alert=警报
+
+openeye.category.warning=警告
+
+openeye.category.info=信息
+
+openeye.category.system_info=系统信息
+
+openeye.category.remove_file=移除文件
+
+openeye.level.reported_crash=已报告崩溃
+
+openeye.level.resolved_crash=解决崩溃
