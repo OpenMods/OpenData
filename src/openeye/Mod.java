@@ -9,7 +9,7 @@ import java.util.concurrent.RunnableFuture;
 
 import openeye.logic.*;
 import openeye.notes.CommandNotes;
-import openeye.reports.FileSignature;
+import openeye.protocol.FileSignature;
 import openeye.utils.NameCollector;
 
 import com.google.common.eventbus.EventBus;

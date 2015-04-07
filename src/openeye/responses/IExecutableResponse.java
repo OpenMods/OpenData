@@ -1,10 +1,8 @@
 package openeye.responses;
 
 import openeye.logic.IContext;
-import openeye.struct.ITypedStruct;
+import openeye.protocol.responses.IResponse;
 
-public interface IResponse extends ITypedStruct {
-
+public interface IExecutableResponse extends IResponse {
 	public void execute(IContext context);
-
 }

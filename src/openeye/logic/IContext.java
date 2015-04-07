@@ -3,7 +3,7 @@ package openeye.logic;
 import java.io.File;
 import java.util.Set;
 
-import openeye.reports.IReport;
+import openeye.protocol.reports.IReport;
 
 public interface IContext {
 	public Set<String> getModsForSignature(String signature);

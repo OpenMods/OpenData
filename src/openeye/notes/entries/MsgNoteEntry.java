@@ -5,7 +5,7 @@ import java.io.File;
 import openeye.notes.NoteCategory;
 import openeye.notes.NoteLevels;
 import openeye.notes.WrappedChatComponent;
-import openeye.responses.ResponseModMsg;
+import openeye.responses.ResponseModMsgAction;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
@@ -15,7 +15,7 @@ public class MsgNoteEntry extends NoteEntry {
 	private final String signature;
 	private final String payload;
 
-	public MsgNoteEntry(File file, ResponseModMsg msg) {
+	public MsgNoteEntry(File file, ResponseModMsgAction msg) {
 		super(file, calculateFromLevel(msg.level), msg.level);
 		this.signature = msg.signature;
 		this.description = msg.description;

@@ -2,7 +2,7 @@ package openeye.logic;
 
 import java.io.File;
 
-import openeye.reports.ReportCrash;
+import openeye.protocol.reports.ReportCrash;
 import openeye.storage.*;
 
 import com.google.common.base.Preconditions;

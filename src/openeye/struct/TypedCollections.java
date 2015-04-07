@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import openeye.Log;
-import openeye.reports.*;
+import openeye.protocol.reports.*;
+import openeye.protocol.responses.*;
 import openeye.responses.*;
 
 import com.google.common.collect.BiMap;
@@ -69,12 +70,12 @@ public class TypedCollections {
 		private static final long serialVersionUID = -6580030458427773185L;
 	}
 
-	public static class ResponseList extends ArrayList<IResponse> {
+	public static class ResponseList extends ArrayList<IExecutableResponse> {
 		private static final long serialVersionUID = 4069373518963113118L;
 	}
 
 	private static final BiMap<String, Class<? extends IReport>> REPORTS_TYPES = HashBiMap.create();
-	private static final BiMap<String, Class<? extends IResponse>> RESPONSE_TYPES = HashBiMap.create();
+	private static final BiMap<String, Class<? extends IExecutableResponse>> RESPONSE_TYPES = HashBiMap.create();
 
 	public static final Object REPORT_LIST_CONVERTER = new TypedListConverter<IReport>(REPORTS_TYPES) {
 		@Override
@@ -83,9 +84,9 @@ public class TypedCollections {
 		}
 	};
 
-	public static final Object RESPONSE_LIST_CONVERTER = new TypedListConverter<IResponse>(RESPONSE_TYPES) {
+	public static final Object RESPONSE_LIST_CONVERTER = new TypedListConverter<IExecutableResponse>(RESPONSE_TYPES) {
 		@Override
-		protected Collection<IResponse> createCollection() {
+		protected Collection<IExecutableResponse> createCollection() {
 			return new ResponseList();
 		}
 	};
@@ -98,13 +99,13 @@ public class TypedCollections {
 		REPORTS_TYPES.put(ReportKnownFiles.TYPE, ReportKnownFiles.class);
 		REPORTS_TYPES.put(ReportFileContents.TYPE, ReportFileContents.class);
 
-		RESPONSE_TYPES.put(ResponseFileInfo.TYPE, ResponseFileInfo.class);
-		RESPONSE_TYPES.put(ResponsePong.TYPE, ResponsePong.class);
-		RESPONSE_TYPES.put(ResponseFileContents.TYPE, ResponseFileContents.class);
-		RESPONSE_TYPES.put(ResponseRemoveFile.TYPE, ResponseRemoveFile.class);
-		RESPONSE_TYPES.put(ResponseModMsg.TYPE, ResponseModMsg.class);
-		RESPONSE_TYPES.put(ResponseError.TYPE, ResponseError.class);
-		RESPONSE_TYPES.put(ResponseKnownCrash.TYPE, ResponseKnownCrash.class);
+		RESPONSE_TYPES.put(ResponseFileInfo.TYPE, ResponseFileInfoAction.class);
+		RESPONSE_TYPES.put(ResponsePong.TYPE, ResponsePongAction.class);
+		RESPONSE_TYPES.put(ResponseFileContents.TYPE, ResponseFileContentsAction.class);
+		RESPONSE_TYPES.put(ResponseRemoveFile.TYPE, ResponseRemoveFileAction.class);
+		RESPONSE_TYPES.put(ResponseModMsg.TYPE, ResponseModMsgAction.class);
+		RESPONSE_TYPES.put(ResponseError.TYPE, ResponseErrorAction.class);
+		RESPONSE_TYPES.put(ResponseKnownCrash.TYPE, ResponseKnownCrashAction.class);
 	}
 
 }

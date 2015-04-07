@@ -10,11 +10,13 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import openeye.Log;
-import openeye.reports.*;
-import openeye.reports.ReportCrash.FileState;
-import openeye.reports.ReportCrash.ModState;
-import openeye.reports.ReportFileInfo.SerializableMod;
-import openeye.reports.ReportFileInfo.SerializableTweak;
+import openeye.protocol.Artifact;
+import openeye.protocol.FileSignature;
+import openeye.protocol.reports.ReportCrash.FileState;
+import openeye.protocol.reports.ReportCrash.ModState;
+import openeye.protocol.reports.*;
+import openeye.protocol.reports.ReportFileInfo.SerializableMod;
+import openeye.protocol.reports.ReportFileInfo.SerializableTweak;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
@@ -27,6 +29,7 @@ import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.discovery.ASMDataTable;
 import cpw.mods.fml.common.discovery.ContainerType;
 import cpw.mods.fml.common.discovery.ModCandidate;
+import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.ReflectionHelper;
@@ -70,6 +73,21 @@ public class ModMetaCollector {
 			return ImmutableList.copyOf(input);
 		}
 
+		private static Collection<Artifact> copyArtifacts(Collection<ArtifactVersion> input) {
+			if (input == null) return ImmutableList.of();
+
+			ImmutableList.Builder<Artifact> result = ImmutableList.builder();
+
+			for (ArtifactVersion version : input) {
+				final Artifact tmp = new Artifact();
+				tmp.label = version.getLabel();
+				tmp.version = version.getVersionString();
+				result.add(tmp);
+			}
+
+			return result.build();
+		}
+
 		public SerializableMod toSerializable() {
 			SerializableMod result = new SerializableMod();
 			result.modId = modId;
@@ -85,9 +103,9 @@ public class ModMetaCollector {
 			result.credits = Strings.nullToEmpty(metadata.credits);
 			result.parent = Strings.nullToEmpty(metadata.parent);
 			result.authors = safeCopy(metadata.authorList);
-			result.requiredMods = safeCopy(metadata.requiredMods);
-			result.dependants = safeCopy(metadata.dependants);
-			result.dependencies = safeCopy(metadata.dependencies);
+			result.requiredMods = copyArtifacts(metadata.requiredMods);
+			result.dependants = copyArtifacts(metadata.dependants);
+			result.dependencies = copyArtifacts(metadata.dependencies);
 			return result;
 		}
 

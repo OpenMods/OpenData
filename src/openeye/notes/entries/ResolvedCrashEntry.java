@@ -2,7 +2,7 @@ package openeye.notes.entries;
 
 import openeye.notes.NoteCategory;
 import openeye.notes.WrappedChatComponent;
-import openeye.responses.ResponseKnownCrash;
+import openeye.responses.ResponseKnownCrashAction;
 
 import com.google.common.base.Strings;
 
@@ -10,7 +10,7 @@ public class ResolvedCrashEntry extends NoteEntry {
 	private final String url;
 	private final String note;
 
-	public ResolvedCrashEntry(ResponseKnownCrash msg) {
+	public ResolvedCrashEntry(ResponseKnownCrashAction msg) {
 		super(NoteCategory.RESOLVED_CRASH, 64);
 		this.url = msg.url;
 		this.note = msg.note;

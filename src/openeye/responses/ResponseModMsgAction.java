@@ -5,30 +5,10 @@ import java.io.File;
 import net.minecraft.nbt.NBTTagCompound;
 import openeye.logic.IContext;
 import openeye.notes.NoteCollector;
-
-import com.google.gson.annotations.SerializedName;
-
+import openeye.protocol.responses.ResponseModMsg;
 import cpw.mods.fml.common.event.FMLInterModComms;
 
-public class ResponseModMsg implements IResponse {
-	public static final String TYPE = "note";
-
-	@Override
-	public String getType() {
-		return TYPE;
-	}
-
-	@SerializedName("signature")
-	public String signature;
-
-	@SerializedName("level")
-	public int level;
-
-	@SerializedName("payload")
-	public String payload;
-
-	@SerializedName("description")
-	public String description;
+public class ResponseModMsgAction extends ResponseModMsg implements IExecutableResponse {
 
 	@Override
 	public void execute(IContext context) {

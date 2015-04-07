@@ -29,6 +29,25 @@ buildscript {
     }   
 }
 
+repositories {
+    maven {
+        name "OpenMods"
+        url "http://repo.openmods.info/artifactory/openmods"
+    }
+}
+
+configurations {
+    mergeJars
+    
+    compile {
+         extendsFrom mergeJars
+    }
+}
+
+dependencies {
+    mergeJars "openeye:OpenEye-protocol:1.0"
+}
+
 apply plugin: 'forge'
 
 switch (minecraft_version) {
@@ -96,5 +115,7 @@ jar {
     manifest {
         attributes 'FMLCorePlugin': 'openeye.CorePlugin'
     }
+    
+    from configurations.mergeJars.collect { it.isDirectory() ? it : zipTree(it) }
 }
 

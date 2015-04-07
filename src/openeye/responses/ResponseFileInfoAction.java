@@ -1,10 +1,12 @@
 package openeye.responses;
 
 import openeye.logic.IContext;
+import openeye.protocol.responses.ResponseFileInfo;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ResponseFileInfo implements IResponse {
+public class ResponseFileInfoAction extends ResponseFileInfo implements IExecutableResponse {
+
 	public static final String TYPE = "file_info";
 
 	@Override

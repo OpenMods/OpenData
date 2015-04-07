@@ -12,12 +12,12 @@ import net.minecraftforge.common.ForgeVersion;
 import openeye.Log;
 import openeye.Proxy;
 import openeye.logic.ModMetaCollector.ClassSource;
-import openeye.reports.*;
-import openeye.reports.ReportCrash.ExceptionInfo;
-import openeye.reports.ReportCrash.StackTrace;
-import openeye.reports.ReportFileContents.ArchiveDirEntry;
-import openeye.reports.ReportFileContents.ArchiveEntry;
-import openeye.reports.ReportFileContents.ArchiveFileEntry;
+import openeye.protocol.reports.*;
+import openeye.protocol.reports.ReportCrash.ExceptionInfo;
+import openeye.protocol.reports.ReportCrash.StackTrace;
+import openeye.protocol.reports.ReportFileContents.ArchiveDirEntry;
+import openeye.protocol.reports.ReportFileContents.ArchiveEntry;
+import openeye.protocol.reports.ReportFileContents.ArchiveFileEntry;
 import openeye.utils.CompatiblityAdapter;
 
 import com.google.common.base.Strings;

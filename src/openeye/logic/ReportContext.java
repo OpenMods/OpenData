@@ -3,7 +3,7 @@ package openeye.logic;
 import java.io.File;
 import java.util.Set;
 
-import openeye.reports.IReport;
+import openeye.protocol.reports.IReport;
 import openeye.struct.TypedCollections.ReportsList;
 
 import com.google.common.collect.Sets;

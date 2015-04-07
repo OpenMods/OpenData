@@ -6,7 +6,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import openeye.Log;
-import openeye.reports.ReportCrash;
+import openeye.protocol.reports.ReportCrash;
 import openeye.storage.IDataSource;
 
 import com.google.common.collect.HashMultiset;

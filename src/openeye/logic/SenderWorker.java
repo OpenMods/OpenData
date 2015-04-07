@@ -10,13 +10,13 @@ import openeye.Log;
 import openeye.net.GenericSender.FailedToReceive;
 import openeye.net.GenericSender.FailedToSend;
 import openeye.net.ReportSender;
-import openeye.reports.FileSignature;
-import openeye.reports.ReportCrash;
-import openeye.reports.ReportPing;
-import openeye.responses.IResponse;
+import openeye.protocol.FileSignature;
+import openeye.protocol.ITypedStruct;
+import openeye.protocol.reports.ReportCrash;
+import openeye.protocol.reports.ReportPing;
+import openeye.responses.IExecutableResponse;
 import openeye.storage.IDataSource;
 import openeye.storage.IWorkingStorage;
-import openeye.struct.ITypedStruct;
 import openeye.struct.TypedCollections.ReportsList;
 import openeye.struct.TypedCollections.ResponseList;
 
@@ -74,7 +74,7 @@ public class SenderWorker implements Runnable {
 
 		final ReportContext context = new ReportContext(collector);
 
-		for (IResponse request : requests)
+		for (IExecutableResponse request : requests)
 			request.execute(context);
 
 		dangerousSignatures.addAll(context.dangerousSignatures());

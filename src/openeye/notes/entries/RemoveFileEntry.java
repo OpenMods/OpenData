@@ -5,7 +5,7 @@ import java.io.File;
 import openeye.notes.NoteCategory;
 import openeye.notes.NoteLevels;
 import openeye.notes.WrappedChatComponent;
-import openeye.responses.ResponseRemoveFile;
+import openeye.responses.ResponseRemoveFileAction;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
@@ -15,7 +15,7 @@ public class RemoveFileEntry extends NoteEntry {
 	private final String signature;
 	private final String url;
 
-	public RemoveFileEntry(File file, ResponseRemoveFile msg) {
+	public RemoveFileEntry(File file, ResponseRemoveFileAction msg) {
 		super(file, NoteCategory.REMOVE_FILE, NoteLevels.REMOVE_FILE_LEVEL);
 		this.signature = msg.signature;
 		this.url = msg.url;
