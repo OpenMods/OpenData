@@ -12,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-    }   
+    }
 }
 
 repositories {
@@ -24,7 +24,7 @@ repositories {
 
 configurations {
     mergeJars
-    
+
     compile {
          extendsFrom mergeJars
     }
@@ -37,6 +37,7 @@ dependencies {
 apply plugin: 'forge'
 
 archivesBaseName = 'OpenEye'
+version = mc_ver + "-" + mod_version
 
 ext.env = System.getenv()
 if (env.BUILD_NUMBER != null) {
@@ -68,11 +69,11 @@ jar {
     manifest {
         attributes 'FMLCorePlugin': 'openeye.CorePlugin'
     }
-    
+
     from configurations.mergeJars.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
 task wrapper (type: Wrapper) {
     gradleVersion = "2.11"
-} 
+}
 
