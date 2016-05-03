@@ -3,12 +3,13 @@
   "modid" : "OpenEye",
   "name" : "OpenEye",
   "version" : "${version}",
-  "url" : "http://openmods.info",
+  "mcversion" : "${mc_version}",
+  "url" : "https://openeye.openmods.info",
   "credits" : "",
   "authors": [
   	"boq", "Mikee"
   ],
-  "description": "User protection, error management and analytics",
+  "description": "Exception and analytics collector",
   "logoFile" : "",
   "updateUrl" : "",
   "parent" : "",
