@@ -1,7 +1,3 @@
-if (!project.hasProperty('minecraft_version')) {
-    throw new GradleException('Usage: gradle build -Pminecraft_version=... ')
-}
-
 buildscript {
     repositories {
         mavenCentral()
@@ -15,17 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        switch (minecraft_version) {
-        case '1.6.4':
-            classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
-            break
-        case '1.7.2':
-        case '1.7.10':
-            classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-            break
-        default:
-            throw new GradleException('Invalid Minecraft version ' + minecraft_version)
-        }
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
     }   
 }
 
@@ -50,44 +36,20 @@ dependencies {
 
 apply plugin: 'forge'
 
-switch (minecraft_version) {
-case '1.6.4':
-    ext.forge_version = '9.11.1.964'
-    ext.src_extra = ['1.6.4']
-    break
-case '1.7.2':
-    ext.forge_version = '10.12.2.1121'
-    ext.src_extra = ['1.7', '1.7.2']
-    break
-case '1.7.10':
-    ext.forge_version = '10.13.0.1152'
-    ext.src_extra = ['1.7', '1.7.10']
-    break
-}
-
-ext.mod_version = '0.6'
-ext.mod_group = 'com.openmods.openeye'
-
 archivesBaseName = 'OpenEye'
-version = "${mod_version}-${minecraft_version}"
+version = mc_ver + "-" + mod_version
 
 ext.env = System.getenv()
 if (env.BUILD_NUMBER != null) {
     version += "-snapshot-" + env.BUILD_NUMBER
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir "src"
-            for (extra_src in src_extra) {
-                srcDir "src-${extra_src}"
-            }
-        }
-        resources {
-            srcDir "resources"
-        }
-    }
+minecraft {
+    version = mc_ver + "-" + forge_ver
+    assetDir = "run/assets"
+
+    replaceIn 'openeye/Mod.java'
+    replace "@VERSION@", mod_version
 }
 
 processResources {
@@ -95,20 +57,12 @@ processResources {
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version': mod_version
+        expand 'version':mod_version, 'mc_version':mc_ver
     }
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-}
-
-minecraft {
-    version = minecraft_version + "-" + forge_version
-    assetDir = "run/assets"
-
-    replaceIn 'openeye/Mod.java'
-    replace "@VERSION@", mod_version
 }
 
 jar {
@@ -118,4 +72,8 @@ jar {
     
     from configurations.mergeJars.collect { it.isDirectory() ? it : zipTree(it) }
 }
+
+task wrapper (type: Wrapper) {
+    gradleVersion = "1.8"
+} 
 
