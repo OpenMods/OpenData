@@ -44,6 +44,24 @@ if (env.BUILD_NUMBER != null) {
     version += "-snapshot-" + env.BUILD_NUMBER
 }
 
+ext.in_jenkins = (env.BUILD_TAG != null) // If this works, we'll assume we're in Jenkins atleast.
+
+def branch = null
+def hash = null
+def proc1 = "git rev-parse --short HEAD".execute()
+proc1.in.eachLine { line -> hash = line }
+proc1.err.eachLine { line -> println line }
+proc1.waitFor()
+
+if (!in_jenkins) {
+    def proc2 = "git rev-parse --abbrev-ref HEAD".execute()
+    proc2.in.eachLine { line -> branch = line }
+    proc2.err.eachLine { line -> println line }
+    proc2.waitFor()
+} else { // In Jenkins
+    branch = env.GIT_BRANCH.minus("origin/")
+}
+
 minecraft {
     version = mc_ver + "-" + forge_ver
     runDir = "run"
@@ -67,7 +85,14 @@ processResources {
 
 jar {
     manifest {
-        attributes 'FMLCorePlugin': 'openeye.CorePlugin'
+        attributes 'FMLCorePlugin': 'openeye.CorePlugin',
+                   'Git-Branch': branch,
+                   'Git-Hash': hash,
+                   'Jenkins-Build': in_jenkins
+
+        if (in_jenkins) {
+            attributes 'Jenkins-Tag': env.BUILD_TAG, 'Jenkins-ID': env.BUILD_ID
+        }
     }
 
     from configurations.mergeJars.collect { it.isDirectory() ? it : zipTree(it) }
