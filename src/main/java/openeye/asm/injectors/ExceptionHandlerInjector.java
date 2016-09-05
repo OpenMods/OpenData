@@ -22,7 +22,7 @@ public class ExceptionHandlerInjector extends MethodVisitor {
 	private boolean skipHandlers;
 
 	public ExceptionHandlerInjector(MethodVisitor mv, String... excNames) {
-		super(Opcodes.ASM4, mv);
+		super(Opcodes.ASM5, mv);
 
 		this.excNames = excNames;
 
@@ -63,6 +63,6 @@ public class ExceptionHandlerInjector extends MethodVisitor {
 		Log.info("Adding handler for '%s'", location);
 		super.visitInsn(Opcodes.DUP);
 		super.visitLdcInsn(location);
-		super.visitMethodInsn(Opcodes.INVOKESTATIC, callHackType.getInternalName(), callTarget.getName(), callTarget.getDescriptor());
+		super.visitMethodInsn(Opcodes.INVOKESTATIC, callHackType.getInternalName(), callTarget.getName(), callTarget.getDescriptor(), false);
 	}
 }

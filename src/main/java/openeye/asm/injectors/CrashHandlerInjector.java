@@ -14,7 +14,7 @@ public class CrashHandlerInjector extends MethodVisitor {
 	private final Type callHackType;
 
 	public CrashHandlerInjector(MethodVisitor mv) {
-		super(Opcodes.ASM4, mv);
+		super(Opcodes.ASM5, mv);
 
 		try {
 			fileWriterClose = Method.getMethod(FileWriter.class.getMethod("close"));
@@ -26,11 +26,11 @@ public class CrashHandlerInjector extends MethodVisitor {
 	}
 
 	@Override
-	public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-		super.visitMethodInsn(opcode, owner, name, desc);
+	public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean intf) {
+		super.visitMethodInsn(opcode, owner, name, desc, intf);
 		if (fileWriterClose.getName().equals(name) && fileWriterClose.getDescriptor().equals(desc)) {
 			visitVarInsn(Opcodes.ALOAD, 0);
-			visitMethodInsn(Opcodes.INVOKESTATIC, callHackType.getInternalName(), callTarget.getName(), callTarget.getDescriptor());
+			visitMethodInsn(Opcodes.INVOKESTATIC, callHackType.getInternalName(), callTarget.getName(), callTarget.getDescriptor(), false);
 		}
 	}
 }
