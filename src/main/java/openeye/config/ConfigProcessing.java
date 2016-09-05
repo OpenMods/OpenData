@@ -1,14 +1,12 @@
 package openeye.config;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-
-import openeye.Log;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import openeye.Log;
 
 public class ConfigProcessing {
 

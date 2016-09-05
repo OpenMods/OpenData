@@ -1,19 +1,28 @@
 package openeye.config;
 
-import java.io.*;
-import java.util.Map;
-
-import openeye.Log;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Table;
 import com.google.common.io.Closer;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Map;
+import openeye.Log;
 
 public class GsonConfigProcessingEngine implements IConfigProcessingEngine {
 

@@ -1,11 +1,18 @@
 package openeye.logic;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 import openeye.Log;
 import openeye.net.GenericSender.FailedToReceive;
 import openeye.net.GenericSender.FailedToSend;
@@ -19,11 +26,6 @@ import openeye.storage.IDataSource;
 import openeye.storage.IWorkingStorage;
 import openeye.struct.TypedCollections.ReportsList;
 import openeye.struct.TypedCollections.ResponseList;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class SenderWorker implements Runnable {
 

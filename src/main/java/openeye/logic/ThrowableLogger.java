@@ -1,17 +1,15 @@
 package openeye.logic;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Queues;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 import openeye.Log;
 import openeye.protocol.reports.ReportCrash;
 import openeye.storage.IDataSource;
-
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Queues;
 
 public class ThrowableLogger {
 

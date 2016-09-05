@@ -1,14 +1,18 @@
 package openeye.storage;
 
-import java.io.*;
+import com.google.common.base.Throwables;
+import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import com.google.common.base.Throwables;
-import com.google.gson.Gson;
 
 public class GsonSessionStorage<T> implements IAppendableStorage<T> {
 

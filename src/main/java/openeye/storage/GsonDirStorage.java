@@ -1,9 +1,8 @@
 package openeye.storage;
 
-import java.io.File;
-
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
+import java.io.File;
 
 public abstract class GsonDirStorage<T> extends GsonStorageBase<T> implements IAppendableStorage<T> {
 

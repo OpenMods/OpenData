@@ -1,22 +1,25 @@
 package openeye.notes;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import openeye.logic.ModState;
-import openeye.logic.StateHolder;
-import openeye.logic.Storages;
-import openeye.notes.entries.*;
-import openeye.responses.ResponseKnownCrashAction;
-import openeye.responses.ResponseModMsgAction;
-import openeye.responses.ResponseRemoveFileAction;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import openeye.logic.ModState;
+import openeye.logic.StateHolder;
+import openeye.logic.Storages;
+import openeye.notes.entries.MsgNoteEntry;
+import openeye.notes.entries.NoteEntry;
+import openeye.notes.entries.RemoveFileEntry;
+import openeye.notes.entries.ReportedCrashEntry;
+import openeye.notes.entries.ResolvedCrashEntry;
+import openeye.notes.entries.SystemNoteEntry;
+import openeye.responses.ResponseKnownCrashAction;
+import openeye.responses.ResponseModMsgAction;
+import openeye.responses.ResponseRemoveFileAction;
 
 public class NoteCollector {
 

@@ -1,8 +1,7 @@
 package openeye.config;
 
-import java.io.File;
-
 import com.google.common.collect.Table;
+import java.io.File;
 
 public interface IConfigProcessingEngine {
 	public boolean loadConfig(File source, Table<String, String, IConfigPropertyHolder> properties);

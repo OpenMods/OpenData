@@ -1,21 +1,22 @@
 package openeye.logic;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import java.io.File;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.ProtocolException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import net.minecraft.world.World;
 import net.minecraft.world.storage.ISaveHandler;
 import openeye.Log;
 import openeye.logic.Sanitizer.ITransformer;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class Sanitizers {
 	public static final int PRIORITY_SAVE_DIR = 1300;

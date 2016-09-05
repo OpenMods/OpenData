@@ -2,7 +2,6 @@ package openeye.logic;
 
 import java.io.File;
 import java.util.Set;
-
 import openeye.protocol.reports.IReport;
 
 public interface IContext {

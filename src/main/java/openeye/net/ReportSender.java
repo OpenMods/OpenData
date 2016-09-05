@@ -1,13 +1,17 @@
 package openeye.net;
 
-import java.io.*;
+import com.google.common.base.Charsets;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
-
 import openeye.logic.GsonUtils;
 import openeye.struct.TypedCollections.ReportsList;
 import openeye.struct.TypedCollections.ResponseList;
-
-import com.google.common.base.Charsets;
 
 public class ReportSender extends GenericSender<ReportsList, ResponseList> {
 

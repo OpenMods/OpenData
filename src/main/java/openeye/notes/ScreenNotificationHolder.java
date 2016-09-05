@@ -1,6 +1,9 @@
 package openeye.notes;
 
-import net.minecraft.util.*;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 
 public class ScreenNotificationHolder {
 	private static class Entry {

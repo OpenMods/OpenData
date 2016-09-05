@@ -1,10 +1,12 @@
 package openeye.notes;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.SyntaxErrorException;
@@ -12,10 +14,6 @@ import openeye.logic.GsonUtils;
 import openeye.notes.entries.NoteEntry;
 import openeye.storage.GsonSimpleStorage;
 import openeye.storage.IAppendableStorage;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class CommandNotes implements ICommand {
 

@@ -1,28 +1,14 @@
 package openeye.logic;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.security.CodeSource;
-import java.util.*;
-
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.ITweaker;
-import net.minecraft.launchwrapper.LaunchClassLoader;
-import openeye.Log;
-import openeye.protocol.Artifact;
-import openeye.protocol.FileSignature;
-import openeye.protocol.reports.ReportCrash.FileState;
-import openeye.protocol.reports.ReportCrash.ModState;
-import openeye.protocol.reports.*;
-import openeye.protocol.reports.ReportFileInfo.SerializableMod;
-import openeye.protocol.reports.ReportFileInfo.SerializableTweak;
-
 import com.google.common.base.Strings;
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
-
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.ModMetadata;
@@ -33,6 +19,26 @@ import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.ReflectionHelper;
+import java.io.File;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.security.CodeSource;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.ITweaker;
+import net.minecraft.launchwrapper.LaunchClassLoader;
+import openeye.Log;
+import openeye.protocol.Artifact;
+import openeye.protocol.FileSignature;
+import openeye.protocol.reports.ReportCrash.FileState;
+import openeye.protocol.reports.ReportCrash.ModState;
+import openeye.protocol.reports.ReportFileContents;
+import openeye.protocol.reports.ReportFileInfo;
+import openeye.protocol.reports.ReportFileInfo.SerializableMod;
+import openeye.protocol.reports.ReportFileInfo.SerializableTweak;
 
 public class ModMetaCollector {
 

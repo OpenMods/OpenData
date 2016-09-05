@@ -1,13 +1,11 @@
 package openeye.logic;
 
-import java.util.Map;
-import java.util.Set;
-
-import net.minecraft.launchwrapper.Launch;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import java.util.Map;
+import java.util.Set;
+import net.minecraft.launchwrapper.Launch;
 
 public class TagsCollector {
 
