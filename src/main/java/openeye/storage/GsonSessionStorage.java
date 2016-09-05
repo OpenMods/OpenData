@@ -35,7 +35,9 @@ public class GsonSessionStorage<T> implements IAppendableStorage<T> {
 	}
 
 	private static String generateId() {
-		return FORMATTER.format(new Date());
+		synchronized (FORMATTER) {
+			return FORMATTER.format(new Date());
+		}
 	}
 
 	@Override

@@ -27,7 +27,9 @@ public abstract class GsonStorageBase<T> {
 	}
 
 	protected static String generateId() {
-		return FORMATTER.format(new Date());
+		synchronized (FORMATTER) {
+			return FORMATTER.format(new Date());
+		}
 	}
 
 	protected String generateFilename(String prefix, String id) {

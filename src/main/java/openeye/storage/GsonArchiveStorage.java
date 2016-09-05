@@ -30,7 +30,7 @@ public class GsonArchiveStorage<T> extends GsonDirStorage<T> {
 	}
 
 	@Override
-	protected InputStream createInputStream(File file) throws IOException {
+	protected InputStream createInputStream(File file) {
 		throw new UnsupportedOperationException();
 	}
 
