@@ -73,8 +73,7 @@ public class Sanitizers {
 			if (File.separatorChar == '\\') {
 				targetReversed = targetNormal.replace('\\', '/');
 				targetDoubled = targetNormal.replace("\\", "\\\\");
-			}
-			else if (File.separatorChar == '/') {
+			} else if (File.separatorChar == '/') {
 				targetReversed = targetNormal.replace('/', '\\');
 				targetDoubled = targetNormal.replace("/", "\\\\");
 			} else {
