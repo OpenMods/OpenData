@@ -45,7 +45,7 @@ public class ReportBuilders {
 	private static final Random RANDOM = new Random();
 
 	private static String getSide() {
-		return FMLCommonHandler.instance().getSide().toString().toLowerCase();
+		return FMLCommonHandler.instance().getSide().toString().toLowerCase(Locale.ENGLISH);
 	}
 
 	public static ReportKnownFiles buildKnownFilesReport(ModMetaCollector data) {
