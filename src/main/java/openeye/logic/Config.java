@@ -15,8 +15,14 @@ public class Config {
 	@ConfigProperty(category = "data")
 	public static Set<String> tags = ImmutableSet.of();
 
-	@ConfigProperty(category = "data", comment = "Send only information about files and crashes - no analytics")
+	@ConfigProperty(category = "data", comment = "Send only basic information about files instead of full analytics. Only works when 'sendModList' is set to true")
 	public static boolean scanOnly = false;
+
+	@ConfigProperty(category = "data", comment = "If false, skips sending any mod list - ether basic file information or analytics. OpenEye will respond with information about files unknown to server")
+	public static boolean sendModList = true;
+
+	@ConfigProperty(category = "data", comment = "If false, skips sending pending crash reports. Please note that pending crashe reports will not be automatically removed.")
+	public static boolean sendCrashes = false;
 
 	@ConfigProperty(category = "data", comment = "Maximum number of crash reports from single category sent per single run")
 	public static int sentCrashReportsLimit = 20;
