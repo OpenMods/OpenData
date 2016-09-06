@@ -1,8 +1,8 @@
 package openeye.config;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +13,7 @@ public class ConfigProcessing {
 	public static final IConfigProcessingEngine GSON = new GsonConfigProcessingEngine();
 
 	private static Table<String, String, IConfigPropertyHolder> categorizeProperties(Collection<IConfigPropertyHolder> properties) {
-		Table<String, String, IConfigPropertyHolder> result = HashBasedTable.create();
+		Table<String, String, IConfigPropertyHolder> result = TreeBasedTable.create();
 
 		for (IConfigPropertyHolder property : properties) {
 			IConfigPropertyHolder prev = result.put(property.category(), property.name(), property);
