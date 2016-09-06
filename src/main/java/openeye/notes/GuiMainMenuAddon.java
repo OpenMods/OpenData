@@ -33,11 +33,21 @@ public class GuiMainMenuAddon extends GuiMainMenu {
 		}
 	}
 
-	protected static GuiButtonNotes getOrCreateInfoButton(GuiScreen screen, List<GuiButton> buttonList) {
+	private static int getX(GuiScreen screen, boolean isAbsolute, int delta) {
+		return (isAbsolute? 0 : screen.width / 2) + delta;
+	}
+
+	private static int getY(GuiScreen screen, boolean isAbsolute, int delta) {
+		return (isAbsolute? 0 : screen.height / 4) + delta;
+	}
+
+	private static GuiButtonNotes getOrCreateInfoButton(GuiScreen screen, List<GuiButton> buttonList) {
 		for (GuiButton button : buttonList)
 			if (button instanceof GuiButtonNotes) return (GuiButtonNotes)button;
 
-		GuiButtonNotes buttonNotes = new GuiButtonNotes(BUTTON_NOTES_ID, screen.width / 2 + 104, screen.height / 4 + 48 + 24 * 2);
+		GuiButtonNotes buttonNotes = new GuiButtonNotes(BUTTON_NOTES_ID,
+				getX(screen, Config.isNotesButtonPosAbsolute, Config.notesButtonPosX),
+				getY(screen, Config.isNotesButtonPosAbsolute, Config.notesButtonPosY));
 		buttonList.add(buttonNotes);
 		return buttonNotes;
 	}
@@ -45,7 +55,12 @@ public class GuiMainMenuAddon extends GuiMainMenu {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicktime) {
 		super.drawScreen(mouseX, mouseY, partialTicktime);
-		if (Config.mainScreenExtraLine && notification != null) drawCenteredString(Minecraft.getMinecraft().fontRenderer, notification.toStringWithFormatting(true), this.width / 2, this.height / 4 + 48 + 24 * 3, 0xFFFFFF);
+		if (Config.mainScreenExtraLine && notification != null)
+			drawCenteredString(Minecraft.getMinecraft().fontRenderer,
+					notification.toStringWithFormatting(true),
+					getX(this, Config.isExtraLinePosAbsolute, Config.extraLinePosX),
+					getY(this, Config.isExtraLinePosAbsolute, Config.extraLinePosY),
+					0xFFFFFF);
 	}
 
 	@Override
