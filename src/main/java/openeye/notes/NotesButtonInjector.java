@@ -35,17 +35,32 @@ public class NotesButtonInjector {
 		}
 	}
 
-	protected static GuiButtonNotes getOrCreateInfoButton(GuiScreen screen, List<GuiButton> buttonList) {
+	private static int getX(GuiScreen screen, boolean isAbsolute, int delta) {
+		return (isAbsolute? 0 : screen.width / 2) + delta;
+	}
+
+	private static int getY(GuiScreen screen, boolean isAbsolute, int delta) {
+		return (isAbsolute? 0 : screen.height / 4) + delta;
+	}
+
+	private static GuiButtonNotes getOrCreateInfoButton(GuiScreen screen, List<GuiButton> buttonList) {
 		for (GuiButton button : buttonList)
 			if (button instanceof GuiButtonNotes) return (GuiButtonNotes)button;
 
-		GuiButtonNotes buttonNotes = new GuiButtonNotes(BUTTON_NOTES_ID, screen.width / 2 + 104, screen.height / 4 + 48 + 24 * 2);
+		GuiButtonNotes buttonNotes = new GuiButtonNotes(BUTTON_NOTES_ID,
+				getX(screen, Config.isNotesButtonPosAbsolute, Config.notesButtonPosX),
+				getY(screen, Config.isNotesButtonPosAbsolute, Config.notesButtonPosY));
 		buttonList.add(buttonNotes);
 		return buttonNotes;
 	}
 
 	public static void onScreenDraw(GuiScreen screen) {
-		if (Config.mainScreenExtraLine && notification != null) screen.drawCenteredString(Minecraft.getMinecraft().fontRenderer, notification.getFormatted(), screen.width / 2, screen.height / 4 + 48 + 24 * 3, 0xFFFFFF);
+		if (Config.mainScreenExtraLine && notification != null)
+			screen.drawCenteredString(Minecraft.getMinecraft().fontRenderer,
+					notification.getFormatted(),
+					getX(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosX),
+					getY(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosY),
+					0xFFFFFF);
 	}
 
 	public static void onActionPerformed(Minecraft mc, GuiScreen screen, GuiButton button) {

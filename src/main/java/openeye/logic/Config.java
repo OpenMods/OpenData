@@ -42,6 +42,24 @@ public class Config {
 	@ConfigProperty(category = "gui", comment = "Enables extra line in main menu screen under buttons (if true, only note button will be displayed)")
 	public static boolean mainScreenExtraLine = true;
 
+	@ConfigProperty(category = "gui", comment = "X coordinate of notes button")
+	public static int notesButtonPosX = 104;
+
+	@ConfigProperty(category = "gui", comment = "Y coordinate of notes button")
+	public static int notesButtonPosY = 96;
+
+	@ConfigProperty(category = "gui", comment = "If false, X and Y coordinates of notes button will be measured from screen width/2 and height/4 (standard MC algorithm)")
+	public static boolean isNotesButtonPosAbsolute = false;
+
+	@ConfigProperty(category = "gui", comment = "X coordinate of notification line")
+	public static int extraLinePosX = 0;
+
+	@ConfigProperty(category = "gui", comment = "Y coordinate of notification line")
+	public static int extraLinePosY = 120;
+
+	@ConfigProperty(category = "gui", comment = "If false, X and Y coordinates of notification line will be measured from screen width/2 and height/4 (standard MC algorithm)")
+	public static boolean isExtraLinePosAbsolute = false;
+
 	public static void load(File mcLocation) {
 		try {
 			File configFolder = new File(mcLocation, "config");
