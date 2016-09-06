@@ -105,18 +105,21 @@ public class SenderWorker implements Runnable {
 	}
 
 	private static void removePendingCrashes() {
-		final IWorkingStorage<ReportCrash> pendingCrashes = Storages.instance().pendingCrashes;
+		if (Config.sendCrashes) {
+			final IWorkingStorage<ReportCrash> pendingCrashes = Storages.instance().pendingCrashes;
 
-		for (IDataSource<ReportCrash> crash : pendingCrashes.listAll())
-			crash.delete();
+			for (IDataSource<ReportCrash> crash : pendingCrashes.listAll())
+				crash.delete();
+		}
 	}
 
 	protected ReportsList createInitialReport(ModMetaCollector collector) {
 		final ReportsList result = new ReportsList();
 
 		try {
-			createAnalyticsReport(collector, result);
-			result.addAll(listPendingCrashes());
+			if (Config.sendModList) createAnalyticsReport(collector, result);
+			if (Config.pingOnInitialReport) result.add(new ReportPing());
+			if (Config.sendCrashes) result.addAll(listPendingCrashes());
 		} catch (Exception e) {
 			logException(e, "Failed to create initial report");
 		}
@@ -131,8 +134,6 @@ public class SenderWorker implements Runnable {
 			} else {
 				result.add(ReportBuilders.buildAnalyticsReport(collector, state.installedMods));
 			}
-
-			if (Config.pingOnInitialReport) result.add(new ReportPing());
 		} catch (Exception e) {
 			logException(e, "Failed to create analytics report");
 		}
