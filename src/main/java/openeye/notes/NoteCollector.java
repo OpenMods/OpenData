@@ -11,6 +11,7 @@ import java.util.List;
 import openeye.logic.ModState;
 import openeye.logic.StateHolder;
 import openeye.logic.Storages;
+import openeye.net.GenericSender.EncryptionState;
 import openeye.notes.entries.MsgNoteEntry;
 import openeye.notes.entries.NoteEntry;
 import openeye.notes.entries.RemoveFileEntry;
@@ -45,7 +46,7 @@ public class NoteCollector {
 
 	private NoteCollector() {}
 
-	public void addNote(NoteEntry entry) {
+	public synchronized void addNote(NoteEntry entry) {
 		notes.add(entry);
 		maxCategory = Ordering.natural().max(maxCategory, entry.category);
 		important |= entry.category.important;
@@ -69,6 +70,26 @@ public class NoteCollector {
 			addNote(new ResolvedCrashEntry(note));
 			menuLine.signalKnownCrash();
 		}
+	}
+
+	public void addNote(EncryptionState encryptionState) {
+		switch (encryptionState) {
+			case NO_ROOT_CERTIFICATE:
+				addNote(new SystemNoteEntry(NoteCategory.WARNING, 11,
+						WrappedChatComponent.createTranslation("openeye.note.title.old_java"),
+						WrappedChatComponent.createTranslation("openeye.note.content.old_java_recoverable"),
+						"http://lmgtfy.com/?q=download+java"));
+				break;
+			case NOT_SUPPORTED:
+				addNote(new SystemNoteEntry(NoteCategory.ALERT, 22,
+						WrappedChatComponent.createTranslation("openeye.note.title.old_java"),
+						WrappedChatComponent.createTranslation("openeye.note.content.old_java_total_failure"),
+						"http://lmgtfy.com/?q=download+java"));
+				break;
+			default:
+				break;
+		}
+
 	}
 
 	public boolean isEmpty() {
@@ -105,7 +126,6 @@ public class NoteCollector {
 		ModState state = StateHolder.state();
 
 		if (!state.infoNotesDisplayed) {
-
 			addIntroNote(1, "http://openeye.openmods.info");
 			addIntroNote(2, "http://openeye.openmods.info");
 			addIntroNote(3, "http://openeye.openmods.info/storage-policy");
