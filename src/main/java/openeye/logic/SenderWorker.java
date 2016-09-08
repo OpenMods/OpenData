@@ -14,9 +14,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import openeye.Log;
-import openeye.net.GenericSender.FailedToReceive;
-import openeye.net.GenericSender.FailedToSend;
 import openeye.net.ReportSender;
+import openeye.notes.NoteCollector;
 import openeye.protocol.FileSignature;
 import openeye.protocol.ITypedStruct;
 import openeye.protocol.reports.ReportCrash;
@@ -29,7 +28,9 @@ import openeye.struct.TypedCollections.ResponseList;
 
 public class SenderWorker implements Runnable {
 
-	private static final String URL = "http://openeye.openmods.info/api/v1/data";
+	private static final String API_HOST = "openeye.openmods.info";
+
+	private static final String API_PATH = "/api/v1/data";
 
 	private final Future<ModMetaCollector> collector;
 
@@ -143,7 +144,7 @@ public class SenderWorker implements Runnable {
 		ReportsList currentReports = createInitialReport(collector);
 
 		try {
-			ReportSender sender = new ReportSender(URL);
+			ReportSender sender = new ReportSender(API_HOST, API_PATH);
 
 			while (!currentReports.isEmpty()) {
 				filterStructs(currentReports, Config.reportsBlacklist);
@@ -167,13 +168,11 @@ public class SenderWorker implements Runnable {
 			}
 
 			removePendingCrashes();
-		} catch (FailedToSend e) {
-			Log.warn(e, "Failed to send report to %s", URL);
-		} catch (FailedToReceive e) {
-			Log.warn(e, "Failed to receive response from %s", URL);
+			NoteCollector.INSTANCE.addNote(sender.getEncryptionState());
 		} catch (Exception e) {
-			Log.warn(e, "Failed to send report to %s", URL);
+			Log.warn(e, "Failed to send report to " + API_HOST + API_PATH);
 		}
+
 	}
 
 	@Override

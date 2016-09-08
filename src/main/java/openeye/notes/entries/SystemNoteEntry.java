@@ -12,7 +12,11 @@ public class SystemNoteEntry extends NoteEntry {
 	private final String url;
 
 	public SystemNoteEntry(int level, WrappedChatComponent title, WrappedChatComponent contents, String url) {
-		super(NoteCategory.SYSTEM_INFO, level);
+		this(NoteCategory.SYSTEM_INFO, level, title, contents, url);
+	}
+
+	public SystemNoteEntry(NoteCategory category, int level, WrappedChatComponent title, WrappedChatComponent contents, String url) {
+		super(category, level);
 		this.title = title;
 		this.contents = contents;
 		this.url = url;

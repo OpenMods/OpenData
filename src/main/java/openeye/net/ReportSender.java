@@ -8,19 +8,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.net.URL;
 import openeye.logic.GsonUtils;
 import openeye.struct.TypedCollections.ReportsList;
 import openeye.struct.TypedCollections.ResponseList;
 
 public class ReportSender extends GenericSender<ReportsList, ResponseList> {
 
-	public ReportSender(URL url) {
-		super(url);
-	}
-
-	public ReportSender(String url) {
-		super(url);
+	public ReportSender(String host, String path) {
+		super(host, path);
 	}
 
 	@Override
