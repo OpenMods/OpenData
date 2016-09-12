@@ -214,7 +214,7 @@ public class ModMetaCollector {
 	private final ASMDataTable table;
 
 	ModMetaCollector(ASMDataTable table, LaunchClassLoader loader, Collection<ITweaker> tweakers) {
-		Log.info("Starting mod metadatadata collection");
+		Log.debug("Starting mod metadata collection");
 		this.table = table;
 		long start = System.nanoTime();
 		Collection<ModCandidate> allCandidates = stealCandidates(table);
@@ -225,7 +225,7 @@ public class ModMetaCollector {
 
 		fillSignaturesMap();
 		operationDuration = System.nanoTime() - start;
-		Log.info("Collection of mod metadata finished. Duration: %.4f ms", operationDuration / 1000000.0d);
+		Log.debug("Collection of mod metadata finished. Duration: %.4f ms", operationDuration / 1000000.0d);
 	}
 
 	private static FileMeta fromModCandidate(ModCandidate candidate) {

@@ -79,7 +79,7 @@ public class ThrowableLogger {
 		locationCounters.add(location);
 
 		if (locationCounters.count(location) > Config.sentCrashReportsLimit) {
-			Log.info("Limit reached for location %s, skipping %s", location, throwable);
+			Log.debug("Limit reached for location %s, skipping %s", location, throwable);
 			return;
 		}
 
