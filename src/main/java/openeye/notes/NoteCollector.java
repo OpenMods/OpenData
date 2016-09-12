@@ -126,15 +126,15 @@ public class NoteCollector {
 		ModState state = StateHolder.state();
 
 		if (!state.infoNotesDisplayed) {
-			addIntroNote(1, "http://openeye.openmods.info");
-			addIntroNote(2, "http://openeye.openmods.info");
-			addIntroNote(3, "http://openeye.openmods.info/storage-policy");
+			addIntroNote(1, "https://openeye.openmods.info");
+			addIntroNote(2, "https://openeye.openmods.info");
+			addIntroNote(3, "https://openeye.openmods.info/storage-policy");
 
 			Storages storages = Storages.instance();
 			if (storages != null) addIntroNote(4, storages.reportsDir.toURI().toString());
 
 			addIntroNote(5, "https://github.com/OpenMods/OpenData");
-			addIntroNote(6, "http://openeye.openmods.info/configuration");
+			addIntroNote(6, "https://openeye.openmods.info/configuration");
 			state.infoNotesDisplayed = true;
 		}
 
