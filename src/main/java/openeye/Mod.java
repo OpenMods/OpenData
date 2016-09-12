@@ -40,7 +40,7 @@ public class Mod extends DummyModContainer {
 		meta.name = "OpenEye";
 		meta.version = "@VERSION@";
 		meta.authorList = Arrays.asList("boq", "Mikee");
-		meta.url = "http://openmods.info/";
+		meta.url = "https://openmods.info/";
 		meta.description = "We see you...";
 	}
 
