@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -77,11 +78,18 @@ public abstract class GenericSender<I, O> {
 		UNKNOWN;
 	}
 
-	private final String host;
+	private enum HttpStatus {
+		OK,
+		REDIRECT;
+	}
 
-	private final String path;
+	private String host;
 
-	private int retries = 2;
+	private String path;
+
+	private int maxRetries = 2;
+
+	private int maxRedirects = 5;
 
 	private int timeout = 20000;
 
@@ -92,8 +100,12 @@ public abstract class GenericSender<I, O> {
 		this.path = path;
 	}
 
-	public void setRetries(int retries) {
-		this.retries = retries;
+	public void setMaxRetries(int maxRetries) {
+		this.maxRetries = maxRetries;
+	}
+
+	public void setMaxRedirects(int maxRedirects) {
+		this.maxRedirects = maxRedirects;
 	}
 
 	public void setTimeout(int timeout) {
@@ -105,7 +117,10 @@ public abstract class GenericSender<I, O> {
 	}
 
 	public O sendAndReceive(I request) {
-		for (int retry = 0; retry < retries; retry++) {
+		int retry = 0;
+		int redirect = 0;
+		while (retry < maxRetries) {
+			Log.info("Trying to connect to %s%s, retry %s, redirect %s", host, path, retry, redirect);
 			try {
 				final HttpURLConnection connection;
 				try {
@@ -118,8 +133,25 @@ public abstract class GenericSender<I, O> {
 				}
 
 				trySendRequest(request, connection);
-				checkStatusCode(connection);
-				return tryReceiveResponse(connection);
+				final HttpStatus statusCode = checkStatusCode(connection);
+				if (statusCode == HttpStatus.REDIRECT) {
+					if (redirect++ >= maxRedirects) throw new HttpTransactionException("Too many redirects");
+					final String redirectPath = connection.getHeaderField("Location");
+					if (redirectPath == null) throw new HttpTransactionException("Invalid redirect");
+					try {
+						final URL url = new URL(redirectPath);
+						// ignoring protocol and port - there is no valid scenario when this is needed
+						this.host = url.getHost();
+						this.path = url.getPath();
+					} catch (MalformedURLException e) {
+						throw new HttpTransactionException("Invalid redirect: '%s'", redirectPath);
+					}
+					connection.disconnect();
+					retry = 0;
+					continue;
+				} else {
+					return tryReceiveResponse(connection);
+				}
 			} catch (HttpTransactionException e) {
 				throw e;
 			} catch (SocketTimeoutException e) {
@@ -127,6 +159,7 @@ public abstract class GenericSender<I, O> {
 			} catch (Throwable t) {
 				Log.warn(t, "Failed to send/receive report (retry %d)", retry);
 			}
+			retry++;
 		}
 
 		throw new HttpTransactionException("Too much retries");
@@ -136,22 +169,30 @@ public abstract class GenericSender<I, O> {
 		// non-business versions of Java 6 can't handle our awesome certificates
 		if (System.getProperty("java.specification.version").equals("1.6")) {
 			final URL url = new URL("http", host, path);
-			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-			configureAndConnect(url, connection);
-			return Pair.of(connection, EncryptionState.NOT_SUPPORTED);
+			return createHttpConnection(url);
 		} else {
 			final URL url = new URL("https", host, path);
-			try {
-				HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-				configureAndConnect(url, connection);
-				return Pair.of(connection, EncryptionState.OK);
-			} catch (SSLHandshakeException e) {
-				HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
-				final SSLSocketFactory sslSocketFactory = createSocketFactoryWithRoots(bundledRoots);
-				connection.setSSLSocketFactory(sslSocketFactory);
-				configureAndConnect(url, connection);
-				return Pair.of((HttpURLConnection)connection, EncryptionState.NO_ROOT_CERTIFICATE);
-			}
+			return createHttpsConnection(url);
+		}
+	}
+
+	private Pair<HttpURLConnection, EncryptionState> createHttpConnection(final URL url) throws IOException, ProtocolException {
+		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+		configureAndConnect(url, connection);
+		return Pair.of(connection, EncryptionState.NOT_SUPPORTED);
+	}
+
+	private Pair<HttpURLConnection, EncryptionState> createHttpsConnection(final URL url) throws IOException, ProtocolException, GeneralSecurityException {
+		try {
+			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			configureAndConnect(url, connection);
+			return Pair.of(connection, EncryptionState.OK);
+		} catch (SSLHandshakeException e) {
+			HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
+			final SSLSocketFactory sslSocketFactory = createSocketFactoryWithRoots(bundledRoots);
+			connection.setSSLSocketFactory(sslSocketFactory);
+			configureAndConnect(url, connection);
+			return Pair.of((HttpURLConnection)connection, EncryptionState.NO_ROOT_CERTIFICATE);
 		}
 	}
 
@@ -166,7 +207,9 @@ public abstract class GenericSender<I, O> {
 		connection.setRequestProperty("Content-Type", "application/json");
 		connection.setRequestProperty("User-Agent", "Die Fledermaus/11");
 		connection.setRequestProperty("Host", url.getAuthority());
-		connection.setInstanceFollowRedirects(true);
+		// Doing manual redirects
+		// Partially for logging and partially since parts of behaviour are controlled by global flags
+		connection.setInstanceFollowRedirects(false);
 		connection.connect();
 	}
 
@@ -182,11 +225,16 @@ public abstract class GenericSender<I, O> {
 		}
 	}
 
-	protected void checkStatusCode(HttpURLConnection connection) throws IOException {
+	protected HttpStatus checkStatusCode(HttpURLConnection connection) throws IOException {
 		int statusCode = connection.getResponseCode();
 		switch (statusCode) {
 			case HttpURLConnection.HTTP_OK:
-				break;
+			case HttpURLConnection.HTTP_NO_CONTENT:
+				return HttpStatus.OK;
+			case 307: // Temporary Redirect
+			case 308: // Permanent Redirect
+				// 301 and 302 are invalid, since method cannot change
+				return HttpStatus.REDIRECT;
 			case HttpURLConnection.HTTP_NOT_FOUND:
 				throw new HttpTransactionException("Endpoint not found");
 			case HttpURLConnection.HTTP_INTERNAL_ERROR:
