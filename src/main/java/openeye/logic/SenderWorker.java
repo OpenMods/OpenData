@@ -66,7 +66,7 @@ public class SenderWorker implements Runnable {
 			final ITypedStruct struct = it.next();
 			final String type = struct.getType();
 			if (blacklist.contains(type)) {
-				Log.info("Filtered type %s(%s) from list, since it's on blacklist", type, struct);
+				Log.debug("Filtered type %s(%s) from list, since it's on blacklist", type, struct);
 				it.remove();
 			}
 		}

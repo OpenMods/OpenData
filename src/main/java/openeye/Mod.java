@@ -70,7 +70,7 @@ public class Mod extends DummyModContainer {
 		if (Proxy.instance().isSnooperEnabled()) {
 			worker = new SenderWorker(collector, StateHolder.state());
 			worker.start();
-		} else Log.info("Snooper disabled, OpenEye will not send or receive any data from server");
+		} else Log.debug("Snooper disabled, OpenEye will not send or receive any data from server");
 	}
 
 	private static void startMetadataCollection(RunnableFuture<ModMetaCollector> collector) {

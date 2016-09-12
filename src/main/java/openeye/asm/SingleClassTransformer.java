@@ -21,7 +21,7 @@ public class SingleClassTransformer extends ClassVisitor {
 		MethodVisitor parent = super.visitMethod(access, name, desc, signature, exceptions);
 		for (MethodCodeInjector injector : methodInjectors)
 			if (injector.matcher.match(name, desc)) {
-				Log.info("Applying method transformer %s for method %s(%s)", injector.name, name, desc);
+				Log.debug("Applying method transformer %s for method %s(%s)", injector.name, name, desc);
 				return injector.createVisitor(parent);
 			}
 
