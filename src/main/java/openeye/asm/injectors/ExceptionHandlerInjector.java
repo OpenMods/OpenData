@@ -60,7 +60,7 @@ public class ExceptionHandlerInjector extends MethodVisitor {
 	}
 
 	private void addHandler(String location) {
-		Log.info("Adding handler for '%s'", location);
+		Log.debug("Adding handler for '%s'", location);
 		super.visitInsn(Opcodes.DUP);
 		super.visitLdcInsn(location);
 		super.visitMethodInsn(Opcodes.INVOKESTATIC, callHackType.getInternalName(), callTarget.getName(), callTarget.getDescriptor());

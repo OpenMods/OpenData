@@ -120,7 +120,7 @@ public abstract class GenericSender<I, O> {
 		int retry = 0;
 		int redirect = 0;
 		while (retry < maxRetries) {
-			Log.info("Trying to connect to %s%s, retry %s, redirect %s", host, path, retry, redirect);
+			Log.debug("Trying to connect to %s%s, retry %s, redirect %s", host, path, retry, redirect);
 			try {
 				final HttpURLConnection connection;
 				try {
