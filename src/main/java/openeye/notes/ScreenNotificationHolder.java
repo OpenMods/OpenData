@@ -8,11 +8,11 @@ import net.minecraft.util.IChatComponent;
 public class ScreenNotificationHolder {
 	private static class Entry {
 		final int level;
-		public final WrappedChatComponent msg;
+		public final IChatComponent msg;
 
 		private Entry(int level, IChatComponent msg) {
 			this.level = level;
-			this.msg = new WrappedChatComponent(msg);
+			this.msg = msg;
 		}
 	}
 
@@ -44,7 +44,7 @@ public class ScreenNotificationHolder {
 		addLine(256, new ChatComponentTranslation("openeye.main_screen.intro").setChatStyle(INTRO_STYLE));
 	}
 
-	public WrappedChatComponent getSelectedLine() {
+	public IChatComponent getSelectedLine() {
 		return selectedLine != null? selectedLine.msg : null;
 	}
 }

@@ -1,8 +1,10 @@
 package openeye.notes.entries;
 
 import com.google.common.base.Strings;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.IChatComponent;
 import openeye.notes.NoteCategory;
-import openeye.notes.WrappedChatComponent;
 import openeye.responses.ResponseKnownCrashAction;
 
 public class ResolvedCrashEntry extends NoteEntry {
@@ -16,13 +18,13 @@ public class ResolvedCrashEntry extends NoteEntry {
 	}
 
 	@Override
-	public WrappedChatComponent title() {
-		return WrappedChatComponent.createTranslation("openeye.notes.title.resolved_crash");
+	public IChatComponent title() {
+		return new ChatComponentTranslation("openeye.notes.title.resolved_crash");
 	}
 
 	@Override
-	public WrappedChatComponent content() {
-		return WrappedChatComponent.createText(Strings.nullToEmpty(note));
+	public IChatComponent content() {
+		return new ChatComponentText(Strings.nullToEmpty(note));
 	}
 
 	@Override

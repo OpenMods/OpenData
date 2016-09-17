@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
@@ -15,7 +16,7 @@ import openeye.logic.Config;
 public class NotesButtonInjector {
 
 	private static final int BUTTON_NOTES_ID = 666;
-	private static WrappedChatComponent notification;
+	private static IChatComponent notification;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void onGuiInit(GuiScreen screen, List buttonList) {
@@ -57,7 +58,7 @@ public class NotesButtonInjector {
 	public static void onScreenDraw(GuiScreen screen) {
 		if (Config.mainScreenExtraLine && notification != null)
 			screen.drawCenteredString(Minecraft.getMinecraft().fontRenderer,
-					notification.getFormatted(),
+					notification.getFormattedText(),
 					getX(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosX),
 					getY(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosY),
 					0xFFFFFF);

@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.IChatComponent;
 import openeye.logic.ModState;
 import openeye.logic.StateHolder;
 import openeye.logic.Storages;
@@ -79,14 +81,14 @@ public class NoteCollector {
 		switch (encryptionState) {
 			case NO_ROOT_CERTIFICATE:
 				addNote(new SystemNoteEntry(NoteCategory.WARNING, 11,
-						WrappedChatComponent.createTranslation("openeye.note.title.old_java"),
-						WrappedChatComponent.createTranslation("openeye.note.content.old_java_recoverable"),
+						new ChatComponentTranslation("openeye.note.title.old_java"),
+						new ChatComponentTranslation("openeye.note.content.old_java_recoverable"),
 						"http://lmgtfy.com/?q=download+java"));
 				break;
 			case NOT_SUPPORTED:
 				addNote(new SystemNoteEntry(NoteCategory.ALERT, 22,
-						WrappedChatComponent.createTranslation("openeye.note.title.old_java"),
-						WrappedChatComponent.createTranslation("openeye.note.content.old_java_total_failure"),
+						new ChatComponentTranslation("openeye.note.title.old_java"),
+						new ChatComponentTranslation("openeye.note.content.old_java_total_failure"),
 						"http://lmgtfy.com/?q=download+java"));
 				break;
 			default:
@@ -98,12 +100,11 @@ public class NoteCollector {
 		final Date suspendEndDate = new Date(suspendUntilTimestamp);
 		final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		final String suspendPrintable = dateFormat.format(suspendEndDate);
-
 		addNote(new SystemNoteEntry(NoteCategory.INFO, 32,
-				WrappedChatComponent.createTranslation("openeye.note.title.suspended"),
+				new ChatComponentTranslation("openeye.note.title.suspended"),
 				Strings.isNullOrEmpty(reason)
-						? WrappedChatComponent.createTranslation("openeye.note.content.suspended_no_reason", suspendPrintable, reason)
-						: WrappedChatComponent.createTranslation("openeye.note.content.suspended", suspendPrintable, reason),
+						? new ChatComponentTranslation("openeye.note.content.suspended_no_reason", suspendPrintable, reason)
+						: new ChatComponentTranslation("openeye.note.content.suspended", suspendPrintable, reason),
 				"https://openeye.openmods.info"));
 	}
 
@@ -115,7 +116,7 @@ public class NoteCollector {
 		return maxCategory;
 	}
 
-	public WrappedChatComponent getScreenMsg() {
+	public IChatComponent getScreenMsg() {
 		return menuLine.getSelectedLine();
 	}
 
@@ -132,8 +133,8 @@ public class NoteCollector {
 		String title = "openeye.note.title.intro" + id;
 		String content = "openeye.note.content.intro" + id;
 		addNote(new SystemNoteEntry(NoteLevels.SYSTEM_NOTIFICATION_LEVEL + 16 - id,
-				WrappedChatComponent.createTranslation(title),
-				WrappedChatComponent.createTranslation(content),
+				new ChatComponentTranslation(title),
+				new ChatComponentTranslation(content),
 				url));
 	}
 
