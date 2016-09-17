@@ -17,10 +17,10 @@ final class ConsoleNoteSink implements INoteSink {
 			IChatComponent level = new ChatComponentTranslation(note.category.translated);
 			level.getChatStyle().setColor(note.category.color);
 			sender.addChatMessage(new ChatComponentTranslation("openeye.chat.note", count++, level));
-			IChatComponent title = note.title().unwrap();
+			IChatComponent title = note.title();
 			title.getChatStyle().setBold(true);
 			sender.addChatMessage(title);
-			sender.addChatMessage(note.content().unwrap());
+			sender.addChatMessage(note.content());
 
 			String url = note.url();
 			if (!Strings.isNullOrEmpty(url)) sender.addChatMessage(new ChatComponentText(note.url()));

@@ -5,12 +5,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.IChatComponent;
 import openeye.logic.Config;
 
 public class GuiMainMenuAddon extends GuiMainMenu {
 
 	private static final int BUTTON_NOTES_ID = 666;
-	private static WrappedChatComponent notification;
+	private static IChatComponent notification;
 
 	@Override
 	public void initGui() {
@@ -64,7 +65,7 @@ public class GuiMainMenuAddon extends GuiMainMenu {
 	public static void onScreenDraw(GuiScreen screen) {
 		if (Config.mainScreenExtraLine && notification != null)
 			screen.drawCenteredString(Minecraft.getMinecraft().fontRenderer,
-					notification.getFormatted(),
+					notification.getFormattedText(),
 					getX(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosX),
 					getY(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosY),
 					0xFFFFFF);
