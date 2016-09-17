@@ -5,8 +5,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import openeye.logic.ModState;
 import openeye.logic.StateHolder;
@@ -89,7 +92,19 @@ public class NoteCollector {
 			default:
 				break;
 		}
+	}
 
+	public void addSuspendNote(long suspendUntilTimestamp, String reason) {
+		final Date suspendEndDate = new Date(suspendUntilTimestamp);
+		final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		final String suspendPrintable = dateFormat.format(suspendEndDate);
+
+		addNote(new SystemNoteEntry(NoteCategory.INFO, 32,
+				WrappedChatComponent.createTranslation("openeye.note.title.suspended"),
+				Strings.isNullOrEmpty(reason)
+						? WrappedChatComponent.createTranslation("openeye.note.content.suspended_no_reason", suspendPrintable, reason)
+						: WrappedChatComponent.createTranslation("openeye.note.content.suspended", suspendPrintable, reason),
+				"https://openeye.openmods.info"));
 	}
 
 	public boolean isEmpty() {
