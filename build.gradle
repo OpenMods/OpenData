@@ -31,7 +31,7 @@ configurations {
 }
 
 dependencies {
-    mergeJars "openeye:OpenEye-protocol:1.0"
+    mergeJars "openeye:OpenEye-protocol:1.1"
 }
 
 apply plugin: 'forge'

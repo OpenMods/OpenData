@@ -9,4 +9,6 @@ public class ModState {
 	public boolean mainMenuInfoDisplayed;
 
 	public boolean infoNotesDisplayed;
+
+	public long suspendUntilTimestamp;
 }
