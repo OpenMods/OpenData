@@ -67,10 +67,15 @@ public class Mod extends DummyModContainer {
 
 		ThrowableLogger.enableResolving(collector);
 
-		if (Proxy.instance().isSnooperEnabled()) {
+		final long now = System.currentTimeMillis();
+		if (StateHolder.state().suspendUntilTimestamp > now) {
+			Log.debug("Communication with server suspended, OpenEye will not send or receive any data");
+		} else if (!Proxy.instance().isSnooperEnabled()) {
+			Log.debug("Snooper disabled, OpenEye will not send or receive any data from server");
+		} else {
 			worker = new SenderWorker(collector, StateHolder.state());
 			worker.start();
-		} else Log.debug("Snooper disabled, OpenEye will not send or receive any data from server");
+		}
 	}
 
 	private static void startMetadataCollection(RunnableFuture<ModMetaCollector> collector) {

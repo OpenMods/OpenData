@@ -28,6 +28,7 @@ import openeye.protocol.responses.ResponseKnownCrash;
 import openeye.protocol.responses.ResponseModMsg;
 import openeye.protocol.responses.ResponsePong;
 import openeye.protocol.responses.ResponseRemoveFile;
+import openeye.protocol.responses.ResponseSuspend;
 import openeye.responses.IExecutableResponse;
 import openeye.responses.ResponseErrorAction;
 import openeye.responses.ResponseFileContentsAction;
@@ -36,6 +37,7 @@ import openeye.responses.ResponseKnownCrashAction;
 import openeye.responses.ResponseModMsgAction;
 import openeye.responses.ResponsePongAction;
 import openeye.responses.ResponseRemoveFileAction;
+import openeye.responses.ResponseSuspendAction;
 
 public class TypedCollections {
 
@@ -130,6 +132,7 @@ public class TypedCollections {
 		RESPONSE_TYPES.put(ResponseModMsg.TYPE, ResponseModMsgAction.class);
 		RESPONSE_TYPES.put(ResponseError.TYPE, ResponseErrorAction.class);
 		RESPONSE_TYPES.put(ResponseKnownCrash.TYPE, ResponseKnownCrashAction.class);
+		RESPONSE_TYPES.put(ResponseSuspend.TYPE, ResponseSuspendAction.class);
 	}
 
 }
