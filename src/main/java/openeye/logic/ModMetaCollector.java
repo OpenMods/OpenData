@@ -452,9 +452,7 @@ public class ModMetaCollector {
 		String packageName = extractPackage(className);
 		ClassSource result = new ClassSource();
 
-		if (packageName.startsWith("net.minecraft") ||
-				packageName.startsWith("net.minecraftforge") ||
-				packageName.startsWith("cpw.mods.fml"))
+		if (packageName != null && (packageName.startsWith("net.minecraft") || packageName.startsWith("net.minecraftforge") || packageName.startsWith("cpw.mods.fml")))
 			return null;
 
 		try {
