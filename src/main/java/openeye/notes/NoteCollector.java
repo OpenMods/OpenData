@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import net.minecraft.util.ChatMessageComponent;
 import openeye.logic.ModState;
 import openeye.logic.StateHolder;
 import openeye.logic.Storages;
@@ -79,7 +80,7 @@ public class NoteCollector {
 		return maxCategory;
 	}
 
-	public WrappedChatComponent getScreenMsg() {
+	public ChatMessageComponent getScreenMsg() {
 		return menuLine.getSelectedLine();
 	}
 
@@ -96,8 +97,8 @@ public class NoteCollector {
 		String title = "openeye.note.title.intro" + id;
 		String content = "openeye.note.content.intro" + id;
 		addNote(new SystemNoteEntry(NoteLevels.SYSTEM_NOTIFICATION_LEVEL + 16 - id,
-				WrappedChatComponent.createTranslation(title),
-				WrappedChatComponent.createTranslation(content),
+				ChatMessageComponent.createFromTranslationKey(title),
+				ChatMessageComponent.createFromTranslationKey(content),
 				url));
 	}
 

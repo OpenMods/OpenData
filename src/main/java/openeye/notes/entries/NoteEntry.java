@@ -4,8 +4,8 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import java.io.File;
+import net.minecraft.util.ChatMessageComponent;
 import openeye.notes.NoteCategory;
-import openeye.notes.WrappedChatComponent;
 
 public abstract class NoteEntry {
 	private static final File DUMMY_FILE = new File("invalid");
@@ -26,9 +26,9 @@ public abstract class NoteEntry {
 
 	public abstract String url();
 
-	public abstract WrappedChatComponent title();
+	public abstract ChatMessageComponent title();
 
-	public abstract WrappedChatComponent content();
+	public abstract ChatMessageComponent content();
 
 	public JsonObject toJson() {
 		JsonObject result = new JsonObject();
@@ -37,8 +37,8 @@ public abstract class NoteEntry {
 		result.addProperty("category", category.toString());
 		result.addProperty("level", level);
 
-		result.addProperty("title", title().getUnformatted());
-		result.addProperty("content", content().getUnformatted());
+		result.addProperty("title", title().toString());
+		result.addProperty("content", content().toString());
 
 		String url = url();
 		if (!Strings.isNullOrEmpty(url)) result.addProperty("url", url);

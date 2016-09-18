@@ -7,11 +7,11 @@ public class ScreenNotificationHolder {
 
 	private static class Entry {
 		final int level;
-		public final WrappedChatComponent msg;
+		public final ChatMessageComponent msg;
 
 		private Entry(int level, ChatMessageComponent msg) {
 			this.level = level;
-			this.msg = new WrappedChatComponent(msg);
+			this.msg = msg;
 		}
 	}
 
@@ -37,7 +37,7 @@ public class ScreenNotificationHolder {
 		addLine(256, ChatMessageComponent.createFromTranslationKey("openeye.main_screen.intro").setColor(EnumChatFormatting.GOLD));
 	}
 
-	public WrappedChatComponent getSelectedLine() {
+	public ChatMessageComponent getSelectedLine() {
 		return selectedLine != null? selectedLine.msg : null;
 	}
 }

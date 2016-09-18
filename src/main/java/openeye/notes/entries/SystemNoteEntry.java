@@ -1,17 +1,17 @@
 package openeye.notes.entries;
 
+import net.minecraft.util.ChatMessageComponent;
 import openeye.notes.NoteCategory;
-import openeye.notes.WrappedChatComponent;
 
 public class SystemNoteEntry extends NoteEntry {
 
-	private final WrappedChatComponent title;
+	private final ChatMessageComponent title;
 
-	private final WrappedChatComponent contents;
+	private final ChatMessageComponent contents;
 
 	private final String url;
 
-	public SystemNoteEntry(int level, WrappedChatComponent title, WrappedChatComponent contents, String url) {
+	public SystemNoteEntry(int level, ChatMessageComponent title, ChatMessageComponent contents, String url) {
 		super(NoteCategory.SYSTEM_INFO, level);
 		this.title = title;
 		this.contents = contents;
@@ -19,12 +19,12 @@ public class SystemNoteEntry extends NoteEntry {
 	}
 
 	@Override
-	public WrappedChatComponent title() {
+	public ChatMessageComponent title() {
 		return title;
 	}
 
 	@Override
-	public WrappedChatComponent content() {
+	public ChatMessageComponent content() {
 		return contents;
 	}
 

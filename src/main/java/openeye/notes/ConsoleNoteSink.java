@@ -14,8 +14,8 @@ final class ConsoleNoteSink implements INoteSink {
 		for (NoteEntry note : notes) {
 			ChatMessageComponent level = ChatMessageComponent.createFromTranslationKey(note.category.translated).setColor(note.category.color);
 			sender.sendChatToPlayer(ChatMessageComponent.createFromTranslationWithSubstitutions("openeye.chat.note", count++, level));
-			sender.sendChatToPlayer(note.title().unwrap().setBold(true));
-			sender.sendChatToPlayer(note.content().unwrap());
+			sender.sendChatToPlayer(note.title().setBold(true));
+			sender.sendChatToPlayer(note.content());
 
 			String url = note.url();
 			if (!Strings.isNullOrEmpty(url)) sender.sendChatToPlayer(ChatMessageComponent.createFromText(note.url()));

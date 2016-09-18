@@ -50,8 +50,8 @@ public class GuiNotesList extends GuiScrollingList {
 		NoteIcons icon = entry.category.icon;
 		owner.drawTexturedModalRect(left, top, icon.textureU + 2, icon.textureV + 2, 16, 16);
 
-		owner.drawString(mc.fontRenderer, entry.title().getFormatted(), left + 20, top + 4, 0xFFFFFF);
-		String description = entry.content().getFormatted();
+		owner.drawString(mc.fontRenderer, entry.title().toStringWithFormatting(true), left + 20, top + 4, 0xFFFFFF);
+		String description = entry.content().toStringWithFormatting(true);
 
 		int width = right - left;
 		if (!Strings.isNullOrEmpty(description)) mc.fontRenderer.drawSplitString(description, left, top + 20, left + width - 10, 0xCCCCCC);
