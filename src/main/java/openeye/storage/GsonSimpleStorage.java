@@ -2,7 +2,6 @@ package openeye.storage;
 
 import com.google.gson.Gson;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class GsonSimpleStorage<T> extends GsonDirStorage<T> {
@@ -17,7 +16,7 @@ public class GsonSimpleStorage<T> extends GsonDirStorage<T> {
 	}
 
 	@Override
-	protected InputStream createInputStream(File file) throws IOException {
+	protected InputStream createInputStream(File file) {
 		throw new UnsupportedOperationException();
 	}
 }
