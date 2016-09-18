@@ -36,7 +36,6 @@ import openeye.protocol.reports.ReportFileContents.ArchiveDirEntry;
 import openeye.protocol.reports.ReportFileContents.ArchiveEntry;
 import openeye.protocol.reports.ReportFileContents.ArchiveFileEntry;
 import openeye.protocol.reports.ReportKnownFiles;
-import openeye.utils.CompatiblityAdapter;
 
 public class ReportBuilders {
 
@@ -71,7 +70,7 @@ public class ReportBuilders {
 	}
 
 	private static void fillEnvInfo(ReportEnvironment report) {
-		report.branding = CompatiblityAdapter.getBrandings();
+		report.branding = FMLCommonHandler.instance().getBrandings(true);
 
 		report.runtime = getEnvVersions();
 

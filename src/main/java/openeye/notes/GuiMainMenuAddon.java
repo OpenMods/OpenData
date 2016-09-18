@@ -6,7 +6,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import openeye.logic.Config;
-import openeye.utils.CompatiblityAdapter;
 
 public class GuiMainMenuAddon extends GuiMainMenu {
 
@@ -53,7 +52,7 @@ public class GuiMainMenuAddon extends GuiMainMenu {
 	}
 
 	public static void onScreenDraw(GuiScreen screen) {
-		if (Config.mainScreenExtraLine && notification != null) screen.drawCenteredString(CompatiblityAdapter.getFontRenderer(), notification.getFormatted(), screen.width / 2, screen.height / 4 + 48 + 24 * 3, 0xFFFFFF);
+		if (Config.mainScreenExtraLine && notification != null) screen.drawCenteredString(Minecraft.getMinecraft().fontRenderer, notification.getFormatted(), screen.width / 2, screen.height / 4 + 48 + 24 * 3, 0xFFFFFF);
 	}
 
 	@Override
