@@ -1,13 +1,11 @@
 package openeye.logic;
 
+import com.google.common.base.Preconditions;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-
-import com.google.common.base.Preconditions;
 
 public class Bootstrap {
 

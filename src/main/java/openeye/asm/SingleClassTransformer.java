@@ -1,9 +1,7 @@
 package openeye.asm;
 
 import java.util.Collection;
-
 import openeye.Log;
-
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;

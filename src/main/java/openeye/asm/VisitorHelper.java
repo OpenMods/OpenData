@@ -1,12 +1,10 @@
 package openeye.asm;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.launchwrapper.Launch;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-
-import com.google.common.base.Preconditions;
 
 public class VisitorHelper {
 

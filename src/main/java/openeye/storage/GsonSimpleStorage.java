@@ -1,10 +1,9 @@
 package openeye.storage;
 
+import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
-import com.google.gson.Gson;
 
 public class GsonSimpleStorage<T> extends GsonDirStorage<T> {
 

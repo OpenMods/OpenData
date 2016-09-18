@@ -1,13 +1,15 @@
 package openeye.logic;
 
-import java.util.*;
-
-import openeye.Log;
-
 import com.google.common.base.Strings;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+import openeye.Log;
 
 public class Sanitizer {
 

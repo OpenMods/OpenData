@@ -1,17 +1,41 @@
 package openeye.struct;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import openeye.Log;
-import openeye.protocol.reports.*;
-import openeye.protocol.responses.*;
-import openeye.responses.*;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.gson.*;
+import openeye.protocol.reports.IReport;
+import openeye.protocol.reports.ReportAnalytics;
+import openeye.protocol.reports.ReportCrash;
+import openeye.protocol.reports.ReportFileContents;
+import openeye.protocol.reports.ReportFileInfo;
+import openeye.protocol.reports.ReportKnownFiles;
+import openeye.protocol.reports.ReportPing;
+import openeye.protocol.responses.ResponseError;
+import openeye.protocol.responses.ResponseFileContents;
+import openeye.protocol.responses.ResponseFileInfo;
+import openeye.protocol.responses.ResponseKnownCrash;
+import openeye.protocol.responses.ResponseModMsg;
+import openeye.protocol.responses.ResponsePong;
+import openeye.protocol.responses.ResponseRemoveFile;
+import openeye.responses.IExecutableResponse;
+import openeye.responses.ResponseErrorAction;
+import openeye.responses.ResponseFileContentsAction;
+import openeye.responses.ResponseFileInfoAction;
+import openeye.responses.ResponseKnownCrashAction;
+import openeye.responses.ResponseModMsgAction;
+import openeye.responses.ResponsePongAction;
+import openeye.responses.ResponseRemoveFileAction;
 
 public class TypedCollections {
 

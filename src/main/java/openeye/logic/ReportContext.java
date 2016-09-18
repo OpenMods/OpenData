@@ -1,12 +1,10 @@
 package openeye.logic;
 
+import com.google.common.collect.Sets;
 import java.io.File;
 import java.util.Set;
-
 import openeye.protocol.reports.IReport;
 import openeye.struct.TypedCollections.ReportsList;
-
-import com.google.common.collect.Sets;
 
 class ReportContext implements IContext {
 	private final ModMetaCollector collector;

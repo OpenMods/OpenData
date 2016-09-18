@@ -1,12 +1,11 @@
 package openeye.config;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.List;
-
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.List;
 
 public class ConfigPropertyCollector {
 

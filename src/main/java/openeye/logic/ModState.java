@@ -1,8 +1,7 @@
 package openeye.logic;
 
-import java.util.Set;
-
 import com.google.common.collect.Sets;
+import java.util.Set;
 
 public class ModState {
 	public Set<String> installedMods = Sets.newHashSet();

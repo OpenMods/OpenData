@@ -1,13 +1,11 @@
 package openeye.notes.entries;
 
-import java.io.File;
-
-import openeye.notes.NoteCategory;
-import openeye.notes.WrappedChatComponent;
-
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
+import java.io.File;
+import openeye.notes.NoteCategory;
+import openeye.notes.WrappedChatComponent;
 
 public abstract class NoteEntry {
 	private static final File DUMMY_FILE = new File("invalid");

@@ -1,15 +1,12 @@
 package openeye.asm.injectors;
 
+import com.google.common.base.Throwables;
 import java.io.FileWriter;
-
 import openeye.asm.CallHack;
-
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
-
-import com.google.common.base.Throwables;
 
 public class CrashHandlerInjector extends MethodVisitor {
 	private final Method fileWriterClose;

@@ -1,7 +1,8 @@
 package openeye.notes;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.util.Collection;
-
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatMessageComponent;
@@ -10,9 +11,6 @@ import openeye.notes.CommandNotes.INoteSink;
 import openeye.notes.entries.NoteEntry;
 import openeye.storage.IAppendableStorage;
 import openeye.storage.IDataSource;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 final class JsonNoteSink implements INoteSink {
 	private final IAppendableStorage<Object> notesDump;

@@ -1,11 +1,10 @@
 package openeye;
 
-import java.util.Map;
-
-import openeye.logic.Bootstrap;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.Name;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
+import java.util.Map;
+import openeye.logic.Bootstrap;
 
 @Name("OpenEyePlugin")
 @TransformerExclusions("openeye")

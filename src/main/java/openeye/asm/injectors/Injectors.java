@@ -1,17 +1,13 @@
 package openeye.asm.injectors;
 
+import com.google.common.collect.Multimap;
+import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import java.io.File;
-
 import openeye.asm.MethodCodeInjector;
 import openeye.asm.MethodMatcher;
 import openeye.asm.VisitorHelper;
-
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-
-import com.google.common.collect.Multimap;
-
-import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 
 public class Injectors {
 

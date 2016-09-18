@@ -1,7 +1,6 @@
 package openeye.responses;
 
 import java.io.File;
-
 import openeye.logic.IContext;
 import openeye.notes.NoteCollector;
 import openeye.protocol.responses.ResponseRemoveFile;

@@ -1,17 +1,14 @@
 package openeye.asm;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.Map;
-
 import net.minecraft.launchwrapper.IClassTransformer;
 import openeye.asm.VisitorHelper.TransformProvider;
 import openeye.asm.injectors.Injectors;
-
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 public class MultiTransformer implements IClassTransformer {
 

@@ -1,15 +1,15 @@
 package openeye.asm.injectors;
 
-import java.util.Map;
-
-import openeye.Log;
-import openeye.asm.CallHack;
-
-import org.objectweb.asm.*;
-import org.objectweb.asm.commons.Method;
-
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
+import java.util.Map;
+import openeye.Log;
+import openeye.asm.CallHack;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.Method;
 
 public class ExceptionHandlerInjector extends MethodVisitor {
 

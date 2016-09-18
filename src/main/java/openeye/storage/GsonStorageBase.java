@@ -1,14 +1,17 @@
 package openeye.storage;
 
-import java.io.*;
+import com.google.common.base.Throwables;
+import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import openeye.Log;
-
-import com.google.common.base.Throwables;
-import com.google.gson.Gson;
 
 public abstract class GsonStorageBase<T> {
 

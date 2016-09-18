@@ -1,14 +1,16 @@
 package openeye.net;
 
+import com.google.common.base.Throwables;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.zip.GZIPOutputStream;
-
 import openeye.Log;
-
-import com.google.common.base.Throwables;
 
 public abstract class GenericSender<I, O> {
 

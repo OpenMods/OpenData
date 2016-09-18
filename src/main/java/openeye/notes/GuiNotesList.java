@@ -1,16 +1,12 @@
 package openeye.notes;
 
+import com.google.common.base.Strings;
+import cpw.mods.fml.client.GuiScrollingList;
 import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import openeye.notes.entries.NoteEntry;
-
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.base.Strings;
-
-import cpw.mods.fml.client.GuiScrollingList;
 
 public class GuiNotesList extends GuiScrollingList {
 

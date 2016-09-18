@@ -1,26 +1,32 @@
 package openeye;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import cpw.mods.fml.client.FMLFileResourcePack;
+import cpw.mods.fml.client.FMLFolderResourcePack;
+import cpw.mods.fml.common.DummyModContainer;
+import cpw.mods.fml.common.LoadController;
+import cpw.mods.fml.common.ModMetadata;
+import cpw.mods.fml.common.event.FMLConstructionEvent;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import java.io.File;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.RunnableFuture;
-
-import openeye.logic.*;
+import openeye.logic.Bootstrap;
+import openeye.logic.Config;
+import openeye.logic.ModCollectorFactory;
+import openeye.logic.ModMetaCollector;
+import openeye.logic.SenderWorker;
+import openeye.logic.StateHolder;
+import openeye.logic.ThrowableLogger;
 import openeye.notes.CommandNotes;
 import openeye.protocol.FileSignature;
 import openeye.utils.NameCollector;
-
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
-import cpw.mods.fml.client.FMLFileResourcePack;
-import cpw.mods.fml.client.FMLFolderResourcePack;
-import cpw.mods.fml.common.DummyModContainer;
-import cpw.mods.fml.common.LoadController;
-import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.event.*;
 
 public class Mod extends DummyModContainer {
 

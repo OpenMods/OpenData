@@ -1,13 +1,11 @@
 package openeye.notes;
 
+import com.google.common.base.Strings;
 import java.util.Collection;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatMessageComponent;
 import openeye.notes.CommandNotes.INoteSink;
 import openeye.notes.entries.NoteEntry;
-
-import com.google.common.base.Strings;
 
 final class ConsoleNoteSink implements INoteSink {
 	@Override

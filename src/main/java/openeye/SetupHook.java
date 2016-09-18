@@ -1,9 +1,8 @@
 package openeye;
 
-import java.util.Map;
-
-import openeye.logic.Bootstrap;
 import cpw.mods.fml.relauncher.IFMLCallHook;
+import java.util.Map;
+import openeye.logic.Bootstrap;
 
 public class SetupHook implements IFMLCallHook {
 

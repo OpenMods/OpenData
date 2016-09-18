@@ -1,32 +1,42 @@
 package openeye.logic;
 
-import java.io.File;
-import java.io.InputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import net.minecraftforge.common.ForgeVersion;
-import openeye.Log;
-import openeye.Proxy;
-import openeye.logic.ModMetaCollector.ClassSource;
-import openeye.protocol.reports.*;
-import openeye.protocol.reports.ReportCrash.ExceptionInfo;
-import openeye.protocol.reports.ReportCrash.StackTrace;
-import openeye.protocol.reports.ReportFileContents.ArchiveDirEntry;
-import openeye.protocol.reports.ReportFileContents.ArchiveEntry;
-import openeye.protocol.reports.ReportFileContents.ArchiveFileEntry;
-import openeye.utils.CompatiblityAdapter;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
+import java.io.File;
+import java.io.InputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import net.minecraftforge.common.ForgeVersion;
+import openeye.Log;
+import openeye.Proxy;
+import openeye.logic.ModMetaCollector.ClassSource;
+import openeye.protocol.reports.ReportAnalytics;
+import openeye.protocol.reports.ReportCrash;
+import openeye.protocol.reports.ReportCrash.ExceptionInfo;
+import openeye.protocol.reports.ReportCrash.StackTrace;
+import openeye.protocol.reports.ReportEnvironment;
+import openeye.protocol.reports.ReportFileContents;
+import openeye.protocol.reports.ReportFileContents.ArchiveDirEntry;
+import openeye.protocol.reports.ReportFileContents.ArchiveEntry;
+import openeye.protocol.reports.ReportFileContents.ArchiveFileEntry;
+import openeye.protocol.reports.ReportKnownFiles;
+import openeye.utils.CompatiblityAdapter;
 
 public class ReportBuilders {
 
