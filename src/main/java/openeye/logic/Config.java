@@ -24,8 +24,11 @@ public class Config {
 	@ConfigProperty(category = "data", comment = "If false, skips sending pending crash reports. Please note that pending crashe reports will not be automatically removed.")
 	public static boolean sendCrashes = false;
 
-	@ConfigProperty(category = "data", comment = "Maximum number of crash reports from single category sent per single run")
-	public static int sentCrashReportsLimit = 20;
+	@ConfigProperty(category = "data", comment = "Maximum number of crash reports from single category stored per single run")
+	public static int storeCrashReportsLimit = 20;
+
+	@ConfigProperty(category = "data", comment = "Maximum number of crash reports to sent (including pending) per single run")
+	public static int sentCrashReportsLimitTotal = 1000;
 
 	@ConfigProperty(category = "debug")
 	public static boolean pingOnInitialReport = false;
