@@ -1,6 +1,8 @@
 package openeye.logic;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -10,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +25,7 @@ import openeye.protocol.reports.ReportCrash;
 import openeye.protocol.reports.ReportPing;
 import openeye.responses.IExecutableResponse;
 import openeye.storage.IDataSource;
-import openeye.storage.IWorkingStorage;
+import openeye.storage.IQueryableStorage;
 import openeye.struct.TypedCollections.ReportsList;
 import openeye.struct.TypedCollections.ResponseList;
 
@@ -31,6 +34,7 @@ public class SenderWorker implements Runnable {
 	private static final String API_HOST = "openeye.openmods.info";
 
 	private static final String API_PATH = "/api/v1/data";
+	// private static final String API_PATH = "/dummy";
 
 	private final Future<ModMetaCollector> collector;
 
@@ -84,43 +88,63 @@ public class SenderWorker implements Runnable {
 		return context.reports();
 	}
 
-	private static Collection<ReportCrash> listPendingCrashes() {
-		final IWorkingStorage<ReportCrash> pendingCrashes = Storages.instance().pendingCrashes;
+	private static <T> SortedMap<String, T> retrieveAllSources(IQueryableStorage<T> storage) {
+		final ImmutableSortedMap.Builder<String, T> result = ImmutableSortedMap.naturalOrder();
 
-		Map<CrashId, ReportCrash> crashes = Maps.newHashMap();
-
-		for (IDataSource<ReportCrash> crash : pendingCrashes.listAll()) {
+		for (IDataSource<T> source : storage.listAll()) {
 			try {
-				ReportCrash report = crash.retrieve();
-				if (report != null) {
-					ReportCrash prev = crashes.put(new CrashId(report.timestamp, report.random), report);
-					if (prev != null) Log.warn("Found duplicated crash report %s", crash.getId());
-				}
-			} catch (Exception e) {
-				// no point of sending those to server
-				Log.warn(e, "Failed to read crash %s, removing", crash.getId());
-				crash.delete();
+				result.put(source.getId(), source.retrieve());
+			} catch (Throwable t) {
+				Log.warn(t, "Failed to read entry %s, removing", source.getId());
+				source.delete();
 			}
 		}
-		return crashes.values();
+		return result.build();
 	}
 
-	private static void removePendingCrashes() {
-		if (Config.sendCrashes) {
-			final IWorkingStorage<ReportCrash> pendingCrashes = Storages.instance().pendingCrashes;
-
-			for (IDataSource<ReportCrash> crash : pendingCrashes.listAll())
-				crash.delete();
+	private static <T> void removeSources(IQueryableStorage<T> storage, Set<String> ids) {
+		for (String id : ids) {
+			final IDataSource<T> entry = storage.getById(id);
+			if (entry != null) entry.delete();
 		}
 	}
 
-	protected ReportsList createInitialReport(ModMetaCollector collector) {
+	private static Collection<ReportCrash> removePendingCrashDuplicates(Map<String, ReportCrash> crashes) {
+		final Map<CrashId, ReportCrash> result = Maps.newHashMap();
+
+		for (Map.Entry<String, ReportCrash> e : crashes.entrySet()) {
+			ReportCrash crash = e.getValue();
+			if (crash != null) {
+				ReportCrash prev = result.put(new CrashId(crash.timestamp, crash.random), crash);
+				if (prev != null) Log.warn("Found duplicated crash report %s", e.getKey());
+			}
+		}
+		return ImmutableList.copyOf(crashes.values());
+	}
+
+	private static SortedMap<String, ReportCrash> selectCrashes(Map<String, ReportCrash> pendingCrashes) {
+		if (!Config.sendCrashes) return ImmutableSortedMap.of();
+
+		if (Config.sentCrashReportsLimitTotal >= 0 && Config.sentCrashReportsLimitTotal < pendingCrashes.size()) {
+			final ImmutableSortedMap.Builder<String, ReportCrash> result = ImmutableSortedMap.naturalOrder();
+			int count = Config.sentCrashReportsLimitTotal;
+			for (Map.Entry<String, ReportCrash> e : pendingCrashes.entrySet()) {
+				if (--count < 0) break;
+				result.put(e);
+			}
+			return result.build();
+		}
+
+		return ImmutableSortedMap.copyOf(pendingCrashes);
+	}
+
+	protected ReportsList createInitialReport(ModMetaCollector collector, Collection<ReportCrash> crashes) {
 		final ReportsList result = new ReportsList();
 
 		try {
 			if (Config.sendModList) createAnalyticsReport(collector, result);
 			if (Config.pingOnInitialReport) result.add(new ReportPing());
-			if (Config.sendCrashes) result.addAll(listPendingCrashes());
+			result.addAll(crashes);
 		} catch (Exception e) {
 			logException(e, "Failed to create initial report");
 		}
@@ -141,7 +165,11 @@ public class SenderWorker implements Runnable {
 	}
 
 	private void sendReports(ModMetaCollector collector) {
-		ReportsList currentReports = createInitialReport(collector);
+		final SortedMap<String, ReportCrash> pendingCrashes = retrieveAllSources(Storages.instance().pendingCrashes);
+		final SortedMap<String, ReportCrash> selectedPendingCrashes = selectCrashes(pendingCrashes);
+		final Collection<ReportCrash> pendingUniqueCrashes = removePendingCrashDuplicates(selectedPendingCrashes);
+
+		ReportsList currentReports = createInitialReport(collector, pendingUniqueCrashes);
 
 		try {
 			ReportSender sender = new ReportSender(API_HOST, API_PATH);
@@ -167,7 +195,7 @@ public class SenderWorker implements Runnable {
 				firstMessageReceived.countDown(); // early release - notes send in next packets are ignored
 			}
 
-			removePendingCrashes();
+			removeSources(Storages.instance().pendingCrashes, selectedPendingCrashes.keySet());
 			NoteCollector.INSTANCE.addNote(sender.getEncryptionState());
 		} catch (Exception e) {
 			Log.warn(e, "Failed to send report to " + API_HOST + API_PATH);
