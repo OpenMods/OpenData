@@ -1,10 +1,9 @@
 package openeye.notes.entries;
 
+import com.google.common.base.Strings;
 import openeye.notes.NoteCategory;
 import openeye.notes.WrappedChatComponent;
 import openeye.responses.ResponseKnownCrashAction;
-
-import com.google.common.base.Strings;
 
 public class ResolvedCrashEntry extends NoteEntry {
 	private final String url;

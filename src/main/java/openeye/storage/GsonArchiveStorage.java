@@ -1,10 +1,12 @@
 package openeye.storage;
 
-import java.io.*;
+import com.google.gson.Gson;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import com.google.gson.Gson;
 
 public class GsonArchiveStorage<T> extends GsonDirStorage<T> {
 

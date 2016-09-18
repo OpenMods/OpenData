@@ -1,17 +1,15 @@
 package openeye.notes;
 
+import com.google.common.base.Strings;
 import java.awt.Desktop;
 import java.net.URI;
 import java.util.List;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiConfirmOpenLink;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.StatCollector;
 import openeye.Log;
 import openeye.notes.entries.NoteEntry;
-
-import com.google.common.base.Strings;
 
 public class GuiNotes extends GuiScreen {
 

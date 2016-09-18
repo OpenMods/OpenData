@@ -1,12 +1,11 @@
 package openeye.responses;
 
+import cpw.mods.fml.common.event.FMLInterModComms;
 import java.io.File;
-
 import net.minecraft.nbt.NBTTagCompound;
 import openeye.logic.IContext;
 import openeye.notes.NoteCollector;
 import openeye.protocol.responses.ResponseModMsg;
-import cpw.mods.fml.common.event.FMLInterModComms;
 
 public class ResponseModMsgAction extends ResponseModMsg implements IExecutableResponse {
 

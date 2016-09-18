@@ -1,13 +1,11 @@
 package openeye.logic;
 
+import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.util.Set;
-
 import openeye.Log;
 import openeye.config.ConfigProcessing;
 import openeye.config.ConfigProperty;
-
-import com.google.common.collect.ImmutableSet;
 
 public class Config {
 

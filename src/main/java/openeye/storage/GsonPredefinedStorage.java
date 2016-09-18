@@ -1,12 +1,11 @@
 package openeye.storage;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Map;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import java.io.File;
+import java.util.Collection;
+import java.util.Map;
 
 public class GsonPredefinedStorage<T> extends GsonStorageBase<T> implements IQueryableStorage<T> {
 

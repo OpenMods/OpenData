@@ -1,14 +1,12 @@
 package openeye.notes.entries;
 
+import com.google.common.base.Strings;
+import com.google.gson.JsonObject;
 import java.io.File;
-
 import openeye.notes.NoteCategory;
 import openeye.notes.NoteLevels;
 import openeye.notes.WrappedChatComponent;
 import openeye.responses.ResponseRemoveFileAction;
-
-import com.google.common.base.Strings;
-import com.google.gson.JsonObject;
 
 public class RemoveFileEntry extends NoteEntry {
 

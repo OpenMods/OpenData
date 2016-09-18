@@ -1,14 +1,16 @@
 package openeye.logic;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import cpw.mods.fml.common.versioning.ArtifactVersion;
 import java.lang.reflect.Type;
-
 import openeye.struct.TypedCollections;
 import openeye.struct.TypedCollections.ReportsList;
 import openeye.struct.TypedCollections.ResponseList;
-
-import com.google.gson.*;
-
-import cpw.mods.fml.common.versioning.ArtifactVersion;
 
 public class GsonUtils {
 

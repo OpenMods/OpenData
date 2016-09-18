@@ -1,11 +1,14 @@
 package openeye.logic;
 
-import java.io.File;
-
-import openeye.protocol.reports.ReportCrash;
-import openeye.storage.*;
-
 import com.google.common.base.Preconditions;
+import java.io.File;
+import openeye.protocol.reports.ReportCrash;
+import openeye.storage.GsonPredefinedStorage;
+import openeye.storage.GsonSessionStorage;
+import openeye.storage.GsonWorkingStorage;
+import openeye.storage.IAppendableStorage;
+import openeye.storage.IQueryableStorage;
+import openeye.storage.IWorkingStorage;
 
 public class Storages {
 	public static final String STATE_FILE_ID = "state";

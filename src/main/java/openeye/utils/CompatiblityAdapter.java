@@ -1,10 +1,9 @@
 package openeye.utils;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class CompatiblityAdapter {
 

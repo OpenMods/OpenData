@@ -1,14 +1,13 @@
 package openeye.storage;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 
 public class GsonWorkingStorage<T> extends GsonDirStorage<T> implements IWorkingStorage<T> {
 
