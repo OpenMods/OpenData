@@ -106,9 +106,9 @@ public class ReportBuilders {
 
 		Set<String> currentSignatures = data.getAllSignatures();
 
-		analytics.addedSignatures = Sets.difference(currentSignatures, prevSignatures);
+		analytics.installedSignatures = Sets.difference(currentSignatures, prevSignatures);
 
-		analytics.removedSignatures = Sets.difference(prevSignatures, currentSignatures);
+		analytics.uninstalledSignatures = Sets.difference(prevSignatures, currentSignatures);
 
 		return analytics;
 	}
