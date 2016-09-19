@@ -206,8 +206,10 @@ public class SenderWorker implements Runnable {
 	@Override
 	public void run() {
 		try {
-			ModMetaCollector collector = this.collector.get();
+			final ModMetaCollector collector = this.collector.get();
 			sendReports(collector);
+			// only update state after mods were successfully sent
+			StateHolder.state().installedMods = collector.getAllSignatures();
 		} catch (Throwable t) {
 			logException(t, "Failed to send data to server OpenEye");
 		} finally {
