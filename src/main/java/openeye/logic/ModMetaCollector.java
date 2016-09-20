@@ -1,5 +1,6 @@
 package openeye.logic;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -27,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -41,6 +43,12 @@ import openeye.protocol.reports.ReportFileInfo.SerializableMod;
 import openeye.protocol.reports.ReportFileInfo.SerializableTweak;
 
 public class ModMetaCollector {
+
+	private static final String SIGNATURE_MINECRAFT_SERVER_JAR = "special:minecraft_server";
+
+	private static final String SIGNATURE_MINECRAFT_JAR = "special:minecraft";
+
+	private static final String SIGNATURE_NONE = "special:none";
 
 	private static class TweakMeta {
 		private final String pluginName;
@@ -129,12 +137,12 @@ public class ModMetaCollector {
 		public final List<TweakMeta> tweakers = Lists.newArrayList();
 		public final Set<String> packages = Sets.newHashSet();
 		public final File container;
-
-		public FileMeta(File container) {
-			this.container = container;
-		}
-
 		private String signature;
+
+		private FileMeta(File container, String signature) {
+			this.container = container;
+			this.signature = signature;
+		}
 
 		public String signature() {
 			if (signature == null) {
@@ -213,10 +221,19 @@ public class ModMetaCollector {
 
 	private final ASMDataTable table;
 
+	private Map<File, String> specialSignatures = Maps.newHashMap();
+
 	ModMetaCollector(ASMDataTable table, LaunchClassLoader loader, Collection<ITweaker> tweakers) {
 		Log.debug("Starting mod metadata collection");
 		this.table = table;
 		long start = System.nanoTime();
+
+		// Special handling for minecraft jars - some launchers like to repackage.
+		// Since it creates unique signatures, it may allow identification, if not obfuscated
+		// (order of calls is significant: client package contains both client and server classes)
+		assignSignatureToClassSource(SIGNATURE_MINECRAFT_SERVER_JAR, "net.minecraft.server.MinecraftServer");
+		assignSignatureToClassSource(SIGNATURE_MINECRAFT_JAR, "net.minecraft.client.main.Main");
+
 		Collection<ModCandidate> allCandidates = stealCandidates(table);
 		collectFilesFromModCandidates(allCandidates);
 		collectFilesFromClassTransformers(loader, table);
@@ -228,8 +245,37 @@ public class ModMetaCollector {
 		Log.debug("Collection of mod metadata finished. Duration: %.4f ms", operationDuration / 1000000.0d);
 	}
 
-	private static FileMeta fromModCandidate(ModCandidate candidate) {
-		FileMeta fileMeta = new FileMeta(candidate.getModContainer());
+	private FileMeta createFileMeta(File file) {
+		final String signature = specialSignatures.get(file);
+		return new FileMeta(file, signature);
+	}
+
+	private void assignSignatureToClassSource(String signature, String mainCls) {
+		try {
+			Class<?> cls = Class.forName(mainCls);
+			CodeSource src = cls.getProtectionDomain().getCodeSource();
+			URL jarUrl = extractJarUrl(src.getLocation());
+			File sourceFile = new File(jarUrl.toURI());
+			Preconditions.checkState(sourceFile.isFile(), "Path %s is not file", sourceFile);
+			specialSignatures.put(sourceFile, signature);
+			Log.debug("Signature '%s' assigned to file '%s'", signature, sourceFile);
+		} catch (ClassNotFoundException e) {
+			Log.debug("Failed to assign signature '%s' to source of class %s - class not found", signature, mainCls);
+		} catch (Exception e) {
+			Log.log(Level.FINE, e, "Failed to assign signature '%s' to source of class %s", signature, mainCls);
+		}
+	}
+
+	private static URL extractJarUrl(URL sourceUrl) throws Exception {
+		Preconditions.checkState(sourceUrl.getProtocol().equalsIgnoreCase("jar"), "%s is not jar path", sourceUrl);
+		final String jarFileSource = sourceUrl.getFile();
+		final int separator = jarFileSource.indexOf("!/");
+		if (separator == -1) throw new IllegalStateException("no !/ found in url spec:" + jarFileSource);
+		return new URL(jarFileSource.substring(0, separator));
+	}
+
+	private FileMeta fromModCandidate(ModCandidate candidate) {
+		FileMeta fileMeta = createFileMeta(candidate.getModContainer());
 		fileMeta.packages.addAll(candidate.getContainedPackages());
 		for (ModContainer c : candidate.getContainedMods())
 			fileMeta.mods.put(c.getModId(), new ModMeta(c));
@@ -242,14 +288,14 @@ public class ModMetaCollector {
 			return "sha256:" + Files.hash(file, Hashing.sha256()).toString();
 		} catch (Throwable t) {
 			Log.warn(t, "Can't hash file %s", file);
-			return null;
+			return SIGNATURE_NONE;
 		}
 	}
 
 	private FileMeta getOrCreateData(File file) {
 		FileMeta data = files.get(file);
 		if (data == null) {
-			data = new FileMeta(file);
+			data = createFileMeta(file);
 			files.put(file, data);
 		}
 
@@ -259,9 +305,7 @@ public class ModMetaCollector {
 	private void collectFilesFromModCandidates(Collection<ModCandidate> candidates) {
 		for (ModCandidate c : candidates) {
 			File modContainer = c.getModContainer();
-			if (!files.containsKey(modContainer) &&
-					!c.isMinecraftJar() &&
-					c.getSourceType() == ContainerType.JAR) {
+			if (!files.containsKey(modContainer) && c.getSourceType() == ContainerType.JAR) {
 				FileMeta meta = fromModCandidate(c);
 				files.put(modContainer, meta);
 			}
@@ -322,7 +366,7 @@ public class ModMetaCollector {
 	}
 
 	private void collectFilesFromModContainers(ASMDataTable table) {
-		File dummyEntry = new File("minecraft.jar");
+		final File dummyEntry = new File("minecraft.jar"); // dummy entry comes from MCP container
 		for (ModContainer c : Loader.instance().getModList()) {
 			File f = c.getSource();
 			if (f != null && !f.equals(dummyEntry) && !f.isDirectory()) {
@@ -459,7 +503,7 @@ public class ModMetaCollector {
 			Class<?> cls = Class.forName(className);
 			CodeSource src = cls.getProtectionDomain().getCodeSource();
 			if (src != null) {
-				URL sourceUrl = src.getLocation();
+				URL sourceUrl = extractJarUrl(src.getLocation());
 				File sourceFile = new File(sourceUrl.toURI());
 				FileMeta meta = files.get(sourceFile);
 				if (meta != null) result.loadedFrom = meta.signature();
