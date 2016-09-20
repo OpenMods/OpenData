@@ -1,10 +1,13 @@
 package openeye.logic;
 
+import com.google.common.base.Preconditions;
 import openeye.Log;
 import openeye.storage.IDataSource;
 
 public class StateHolder {
 	private static ModState state = new ModState();
+
+	private static Runnable saveCallback;
 
 	private static void storeState(ModState state, Storages storages) {
 		IDataSource<ModState> stateStorage = storages.state.getById(Storages.STATE_FILE_ID);
@@ -12,6 +15,7 @@ public class StateHolder {
 	}
 
 	public static void init(final Storages storages) {
+		Preconditions.checkState(saveCallback == null, "Double initialization of state storage");
 		try {
 			IDataSource<ModState> stateStorage = storages.state.getById(Storages.STATE_FILE_ID);
 			ModState storedState = stateStorage.retrieve();
@@ -20,7 +24,7 @@ public class StateHolder {
 			Log.warn(t, "Failed to get mod state, reinitializing");
 		}
 
-		Thread stateDump = new Thread() {
+		saveCallback = new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -32,7 +36,12 @@ public class StateHolder {
 			}
 		};
 
-		Runtime.getRuntime().addShutdownHook(stateDump);
+		Runtime.getRuntime().addShutdownHook(new Thread(saveCallback));
+	}
+
+	public static void save() {
+		Preconditions.checkState(saveCallback != null, "State holder not initialized");
+		saveCallback.run();
 	}
 
 	public static ModState state() {
