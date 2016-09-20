@@ -34,14 +34,17 @@ class ReportContext implements IContext {
 
 	@Override
 	public void queueFileReport(String signature) {
-		if (!addedFileInfos.contains(signature)) {
-			result.add(collector.generateFileReport(signature));
-			addedFileInfos.add(signature);
+		if (!signature.startsWith("special:")) {
+			if (!addedFileInfos.contains(signature)) {
+				result.add(collector.generateFileReport(signature));
+				addedFileInfos.add(signature);
+			}
 		}
 	}
 
 	@Override
 	public void queueFileContents(String signature) {
+		// special files allowed - it may be useful to get minecraft.jar contents
 		if (!addedFileContents.contains(signature)) {
 			result.add(collector.generateFileContentsReport(signature));
 			addedFileContents.add(signature);
