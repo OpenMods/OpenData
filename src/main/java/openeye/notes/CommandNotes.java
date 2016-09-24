@@ -7,9 +7,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.SyntaxErrorException;
+import net.minecraft.util.BlockPos;
 import openeye.logic.GsonUtils;
 import openeye.notes.entries.NoteEntry;
 import openeye.storage.GsonSimpleStorage;
@@ -20,7 +22,7 @@ public class CommandNotes implements ICommand {
 	private static final String COMMAND_NAME = "eye_notes";
 
 	interface INoteSink {
-		public void dump(Collection<NoteEntry> notes, ICommandSender sender);
+		public void dump(Collection<NoteEntry> notes, ICommandSender sender) throws CommandException;
 	}
 
 	private final Map<String, INoteSink> sinks = Maps.newHashMap();
@@ -33,11 +35,11 @@ public class CommandNotes implements ICommand {
 
 	@Override
 	public int compareTo(Object o) {
-		return COMMAND_NAME.compareTo(((ICommand)o).getCommandName());
+		return COMMAND_NAME.compareTo(((ICommand)o).getName());
 	}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return COMMAND_NAME;
 	}
 
@@ -51,12 +53,12 @@ public class CommandNotes implements ICommand {
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public List getCommandAliases() {
-		return null;
+	public List getAliases() {
+		return Lists.newArrayList();
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] command) {
+	public void execute(ICommandSender sender, String[] command) throws CommandException {
 		if (command.length != 1) throw new SyntaxErrorException();
 		String sinkType = command[0];
 		INoteSink sink = sinks.get(sinkType);
@@ -66,13 +68,13 @@ public class CommandNotes implements ICommand {
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender sender) {
-		return sender.canCommandSenderUseCommand(4, COMMAND_NAME);
+	public boolean canCommandSenderUse(ICommandSender sender) {
+		return sender.canUseCommand(4, COMMAND_NAME);
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public List addTabCompletionOptions(ICommandSender sender, String[] command) {
+	public List addTabCompletionOptions(ICommandSender sender, String[] command, BlockPos pos) {
 		List<String> result = Lists.newArrayList();
 
 		if (command.length == 1) {

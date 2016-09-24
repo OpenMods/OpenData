@@ -1,6 +1,5 @@
 package openeye.notes;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -11,6 +10,7 @@ import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import openeye.logic.Config;
 
 public class NotesButtonInjector {
@@ -57,7 +57,7 @@ public class NotesButtonInjector {
 
 	public static void onScreenDraw(GuiScreen screen) {
 		if (Config.mainScreenExtraLine && notification != null)
-			screen.drawCenteredString(Minecraft.getMinecraft().fontRenderer,
+			screen.drawCenteredString(screen.mc.fontRendererObj,
 					notification.getFormattedText(),
 					getX(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosX),
 					getY(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosY),

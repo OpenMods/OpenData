@@ -1,8 +1,8 @@
 package openeye.responses;
 
-import cpw.mods.fml.common.event.FMLInterModComms;
 import java.io.File;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import openeye.logic.IContext;
 import openeye.notes.NoteCollector;
 import openeye.protocol.responses.ResponseModMsg;

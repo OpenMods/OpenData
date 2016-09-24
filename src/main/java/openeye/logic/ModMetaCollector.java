@@ -10,16 +10,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.discovery.ASMDataTable;
-import cpw.mods.fml.common.discovery.ContainerType;
-import cpw.mods.fml.common.discovery.ModCandidate;
-import cpw.mods.fml.common.versioning.ArtifactVersion;
-import cpw.mods.fml.common.versioning.VersionRange;
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -31,6 +21,16 @@ import java.util.Set;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.discovery.ContainerType;
+import net.minecraftforge.fml.common.discovery.ModCandidate;
+import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+import net.minecraftforge.fml.common.versioning.VersionRange;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import openeye.Log;
 import openeye.protocol.Artifact;
 import openeye.protocol.FileSignature;
@@ -102,6 +102,7 @@ public class ModMetaCollector {
 			return result.build();
 		}
 
+		@SuppressWarnings("deprecation")
 		public SerializableMod toSerializable() {
 			SerializableMod result = new SerializableMod();
 			result.modId = modId;
@@ -378,7 +379,7 @@ public class ModMetaCollector {
 
 	private void collectFilesFromTweakers(Collection<ITweaker> tweakers, ASMDataTable table) {
 		try {
-			Class<?> coreModWrapper = Class.forName("cpw.mods.fml.relauncher.CoreModManager$FMLPluginWrapper");
+			Class<?> coreModWrapper = Class.forName("net.minecraftforge.fml.relauncher.CoreModManager$FMLPluginWrapper");
 			Field nameField = coreModWrapper.getField("name");
 			nameField.setAccessible(true);
 			Field pluginField = coreModWrapper.getField("coreModInstance");

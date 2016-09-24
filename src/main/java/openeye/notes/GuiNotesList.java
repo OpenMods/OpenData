@@ -1,10 +1,10 @@
 package openeye.notes;
 
 import com.google.common.base.Strings;
-import cpw.mods.fml.client.GuiScrollingList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraftforge.fml.client.GuiScrollingList;
 import openeye.notes.entries.NoteEntry;
 import org.lwjgl.opengl.GL11;
 
@@ -15,8 +15,8 @@ public class GuiNotesList extends GuiScrollingList {
 	private final GuiNotes owner;
 	private final Minecraft mc;
 
-	public GuiNotesList(GuiNotes owner, Minecraft mc, int width, int height, int top, int bottom, List<NoteEntry> notes) {
-		super(mc, width, height, top, bottom, 0, ENTRY_HEIGHT);
+	public GuiNotesList(GuiNotes owner, Minecraft mc, int width, int height, int top, int bottom, int screenWidth, int screenHeight, List<NoteEntry> notes) {
+		super(mc, width, height, top, bottom, 0, ENTRY_HEIGHT, screenWidth, screenHeight);
 		this.mc = mc;
 		this.owner = owner;
 		this.notes = notes;
@@ -50,10 +50,11 @@ public class GuiNotesList extends GuiScrollingList {
 		NoteIcons icon = entry.category.icon;
 		owner.drawTexturedModalRect(left, top, icon.textureU + 2, icon.textureV + 2, 16, 16);
 
-		owner.drawString(mc.fontRenderer, entry.title().getFormattedText(), left + 20, top + 4, 0xFFFFFF);
+		owner.drawString(mc.fontRendererObj, entry.title().getFormattedText(), left + 20, top + 4, 0xFFFFFF);
 		String description = entry.content().getFormattedText();
 
 		int width = right - left;
-		if (!Strings.isNullOrEmpty(description)) mc.fontRenderer.drawSplitString(description, left, top + 20, left + width - 10, 0xCCCCCC);
+		if (!Strings.isNullOrEmpty(description))
+			mc.fontRendererObj.drawSplitString(description, left, top + 20, left + width - 10, 0xCCCCCC);
 	}
 }

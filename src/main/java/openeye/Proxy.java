@@ -1,12 +1,12 @@
 package openeye;
 
 import com.google.common.base.Strings;
-import cpw.mods.fml.common.FMLCommonHandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import openeye.logic.Config;
 import openeye.logic.Sanitizers;
 import openeye.notes.NotesButtonInjector;

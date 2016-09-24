@@ -7,12 +7,11 @@ import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiConfirmOpenLink;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.util.StatCollector;
 import openeye.Log;
 import openeye.notes.entries.NoteEntry;
 
-public class GuiNotes extends GuiScreen implements GuiYesNoCallback {
+public class GuiNotes extends GuiScreen {
 
 	private static final int ACTION_GOTO_URL = 0;
 	private static final int BUTTON_FINISHED_ID = 0;
@@ -44,7 +43,7 @@ public class GuiNotes extends GuiScreen implements GuiYesNoCallback {
 		gotoButton = new GuiButton(BUTTON_GOTO_ID, width / 2 - 150, height - 30, 150, 20, StatCollector.translateToLocal("openeye.notes.goto_page"));
 		gotoButton.enabled = false;
 		buttonList.add(gotoButton);
-		noteList = new GuiNotesList(this, mc, width, height, 10, height - 40, notes);
+		noteList = new GuiNotesList(this, mc, width, height, 10, height - 40, width, height, notes);
 	}
 
 	@Override
@@ -57,9 +56,7 @@ public class GuiNotes extends GuiScreen implements GuiYesNoCallback {
 	@Override
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == BUTTON_FINISHED_ID) mc.displayGuiScreen(prevGui);
-		else if (button.id == BUTTON_GOTO_ID) {
-			mc.displayGuiScreen(new GuiConfirmOpenLink(this, gotoUrl, ACTION_GOTO_URL, false));
-		}
+		else if (button.id == BUTTON_GOTO_ID) mc.displayGuiScreen(new GuiConfirmOpenLink(this, gotoUrl, ACTION_GOTO_URL, false));
 	}
 
 	private static void openURI(String uri) {

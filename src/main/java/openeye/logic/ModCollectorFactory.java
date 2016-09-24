@@ -1,12 +1,12 @@
 package openeye.logic;
 
-import cpw.mods.fml.common.discovery.ASMDataTable;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
 
 public class ModCollectorFactory {
 

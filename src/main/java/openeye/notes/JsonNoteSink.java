@@ -20,7 +20,7 @@ final class JsonNoteSink implements INoteSink {
 	}
 
 	@Override
-	public void dump(Collection<NoteEntry> notes, ICommandSender sender) {
+	public void dump(Collection<NoteEntry> notes, ICommandSender sender) throws CommandException {
 		JsonArray result = new JsonArray();
 
 		for (NoteEntry note : notes) {

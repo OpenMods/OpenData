@@ -1,8 +1,8 @@
 package openeye.asm.injectors;
 
 import com.google.common.collect.Multimap;
-import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import java.io.File;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import openeye.asm.MethodCodeInjector;
 import openeye.asm.MethodMatcher;
 import openeye.asm.VisitorHelper;
