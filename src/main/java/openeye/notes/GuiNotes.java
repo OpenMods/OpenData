@@ -35,7 +35,6 @@ public class GuiNotes extends GuiScreen {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
 

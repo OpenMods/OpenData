@@ -34,12 +34,12 @@ public class CommandNotes implements ICommand {
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		return COMMAND_NAME.compareTo(((ICommand)o).getName());
+	public int compareTo(ICommand o) {
+		return COMMAND_NAME.compareTo(o.getCommandName());
 	}
 
 	@Override
-	public String getName() {
+	public String getCommandName() {
 		return COMMAND_NAME;
 	}
 
@@ -52,13 +52,12 @@ public class CommandNotes implements ICommand {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public List getAliases() {
+	public List<String> getCommandAliases() {
 		return Lists.newArrayList();
 	}
 
 	@Override
-	public void execute(ICommandSender sender, String[] command) throws CommandException {
+	public void processCommand(ICommandSender sender, String[] command) throws CommandException {
 		if (command.length != 1) throw new SyntaxErrorException();
 		String sinkType = command[0];
 		INoteSink sink = sinks.get(sinkType);
@@ -68,13 +67,12 @@ public class CommandNotes implements ICommand {
 	}
 
 	@Override
-	public boolean canCommandSenderUse(ICommandSender sender) {
-		return sender.canUseCommand(4, COMMAND_NAME);
+	public boolean canCommandSenderUseCommand(ICommandSender sender) {
+		return sender.canCommandSenderUseCommand(4, COMMAND_NAME);
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public List addTabCompletionOptions(ICommandSender sender, String[] command, BlockPos pos) {
+	public List<String> addTabCompletionOptions(ICommandSender sender, String[] command, BlockPos pos) {
 		List<String> result = Lists.newArrayList();
 
 		if (command.length == 1) {

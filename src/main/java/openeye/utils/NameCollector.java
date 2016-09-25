@@ -5,7 +5,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -21,7 +20,7 @@ public abstract class NameCollector {
 		}
 	}
 
-	public static class ForgeHooks {
+	public static class Hooks {
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void onWorldLoad(WorldEvent.Load evt) {
 			Sanitizers.addWorldNames(evt.world);
@@ -31,17 +30,13 @@ public abstract class NameCollector {
 		public void onEntityJoin(EntityJoinWorldEvent evt) {
 			if (evt.entity instanceof EntityPlayer) tryAddPlayer((EntityPlayer)evt.entity);
 		}
-	}
 
-	public static class FmlHooks {
-		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent evt) {
 			tryAddPlayer(evt.player);
 		}
 	}
 
 	public static void register() {
-		MinecraftForge.EVENT_BUS.register(new ForgeHooks());
-		FMLCommonHandler.instance().bus().register(new FmlHooks());
+		MinecraftForge.EVENT_BUS.register(new Hooks());
 	}
 }
