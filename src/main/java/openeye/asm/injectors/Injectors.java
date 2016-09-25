@@ -58,9 +58,9 @@ public class Injectors {
 		}
 
 		{
-			Type methodType = Type.getMethodType(tileEntityType, nbtTagCompoundType);
+			Type methodType = Type.getMethodType(tileEntityType, worldType, nbtTagCompoundType);
 
-			MethodMatcher matcher = new MethodMatcher(tileEntityName, methodType.getDescriptor(), "create", "func_189514_c");
+			MethodMatcher matcher = new MethodMatcher(tileEntityName, methodType.getDescriptor(), "func_190200_a", "func_190200_a");
 
 			injectors.put(TILE_ENTITY_CLS, new MethodCodeInjector("tile_entity_load", matcher) {
 				@Override
