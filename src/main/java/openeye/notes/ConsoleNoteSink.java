@@ -15,10 +15,10 @@ final class ConsoleNoteSink implements INoteSink {
 		int count = 0;
 		for (NoteEntry note : notes) {
 			ITextComponent level = new TextComponentTranslation(note.category.translated);
-			level.getChatStyle().setColor(note.category.color);
+			level.getStyle().setColor(note.category.color);
 			sender.addChatMessage(new TextComponentTranslation("openeye.chat.note", count++, level));
 			ITextComponent title = note.title();
-			title.getChatStyle().setBold(true);
+			title.getStyle().setBold(true);
 			sender.addChatMessage(title);
 			sender.addChatMessage(note.content());
 

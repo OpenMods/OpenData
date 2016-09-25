@@ -7,7 +7,7 @@ import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiConfirmOpenLink;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.client.resources.I18n;
 import openeye.Log;
 import openeye.notes.entries.NoteEntry;
 
@@ -38,8 +38,8 @@ public class GuiNotes extends GuiScreen {
 	public void initGui() {
 		super.initGui();
 
-		buttonList.add(new GuiButton(BUTTON_FINISHED_ID, width / 2, height - 30, 150, 20, I18n.translateToLocal("gui.done")));
-		gotoButton = new GuiButton(BUTTON_GOTO_ID, width / 2 - 150, height - 30, 150, 20, I18n.translateToLocal("openeye.notes.goto_page"));
+		buttonList.add(new GuiButton(BUTTON_FINISHED_ID, width / 2, height - 30, 150, 20, I18n.format("gui.done")));
+		gotoButton = new GuiButton(BUTTON_GOTO_ID, width / 2 - 150, height - 30, 150, 20, I18n.format("openeye.notes.goto_page"));
 		gotoButton.enabled = false;
 		buttonList.add(gotoButton);
 		noteList = new GuiNotesList(this, mc, width, height, 10, height - 40, width, height, notes);

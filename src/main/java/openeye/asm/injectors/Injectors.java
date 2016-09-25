@@ -19,7 +19,6 @@ public class Injectors {
 	private static final String WORLD_CLS = "net.minecraft.world.World";
 	private static final String CHUNK_CLS = "net.minecraft.world.chunk.Chunk";
 	private static final String ANVIL_CHUNK_LOADER = "net.minecraft.world.chunk.storage.AnvilChunkLoader";
-	private static final String MINECRAFT_SERVER_CLS = "net.minecraft.server.MinecraftServer";
 
 	public static String getClassName(String name) {
 		name = name.replace('.', '/');
@@ -42,9 +41,6 @@ public class Injectors {
 		String chunkName = getClassName(CHUNK_CLS);
 		Type chunkType = Type.getObjectType(chunkName);
 
-		String mcServerName = getClassName(MINECRAFT_SERVER_CLS);
-		Type mcServerType = Type.getObjectType(mcServerName);
-
 		{
 			String crashHandlerName = getClassName(CRASH_REPORT_CLS);
 			Type fileType = Type.getType(File.class);
@@ -62,9 +58,9 @@ public class Injectors {
 		}
 
 		{
-			Type methodType = Type.getMethodType(tileEntityType, mcServerType, nbtTagCompoundType);
+			Type methodType = Type.getMethodType(tileEntityType, nbtTagCompoundType);
 
-			MethodMatcher matcher = new MethodMatcher(tileEntityName, methodType.getDescriptor(), "createTileEntity", "func_184246_b");
+			MethodMatcher matcher = new MethodMatcher(tileEntityName, methodType.getDescriptor(), "create", "func_189514_c");
 
 			injectors.put(TILE_ENTITY_CLS, new MethodCodeInjector("tile_entity_load", matcher) {
 				@Override

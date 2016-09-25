@@ -29,7 +29,7 @@ public class ScreenNotificationHolder {
 	}
 
 	public void signalDangerousFile() {
-		addLine(64, new TextComponentTranslation("openeye.main_screen.remove_file").setChatStyle(REMOVE_FILE_STYLE));
+		addLine(64, new TextComponentTranslation("openeye.main_screen.remove_file").setStyle(REMOVE_FILE_STYLE));
 	}
 
 	public void signalCrashReported() {
@@ -37,11 +37,11 @@ public class ScreenNotificationHolder {
 	}
 
 	public void signalKnownCrash() {
-		addLine(32, new TextComponentTranslation("openeye.main_screen.known_crash").setChatStyle(KNOWN_CRASH_STYLE));
+		addLine(32, new TextComponentTranslation("openeye.main_screen.known_crash").setStyle(KNOWN_CRASH_STYLE));
 	}
 
 	public void signalIntroStuff() {
-		addLine(256, new TextComponentTranslation("openeye.main_screen.intro").setChatStyle(INTRO_STYLE));
+		addLine(256, new TextComponentTranslation("openeye.main_screen.intro").setStyle(INTRO_STYLE));
 	}
 
 	public ITextComponent getSelectedLine() {
