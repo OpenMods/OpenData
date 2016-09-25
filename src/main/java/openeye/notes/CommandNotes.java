@@ -11,7 +11,8 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.SyntaxErrorException;
-import net.minecraft.util.BlockPos;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import openeye.logic.GsonUtils;
 import openeye.notes.entries.NoteEntry;
 import openeye.storage.GsonSimpleStorage;
@@ -57,7 +58,7 @@ public class CommandNotes implements ICommand {
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] command) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] command) throws CommandException {
 		if (command.length != 1) throw new SyntaxErrorException();
 		String sinkType = command[0];
 		INoteSink sink = sinks.get(sinkType);
@@ -67,12 +68,12 @@ public class CommandNotes implements ICommand {
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender sender) {
+	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
 		return sender.canCommandSenderUseCommand(4, COMMAND_NAME);
 	}
 
 	@Override
-	public List<String> addTabCompletionOptions(ICommandSender sender, String[] command, BlockPos pos) {
+	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] command, BlockPos pos) {
 		List<String> result = Lists.newArrayList();
 
 		if (command.length == 1) {

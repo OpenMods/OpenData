@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import java.util.Collection;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentTranslation;
 import openeye.Log;
 import openeye.notes.CommandNotes.INoteSink;
 import openeye.notes.entries.NoteEntry;
@@ -31,7 +31,7 @@ final class JsonNoteSink implements INoteSink {
 		try {
 			IDataSource<Object> target = notesDump.createNew();
 			target.store(result);
-			sender.addChatMessage(new ChatComponentTranslation("openeye.chat.dumped", target.getId()));
+			sender.addChatMessage(new TextComponentTranslation("openeye.chat.dumped", target.getId()));
 		} catch (Throwable t) {
 			Log.warn(t, "Failed to store notes");
 			throw new CommandException("openeye.chat.store_failed");

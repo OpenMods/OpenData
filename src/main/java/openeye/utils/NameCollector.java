@@ -23,12 +23,12 @@ public abstract class NameCollector {
 	public static class Hooks {
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void onWorldLoad(WorldEvent.Load evt) {
-			Sanitizers.addWorldNames(evt.world);
+			Sanitizers.addWorldNames(evt.getWorld());
 		}
 
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void onEntityJoin(EntityJoinWorldEvent evt) {
-			if (evt.entity instanceof EntityPlayer) tryAddPlayer((EntityPlayer)evt.entity);
+			if (evt.getEntity() instanceof EntityPlayer) tryAddPlayer((EntityPlayer)evt.getEntity());
 		}
 
 		public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent evt) {

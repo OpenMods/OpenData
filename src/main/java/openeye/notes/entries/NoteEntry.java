@@ -4,7 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import java.io.File;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 import openeye.notes.NoteCategory;
 
 public abstract class NoteEntry {
@@ -26,9 +26,9 @@ public abstract class NoteEntry {
 
 	public abstract String url();
 
-	public abstract IChatComponent title();
+	public abstract ITextComponent title();
 
-	public abstract IChatComponent content();
+	public abstract ITextComponent content();
 
 	public JsonObject toJson() {
 		JsonObject result = new JsonObject();

@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
@@ -16,7 +16,7 @@ import openeye.logic.Config;
 public class NotesButtonInjector {
 
 	private static final int BUTTON_NOTES_ID = 666;
-	private static IChatComponent notification;
+	private static ITextComponent notification;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void onGuiInit(GuiScreen screen, List buttonList) {
@@ -74,17 +74,17 @@ public class NotesButtonInjector {
 
 	@SubscribeEvent
 	public void onGuiInit(InitGuiEvent evt) {
-		if (evt.gui instanceof GuiMainMenu) onGuiInit(evt.gui, evt.buttonList);
+		if (evt.getGui() instanceof GuiMainMenu) onGuiInit(evt.getGui(), evt.getButtonList());
 	}
 
 	@SubscribeEvent
 	public void onGuiInit(DrawScreenEvent.Post evt) {
-		if (evt.gui instanceof GuiMainMenu) onScreenDraw(evt.gui);
+		if (evt.getGui() instanceof GuiMainMenu) onScreenDraw(evt.getGui());
 	}
 
 	@SubscribeEvent
 	public void onActionPerformed(ActionPerformedEvent evt) {
-		if (evt.gui instanceof GuiMainMenu) onActionPerformed(evt.gui.mc, evt.gui, evt.button);
+		if (evt.getGui() instanceof GuiMainMenu) onActionPerformed(evt.getGui().mc, evt.getGui(), evt.getButton());
 	}
 
 	public static void registerInjector() {

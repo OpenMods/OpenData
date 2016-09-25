@@ -3,8 +3,8 @@ package openeye.notes.entries;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import java.io.File;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import openeye.notes.NoteCategory;
 import openeye.notes.NoteLevels;
 import openeye.responses.ResponseRemoveFileAction;
@@ -21,13 +21,13 @@ public class RemoveFileEntry extends NoteEntry {
 	}
 
 	@Override
-	public IChatComponent title() {
-		return new ChatComponentTranslation("openeye.notes.title.remove_file", file.getName());
+	public ITextComponent title() {
+		return new TextComponentTranslation("openeye.notes.title.remove_file", file.getName());
 	}
 
 	@Override
-	public IChatComponent content() {
-		return new ChatComponentTranslation("openeye.notes.content.remove_file", file.getName());
+	public ITextComponent content() {
+		return new TextComponentTranslation("openeye.notes.content.remove_file", file.getName());
 	}
 
 	@Override

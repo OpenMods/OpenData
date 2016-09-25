@@ -209,8 +209,11 @@ public class Sanitizers {
 	public static void addWorldNames(World world) {
 		final ISaveHandler saveHandler = world.getSaveHandler();
 
-		String worldDir = saveHandler.getWorldDirectoryName();
-		mainSanitizer.addPre(PRIORITY_SAVE_DIR_NAME, replaceNoDuplicates(worldDir, "[save dir]"));
+		final File worldDirectory = saveHandler.getWorldDirectory();
+		if (worldDirectory != null) {
+			final String worldDir = worldDirectory.getName();
+			mainSanitizer.addPre(PRIORITY_SAVE_DIR_NAME, replaceNoDuplicates(worldDir, "[save dir]"));
+		}
 
 		try {
 			File dummy = saveHandler.getMapFileFromName("dummy");

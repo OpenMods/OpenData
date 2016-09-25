@@ -1,9 +1,9 @@
 package openeye.notes.entries;
 
 import com.google.common.base.Strings;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import openeye.notes.NoteCategory;
 import openeye.responses.ResponseKnownCrashAction;
 
@@ -18,13 +18,13 @@ public class ResolvedCrashEntry extends NoteEntry {
 	}
 
 	@Override
-	public IChatComponent title() {
-		return new ChatComponentTranslation("openeye.notes.title.resolved_crash");
+	public ITextComponent title() {
+		return new TextComponentTranslation("openeye.notes.title.resolved_crash");
 	}
 
 	@Override
-	public IChatComponent content() {
-		return new ChatComponentText(Strings.nullToEmpty(note));
+	public ITextComponent content() {
+		return new TextComponentString(Strings.nullToEmpty(note));
 	}
 
 	@Override

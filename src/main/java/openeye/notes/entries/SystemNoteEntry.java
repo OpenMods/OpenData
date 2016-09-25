@@ -1,21 +1,21 @@
 package openeye.notes.entries;
 
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 import openeye.notes.NoteCategory;
 
 public class SystemNoteEntry extends NoteEntry {
 
-	private final IChatComponent title;
+	private final ITextComponent title;
 
-	private final IChatComponent contents;
+	private final ITextComponent contents;
 
 	private final String url;
 
-	public SystemNoteEntry(int level, IChatComponent title, IChatComponent contents, String url) {
+	public SystemNoteEntry(int level, ITextComponent title, ITextComponent contents, String url) {
 		this(NoteCategory.SYSTEM_INFO, level, title, contents, url);
 	}
 
-	public SystemNoteEntry(NoteCategory category, int level, IChatComponent title, IChatComponent contents, String url) {
+	public SystemNoteEntry(NoteCategory category, int level, ITextComponent title, ITextComponent contents, String url) {
 		super(category, level);
 		this.title = title;
 		this.contents = contents;
@@ -23,12 +23,12 @@ public class SystemNoteEntry extends NoteEntry {
 	}
 
 	@Override
-	public IChatComponent title() {
+	public ITextComponent title() {
 		return title;
 	}
 
 	@Override
-	public IChatComponent content() {
+	public ITextComponent content() {
 		return contents;
 	}
 

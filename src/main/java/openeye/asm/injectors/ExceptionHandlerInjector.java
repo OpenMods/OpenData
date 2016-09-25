@@ -18,13 +18,15 @@ public class ExceptionHandlerInjector extends MethodVisitor {
 
 	private final String[] excNames;
 	private final Map<Label, String> excLabels = Maps.newIdentityHashMap();
+	private final String excType;
 	int currentLabel;
 	private boolean skipHandlers;
 
-	public ExceptionHandlerInjector(MethodVisitor mv, String... excNames) {
+	public ExceptionHandlerInjector(MethodVisitor mv, String excType, String... excNames) {
 		super(Opcodes.ASM5, mv);
 
 		this.excNames = excNames;
+		this.excType = excType;
 
 		try {
 			callHackType = Type.getType(CallHack.class);
@@ -38,7 +40,7 @@ public class ExceptionHandlerInjector extends MethodVisitor {
 	public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
 		super.visitTryCatchBlock(start, end, handler, type);
 
-		if (!skipHandlers && "java/lang/Exception".equals(type)) {
+		if (!skipHandlers && excType.equals(type)) {
 			try {
 				String name = excNames[currentLabel++];
 				excLabels.put(handler, name);

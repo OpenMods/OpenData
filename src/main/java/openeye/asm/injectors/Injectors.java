@@ -19,6 +19,7 @@ public class Injectors {
 	private static final String WORLD_CLS = "net.minecraft.world.World";
 	private static final String CHUNK_CLS = "net.minecraft.world.chunk.Chunk";
 	private static final String ANVIL_CHUNK_LOADER = "net.minecraft.world.chunk.storage.AnvilChunkLoader";
+	private static final String MINECRAFT_SERVER_CLS = "net.minecraft.server.MinecraftServer";
 
 	public static String getClassName(String name) {
 		name = name.replace('.', '/');
@@ -41,6 +42,9 @@ public class Injectors {
 		String chunkName = getClassName(CHUNK_CLS);
 		Type chunkType = Type.getObjectType(chunkName);
 
+		String mcServerName = getClassName(MINECRAFT_SERVER_CLS);
+		Type mcServerType = Type.getObjectType(mcServerName);
+
 		{
 			String crashHandlerName = getClassName(CRASH_REPORT_CLS);
 			Type fileType = Type.getType(File.class);
@@ -58,14 +62,14 @@ public class Injectors {
 		}
 
 		{
-			Type methodType = Type.getMethodType(tileEntityType, nbtTagCompoundType);
+			Type methodType = Type.getMethodType(tileEntityType, mcServerType, nbtTagCompoundType);
 
-			MethodMatcher matcher = new MethodMatcher(tileEntityName, methodType.getDescriptor(), "createAndLoadEntity", "func_145827_c");
+			MethodMatcher matcher = new MethodMatcher(tileEntityName, methodType.getDescriptor(), "createTileEntity", "func_184246_b");
 
 			injectors.put(TILE_ENTITY_CLS, new MethodCodeInjector("tile_entity_load", matcher) {
 				@Override
 				public MethodVisitor createVisitor(MethodVisitor parent) {
-					return new ExceptionHandlerInjector(parent, "tile_entity_construct", "tile_entity_read");
+					return new ExceptionHandlerInjector(parent, "java/lang/Throwable", "tile_entity_construct", "tile_entity_read");
 				}
 			});
 		}
@@ -80,7 +84,7 @@ public class Injectors {
 			injectors.put(ENTITY_LIST_CLS, new MethodCodeInjector("entity_load", matcher) {
 				@Override
 				public MethodVisitor createVisitor(MethodVisitor parent) {
-					return new ExceptionHandlerInjector(parent, "entity_construct", "entity_read");
+					return new ExceptionHandlerInjector(parent, "java/lang/Exception", "entity_construct", "entity_read");
 				}
 			});
 		}
@@ -95,7 +99,7 @@ public class Injectors {
 			injectors.put(ANVIL_CHUNK_LOADER, new MethodCodeInjector("chunk_write", matcher) {
 				@Override
 				public MethodVisitor createVisitor(MethodVisitor parent) {
-					return new ExceptionHandlerInjector(parent, "entity_write", "tile_entity_write");
+					return new ExceptionHandlerInjector(parent, "java/lang/Exception", "entity_write", "tile_entity_write");
 				}
 			});
 		}
