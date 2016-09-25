@@ -22,7 +22,7 @@ public class Config {
 	public static boolean sendModList = true;
 
 	@ConfigProperty(category = "data", comment = "If false, skips sending pending crash reports. Please note that pending crashe reports will not be automatically removed.")
-	public static boolean sendCrashes = false;
+	public static boolean sendCrashes = true;
 
 	@ConfigProperty(category = "data", comment = "Maximum number of crash reports from single category stored per single run")
 	public static int storeCrashReportsLimit = 20;
