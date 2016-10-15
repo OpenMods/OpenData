@@ -32,10 +32,10 @@ openeye.note.content.intro6=OpenEye uses vanilla snooper setting. If you are not
 
 openeye.note.title.old_java=Old Java version
 
-openeye.note.content.old_java_recoverable=Your Java is to old to handle secure connection to OpenEye server. Fortunatelly, client was able to provide missing data. Please consider updating.
-openeye.note.content.old_java_total_failure=Your Java is to old to handle secure connection to OpenEye server. Please update!
+openeye.note.content.old_java_recoverable=Your Java is too old to handle secure connection to OpenEye server. Fortunately, client was able to provide missing data. Please consider updating to latest version.
+openeye.note.content.old_java_total_failure=Your Java is too old to handle secure connection to OpenEye server. Please update!
 
-openeye.note.title.suspended=Communication with server supended
+openeye.note.title.suspended=Communication with server suspended
 openeye.note.content.suspended_no_reason=Server requested to suspend communication until %s
 openeye.note.content.suspended=Server requested to suspend communication until %s, reason: "%s"
 
