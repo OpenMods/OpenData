@@ -5,9 +5,14 @@ buildscript {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
+        maven {
+          name 'OpenMods Third Party'
+          url 'http://repo.openmods.info/artifactory/simple/thirdparty'
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.thesilkminer.gradle.translationchecker:TranslationChecker:1.1'
     }
 }
 
@@ -94,6 +99,15 @@ jar {
     }
 
     from configurations.mergeJars.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
+task updateTranslations(type: net.thesilkminer.gradle.plugin.translationchecker.tasks.TranslationCheckTask) {
+    modId = "openeye"
+}
+
+task checkTranslations(type: net.thesilkminer.gradle.plugin.translationchecker.tasks.TranslationCheckTask) {
+    modId = "openeye"
+    dryRun = true
 }
 
 task wrapper (type: Wrapper) {

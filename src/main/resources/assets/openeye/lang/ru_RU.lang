@@ -30,6 +30,15 @@ openeye.note.content.intro5=OpenEye - модификация с открытым
 openeye.note.title.intro6=Отключение и конфигурация
 openeye.note.content.intro6=OpenEye использует настройки сбора информации. Если Вы не удовлетворены ими, Вы также можете безопасно удалить эту модификацию.
 
+#openeye.note.title.old_java=Old Java version ## NEEDS TRANSLATION ##
+
+#openeye.note.content.old_java_recoverable=Your Java is too old to handle secure connection to OpenEye server. Fortunately, client was able to provide missing data. Please consider updating to latest version. ## NEEDS TRANSLATION ##
+#openeye.note.content.old_java_total_failure=Your Java is too old to handle secure connection to OpenEye server. Please update! ## NEEDS TRANSLATION ##
+
+#openeye.note.title.suspended=Communication with server suspended ## NEEDS TRANSLATION ##
+#openeye.note.content.suspended_no_reason=Server requested to suspend communication until %s ## NEEDS TRANSLATION ##
+#openeye.note.content.suspended=Server requested to suspend communication until %s, reason: "%s" ## NEEDS TRANSLATION ##
+
 openeye.chat.note=Примечание %s, тип: %s
 openeye.chat.store_failed=Не удалось сохранить примечания!
 openeye.chat.dumped=Примечания сохранены в файл %s

@@ -30,6 +30,15 @@ openeye.note.content.intro5=OpenEye ist eine quelloffene Modifikation. Der Quell
 openeye.note.title.intro6=Deaktivierung & Konfiguration
 openeye.note.content.intro6=OpenEye nutzt die gewöhnlichen Datenerhebungseinstellungen. Sollte dir das nicht reichen, kannst du diese Modifikation auch problemlos entfernen.
 
+#openeye.note.title.old_java=Old Java version ## NEEDS TRANSLATION ##
+
+#openeye.note.content.old_java_recoverable=Your Java is too old to handle secure connection to OpenEye server. Fortunately, client was able to provide missing data. Please consider updating to latest version. ## NEEDS TRANSLATION ##
+#openeye.note.content.old_java_total_failure=Your Java is too old to handle secure connection to OpenEye server. Please update! ## NEEDS TRANSLATION ##
+
+#openeye.note.title.suspended=Communication with server suspended ## NEEDS TRANSLATION ##
+#openeye.note.content.suspended_no_reason=Server requested to suspend communication until %s ## NEEDS TRANSLATION ##
+#openeye.note.content.suspended=Server requested to suspend communication until %s, reason: "%s" ## NEEDS TRANSLATION ##
+
 openeye.chat.note=Anmerkung %s, Typ: %s
 openeye.chat.store_failed=Speichern der Anmerkungen fehlgeschlagen!
 openeye.chat.dumped=Anmerkungen in Datei gespeichert: %s
