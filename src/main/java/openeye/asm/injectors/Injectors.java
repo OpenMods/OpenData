@@ -60,7 +60,7 @@ public class Injectors {
 		{
 			Type methodType = Type.getMethodType(tileEntityType, worldType, nbtTagCompoundType);
 
-			MethodMatcher matcher = new MethodMatcher(tileEntityName, methodType.getDescriptor(), "func_190200_a", "func_190200_a");
+			MethodMatcher matcher = new MethodMatcher(tileEntityName, methodType.getDescriptor(), "create", "func_190200_a");
 
 			injectors.put(TILE_ENTITY_CLS, new MethodCodeInjector("tile_entity_load", matcher) {
 				@Override
@@ -73,16 +73,27 @@ public class Injectors {
 		{
 			String entityListName = getClassName(ENTITY_LIST_CLS);
 
-			Type methodType = Type.getMethodType(entityType, nbtTagCompoundType, worldType);
+			{
+				Type methodType = Type.getMethodType(entityType, nbtTagCompoundType, worldType);
+				MethodMatcher matcher = new MethodMatcher(entityListName, methodType.getDescriptor(), "createEntityFromNBT", "func_75615_a");
+				injectors.put(ENTITY_LIST_CLS, new MethodCodeInjector("entity_read", matcher) {
+					@Override
+					public MethodVisitor createVisitor(MethodVisitor parent) {
+						return new ExceptionHandlerInjector(parent, "java/lang/Exception", "entity_read");
+					}
+				});
+			}
 
-			MethodMatcher matcher = new MethodMatcher(entityListName, methodType.getDescriptor(), "createEntityFromNBT", "func_75615_a");
-
-			injectors.put(ENTITY_LIST_CLS, new MethodCodeInjector("entity_load", matcher) {
-				@Override
-				public MethodVisitor createVisitor(MethodVisitor parent) {
-					return new ExceptionHandlerInjector(parent, "java/lang/Exception", "entity_construct", "entity_read");
-				}
-			});
+			{
+				Type methodType = Type.getMethodType(entityType, Type.getType(Class.class), worldType);
+				MethodMatcher matcher = new MethodMatcher(entityListName, methodType.getDescriptor(), "func_191304_a", "func_191304_a");
+				injectors.put(ENTITY_LIST_CLS, new MethodCodeInjector("entity_create", matcher) {
+					@Override
+					public MethodVisitor createVisitor(MethodVisitor parent) {
+						return new ExceptionHandlerInjector(parent, "java/lang/Exception", "entity_create");
+					}
+				});
+			}
 		}
 
 		{

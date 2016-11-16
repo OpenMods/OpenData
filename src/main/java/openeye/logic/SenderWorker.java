@@ -34,7 +34,7 @@ public class SenderWorker implements Runnable {
 	private static final String API_HOST = "openeye.openmods.info";
 
 	private static final String API_PATH = "/api/v1/data";
-	// private static final String API_PATH = "/dummy";
+	//private static final String API_PATH = "/dummy";
 
 	private final Future<ModMetaCollector> collector;
 
