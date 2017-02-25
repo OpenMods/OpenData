@@ -36,16 +36,16 @@ public class CommandNotes implements ICommand {
 
 	@Override
 	public int compareTo(ICommand o) {
-		return COMMAND_NAME.compareTo(o.getCommandName());
+		return COMMAND_NAME.compareTo(o.getName());
 	}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return COMMAND_NAME;
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) {
 		StringBuilder builder = new StringBuilder(COMMAND_NAME).append(" <");
 		Joiner.on('|').appendTo(builder, sinks.keySet());
 		builder.append(">");
@@ -53,7 +53,7 @@ public class CommandNotes implements ICommand {
 	}
 
 	@Override
-	public List<String> getCommandAliases() {
+	public List<String> getAliases() {
 		return Lists.newArrayList();
 	}
 
@@ -69,11 +69,11 @@ public class CommandNotes implements ICommand {
 
 	@Override
 	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-		return sender.canCommandSenderUseCommand(4, COMMAND_NAME);
+		return sender.canUseCommand(4, COMMAND_NAME);
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] command, BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] command, BlockPos pos) {
 		List<String> result = Lists.newArrayList();
 
 		if (command.length == 1) {

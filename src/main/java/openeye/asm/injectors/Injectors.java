@@ -86,7 +86,7 @@ public class Injectors {
 
 			{
 				Type methodType = Type.getMethodType(entityType, Type.getType(Class.class), worldType);
-				MethodMatcher matcher = new MethodMatcher(entityListName, methodType.getDescriptor(), "func_191304_a", "func_191304_a");
+				MethodMatcher matcher = new MethodMatcher(entityListName, methodType.getDescriptor(), "newEntity", "func_191304_a");
 				injectors.put(ENTITY_LIST_CLS, new MethodCodeInjector("entity_create", matcher) {
 					@Override
 					public MethodVisitor createVisitor(MethodVisitor parent) {

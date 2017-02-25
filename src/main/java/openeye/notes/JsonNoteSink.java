@@ -31,7 +31,7 @@ final class JsonNoteSink implements INoteSink {
 		try {
 			IDataSource<Object> target = notesDump.createNew();
 			target.store(result);
-			sender.addChatMessage(new TextComponentTranslation("openeye.chat.dumped", target.getId()));
+			sender.sendMessage(new TextComponentTranslation("openeye.chat.dumped", target.getId()));
 		} catch (Throwable t) {
 			Log.warn(t, "Failed to store notes");
 			throw new CommandException("openeye.chat.store_failed");
