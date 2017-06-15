@@ -1,6 +1,5 @@
 package openeye.storage;
 
-import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -98,8 +97,8 @@ public class GsonSessionStorage<T> implements IAppendableStorage<T> {
 					ZipOutputStream stream = archiveStream();
 					stream.putNextEntry(new ZipEntry(fullId));
 					return stream;
-				} catch (Throwable t) {
-					throw Throwables.propagate(t);
+				} catch (IOException t) {
+					throw new RuntimeException(t);
 				}
 			}
 

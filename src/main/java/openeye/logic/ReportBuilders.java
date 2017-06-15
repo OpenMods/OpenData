@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.IdentityHashMap;
@@ -173,7 +174,7 @@ public class ReportBuilders {
 
 		crash.location = location;
 
-		Set<Throwable> blacklist = Sets.newSetFromMap(new IdentityHashMap<Throwable, Boolean>());
+		Set<Throwable> blacklist = Collections.newSetFromMap(new IdentityHashMap<Throwable, Boolean>());
 		crash.exception = createStackTrace(throwable, new StackTraceElement[0], blacklist, collector);
 
 		if (collector != null) crash.states = collector.collectStates();

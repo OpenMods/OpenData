@@ -1,6 +1,5 @@
 package openeye.storage;
 
-import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,8 +59,8 @@ public abstract class GsonStorageBase<T> {
 			protected OutputStream createOutputStream() {
 				try {
 					return GsonStorageBase.this.createOutputStream(file);
-				} catch (Throwable t) {
-					throw Throwables.propagate(t);
+				} catch (IOException t) {
+					throw new RuntimeException(t);
 				}
 			}
 
@@ -69,8 +68,8 @@ public abstract class GsonStorageBase<T> {
 			protected InputStream createInputStream() {
 				try {
 					return GsonStorageBase.this.createInputStream(file);
-				} catch (Throwable t) {
-					throw Throwables.propagate(t);
+				} catch (IOException t) {
+					throw new RuntimeException(t);
 				}
 			}
 

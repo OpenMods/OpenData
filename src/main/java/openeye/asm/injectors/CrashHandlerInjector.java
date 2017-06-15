@@ -1,6 +1,5 @@
 package openeye.asm.injectors;
 
-import com.google.common.base.Throwables;
 import java.io.Writer;
 import openeye.Log;
 import openeye.asm.CallHack;
@@ -21,8 +20,8 @@ public class CrashHandlerInjector extends MethodVisitor {
 			streamClose = new Method("closeQuietly", Type.VOID_TYPE, new Type[] { Type.getType(Writer.class) });
 			callHackType = Type.getType(CallHack.class);
 			callTarget = Method.getMethod(CallHack.class.getMethod("callFromCrashHandler", Object.class));
-		} catch (Throwable t) {
-			throw Throwables.propagate(t);
+		} catch (NoSuchMethodException t) {
+			throw new RuntimeException(t);
 		}
 	}
 

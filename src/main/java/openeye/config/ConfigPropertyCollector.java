@@ -1,7 +1,6 @@
 package openeye.config;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -52,8 +51,8 @@ public class ConfigPropertyCollector {
 		public Object getValue() {
 			try {
 				return field.get(target);
-			} catch (Throwable t) {
-				throw Throwables.propagate(t);
+			} catch (IllegalAccessException t) {
+				throw new RuntimeException(t);
 			}
 		}
 
@@ -61,8 +60,8 @@ public class ConfigPropertyCollector {
 		public void setValue(Object value) {
 			try {
 				field.set(target, value);
-			} catch (Throwable t) {
-				throw Throwables.propagate(t);
+			} catch (IllegalAccessException t) {
+				throw new RuntimeException(t);
 			}
 		}
 

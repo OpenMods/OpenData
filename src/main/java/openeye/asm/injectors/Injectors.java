@@ -90,7 +90,7 @@ public class Injectors {
 				injectors.put(ENTITY_LIST_CLS, new MethodCodeInjector("entity_create", matcher) {
 					@Override
 					public MethodVisitor createVisitor(MethodVisitor parent) {
-						return new ExceptionHandlerInjector(parent, "java/lang/Exception", "entity_create");
+						return new ExceptionHandlerInjector(parent, "java/lang/Exception", "entity_create", "entity_create"); // seems to be split in two
 					}
 				});
 			}

@@ -2,7 +2,6 @@ package openeye.config;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Table;
 import com.google.common.io.Closer;
 import com.google.gson.Gson;
@@ -41,7 +40,7 @@ public class GsonConfigProcessingEngine implements IConfigProcessingEngine {
 				stream.close();
 			}
 		} catch (IOException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -58,7 +57,7 @@ public class GsonConfigProcessingEngine implements IConfigProcessingEngine {
 				closer.close();
 			}
 		} catch (IOException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e);
 		}
 	}
 

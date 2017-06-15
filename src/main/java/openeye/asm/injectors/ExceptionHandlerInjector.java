@@ -1,6 +1,6 @@
 package openeye.asm.injectors;
 
-import com.google.common.base.Throwables;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import openeye.Log;
@@ -31,8 +31,8 @@ public class ExceptionHandlerInjector extends MethodVisitor {
 		try {
 			callHackType = Type.getType(CallHack.class);
 			callTarget = Method.getMethod(CallHack.class.getMethod("callForSilentException", Throwable.class, String.class));
-		} catch (Throwable t) {
-			throw Throwables.propagate(t);
+		} catch (NoSuchMethodException t) {
+			throw new RuntimeException(t);
 		}
 	}
 
@@ -43,9 +43,10 @@ public class ExceptionHandlerInjector extends MethodVisitor {
 		if (!skipHandlers && excType.equals(type)) {
 			try {
 				String name = excNames[currentLabel++];
-				excLabels.put(handler, name);
+				final String prev = excLabels.put(handler, name);
+				Preconditions.checkState(prev == null || prev.equals(name), "Duplicate handlers for '%s'", name);
 			} catch (ArrayIndexOutOfBoundsException e) {
-				Log.warn("Invalid method structure, more than two exception handlers. Aborting");
+				Log.warn("Invalid method structure, more than %d exception handlers. Aborting", excNames.length);
 				skipHandlers = true;
 			}
 		}

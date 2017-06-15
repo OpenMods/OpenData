@@ -1,6 +1,5 @@
 package openeye.notes.entries;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import java.io.File;
@@ -11,7 +10,7 @@ public abstract class NoteEntry {
 	private static final File DUMMY_FILE = new File("invalid");
 
 	protected NoteEntry(File file, NoteCategory category, int level) {
-		this.file = Objects.firstNonNull(file, DUMMY_FILE);
+		this.file = file != null? file : DUMMY_FILE;
 		this.category = category;
 		this.level = level;
 	}
