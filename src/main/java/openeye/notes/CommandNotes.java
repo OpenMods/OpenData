@@ -29,7 +29,7 @@ public class CommandNotes implements ICommand {
 	private final Map<String, INoteSink> sinks = Maps.newHashMap();
 
 	public CommandNotes(File reportDir) {
-		final IAppendableStorage<Object> notesDump = new GsonSimpleStorage<Object>(reportDir, "notes", "json", Object.class, GsonUtils.PRETTY_GSON);
+		final IAppendableStorage<Object> notesDump = new GsonSimpleStorage<>(reportDir, "notes", "json", Object.class, GsonUtils.PRETTY_GSON);
 		sinks.put("console", new ConsoleNoteSink());
 		sinks.put("json", new JsonNoteSink(notesDump));
 	}

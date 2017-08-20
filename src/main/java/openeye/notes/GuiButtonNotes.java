@@ -28,7 +28,7 @@ public class GuiButtonNotes extends GuiButton {
 	}
 
 	@Override
-	public void func_191745_a(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		mc.getTextureManager().bindTexture(TEXTURE);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		final boolean mouseOverButton = isMouseOverButton(mouseX, mouseY);
@@ -39,12 +39,12 @@ public class GuiButtonNotes extends GuiButton {
 		else if (mouseOverButton) textureU = 20;
 		else textureU = 0;
 
-		drawTexturedModalRect(xPosition, yPosition, textureU, 0, width, height);
+		drawTexturedModalRect(x, y, textureU, 0, width, height);
 
-		drawTexturedModalRect(xPosition + 2, yPosition + 2, icon.textureU + 2, icon.textureV + 2, 16, 16);
+		drawTexturedModalRect(x + 2, y + 2, icon.textureU + 2, icon.textureV + 2, 16, 16);
 	}
 
 	protected boolean isMouseOverButton(int mouseX, int mouseY) {
-		return mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+		return mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 	}
 }

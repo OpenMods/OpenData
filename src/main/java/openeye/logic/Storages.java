@@ -25,9 +25,9 @@ public class Storages {
 		reportsDir = new File(mcDir, "reports");
 		reportsDir.mkdir();
 
-		state = new GsonPredefinedStorage<ModState>(reportsDir, ModState.class, GsonUtils.PRETTY_GSON, STATE_FILE_ID);
-		pendingCrashes = new GsonWorkingStorage<ReportCrash>(reportsDir, "pending-crash", ReportCrash.class, GsonUtils.PRETTY_GSON);
-		sessionArchive = new GsonSessionStorage<Object>(reportsDir, "json", Object.class, GsonUtils.PRETTY_GSON);
+		state = new GsonPredefinedStorage<>(reportsDir, ModState.class, GsonUtils.PRETTY_GSON, STATE_FILE_ID);
+		pendingCrashes = new GsonWorkingStorage<>(reportsDir, "pending-crash", ReportCrash.class, GsonUtils.PRETTY_GSON);
+		sessionArchive = new GsonSessionStorage<>(reportsDir, "json", Object.class, GsonUtils.PRETTY_GSON);
 	}
 
 	public static Storages init(File mcDir) {

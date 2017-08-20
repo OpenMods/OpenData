@@ -1,7 +1,6 @@
 package openeye.logic;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Supplier;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import java.util.ArrayList;
@@ -35,12 +34,7 @@ public class Sanitizer {
 	};
 
 	private static <V> Multimap<Integer, V> createPriorityList() {
-		return Multimaps.newMultimap(new TreeMap<Integer, Collection<V>>(REVERSED), new Supplier<Collection<V>>() {
-			@Override
-			public Collection<V> get() {
-				return new ArrayList<V>();
-			}
-		});
+		return Multimaps.newMultimap(new TreeMap<Integer, Collection<V>>(REVERSED), ArrayList::new);
 	}
 
 	private final Multimap<Integer, ITransformer> pre = createPriorityList();

@@ -57,7 +57,7 @@ public class NotesButtonInjector {
 
 	public static void onScreenDraw(GuiScreen screen) {
 		if (Config.mainScreenExtraLine && notification != null)
-			screen.drawCenteredString(screen.mc.fontRendererObj,
+			screen.drawCenteredString(screen.mc.fontRenderer,
 					notification.getFormattedText(),
 					getX(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosX),
 					getY(screen, Config.isExtraLinePosAbsolute, Config.extraLinePosY),
