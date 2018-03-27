@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -222,12 +221,9 @@ public class SenderWorker implements Runnable {
 		Thread senderThread = new Thread(this);
 		senderThread.setName("OpenEye sender thread");
 
-		senderThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread t, Throwable e) {
-				logException(e, "Uncaught exception in data collector thread, report will not be send");
-				firstMessageReceived.countDown(); // oh well, better luck next time
-			}
+		senderThread.setUncaughtExceptionHandler((t, e) -> {
+			logException(e, "Uncaught exception in data collector thread, report will not be send");
+			firstMessageReceived.countDown(); // oh well, better luck next time
 		});
 
 		senderThread.start();

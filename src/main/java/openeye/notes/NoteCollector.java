@@ -29,14 +29,11 @@ import openeye.responses.ResponseRemoveFileAction;
 
 public class NoteCollector {
 
-	private static final Comparator<NoteEntry> NOTE_COMPARATOR = new Comparator<NoteEntry>() {
-		@Override
-		public int compare(NoteEntry o1, NoteEntry o2) {
-			int result = o2.level - o1.level;
-			if (result != 0) return result;
+	private static final Comparator<NoteEntry> NOTE_COMPARATOR = (o1, o2) -> {
+		int result = o2.level - o1.level;
+		if (result != 0) return result;
 
-			return o1.file.compareTo(o2.file);
-		}
+		return o1.file.compareTo(o2.file);
 	};
 
 	private final ScreenNotificationHolder menuLine = new ScreenNotificationHolder();

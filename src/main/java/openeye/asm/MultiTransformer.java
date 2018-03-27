@@ -5,9 +5,7 @@ import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.Map;
 import net.minecraft.launchwrapper.IClassTransformer;
-import openeye.asm.VisitorHelper.TransformProvider;
 import openeye.asm.injectors.Injectors;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 public class MultiTransformer implements IClassTransformer {
@@ -25,12 +23,7 @@ public class MultiTransformer implements IClassTransformer {
 		for (Map.Entry<String, Collection<MethodCodeInjector>> clsInjectors : injectors.asMap().entrySet()) {
 			if (transformedName.equals(clsInjectors.getKey())) {
 				final Collection<MethodCodeInjector> methodInjector = clsInjectors.getValue();
-				bytes = VisitorHelper.apply(bytes, ClassWriter.COMPUTE_FRAMES, new TransformProvider() {
-					@Override
-					public ClassVisitor createVisitor(ClassVisitor cv) {
-						return new SingleClassTransformer(cv, name, methodInjector);
-					}
-				});
+				bytes = VisitorHelper.apply(bytes, ClassWriter.COMPUTE_FRAMES, cv -> new SingleClassTransformer(cv, name, methodInjector));
 			}
 		}
 

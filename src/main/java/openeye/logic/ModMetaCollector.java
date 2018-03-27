@@ -346,12 +346,7 @@ public class ModMetaCollector {
 	}
 
 	private void registerClassTransformer(ASMDataTable table, final String cls) {
-		visitMeta(table, cls, new IFileMetaVisitor() {
-			@Override
-			public void visit(FileMeta fileMeta) {
-				fileMeta.classTransformers.add(cls);
-			}
-		});
+		visitMeta(table, cls, fileMeta -> fileMeta.classTransformers.add(cls));
 	}
 
 	private static Collection<ModCandidate> stealCandidates(ASMDataTable table) {

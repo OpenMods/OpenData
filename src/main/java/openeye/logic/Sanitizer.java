@@ -26,12 +26,7 @@ public class Sanitizer {
 
 	private final Sanitizer parent;
 
-	private static final Comparator<Integer> REVERSED = new Comparator<Integer>() {
-		@Override
-		public int compare(Integer o1, Integer o2) {
-			return o2 - o1;
-		}
-	};
+	private static final Comparator<Integer> REVERSED = (o1, o2) -> o2 - o1;
 
 	private static <V> Multimap<Integer, V> createPriorityList() {
 		return Multimaps.newMultimap(new TreeMap<Integer, Collection<V>>(REVERSED), ArrayList::new);

@@ -3,7 +3,6 @@ package openeye.logic;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Queues;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -62,12 +61,9 @@ public class ThrowableLogger {
 			}
 		};
 
-		crashDumperThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread t, Throwable e) {
-				System.err.println("[OpenEye] Exception in shutdown handler, report may not be sent");
-				e.printStackTrace();
-			}
+		crashDumperThread.setUncaughtExceptionHandler((t, e) -> {
+			System.err.println("[OpenEye] Exception in shutdown handler, report may not be sent");
+			e.printStackTrace();
 		});
 
 		Runtime.getRuntime().addShutdownHook(crashDumperThread);

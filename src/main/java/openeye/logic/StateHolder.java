@@ -24,15 +24,12 @@ public class StateHolder {
 			Log.warn(t, "Failed to get mod state, reinitializing");
 		}
 
-		saveCallback = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					storeState(state, storages);
-				} catch (Throwable t) {
-					System.err.println("[OpenEye] Failed to store state");
-					t.printStackTrace();
-				}
+		saveCallback = () -> {
+			try {
+				storeState(state, storages);
+			} catch (Throwable t) {
+				System.err.println("[OpenEye] Failed to store state");
+				t.printStackTrace();
 			}
 		};
 
