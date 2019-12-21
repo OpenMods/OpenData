@@ -5,7 +5,7 @@ openeye.main_screen.intro=NÃO ENTRE EM PÂNICO! Clique no botão piscando para 
 
 openeye.notes.goto_page=Abrir URL
 
-openeye.notes.title.resolved_crash=Resolução de falha recent disponível no site
+openeye.notes.title.resolved_crash=Resolução de falha recente disponível no site
 openeye.notes.title.reported_crash=Relatório de falha enviado ao servidor
 openeye.notes.title.note=Nota para o arquivo %s
 openeye.notes.title.remove_file=Recuperar solicitação de arquivo: %s
