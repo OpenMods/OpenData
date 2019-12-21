@@ -1,0 +1,53 @@
+openeye.main_screen.remove_file=OpenEye sugere remover o arquivo
+openeye.main_screen.known_crash=OpenEye tem informações sobre uma ou mais de suas falhas recentes
+openeye.main_screen.crash_reported=Falhas armazenadas no servidor
+openeye.main_screen.intro=NÃO ENTRE EM PÂNICO! Clique no botão piscando para descobrir o que está acontecendo.
+
+openeye.notes.goto_page=Abrir URL
+
+openeye.notes.title.resolved_crash=Resolução de falha recente disponível no site
+openeye.notes.title.reported_crash=Relatório de falha enviado ao servidor
+openeye.notes.title.note=Nota para o arquivo %s
+openeye.notes.title.remove_file=Recuperar solicitação de arquivo: %s
+
+openeye.notes.content.remove_file=OpenEye sugere remover o arquivo %s, pois pode ser inválido ou conter conteúdo suspeito. Abra o site para obter detalhes.
+
+openeye.note.title.intro1=Bem vindo ao Open Eye
+openeye.note.content.intro1=OpenEye é um utilitário que coleta dados anônimos sobre uso de mods e relatórios de falhas.
+
+openeye.note.title.intro2=Estatisticas
+openeye.note.content.intro2=Selecione este item e clique em "Abrir URL" para ver as estatísticas coletadas por esta ferramenta. Outros itens também possuem URLs atribuídos.
+
+openeye.note.title.intro3=Dados coletados
+openeye.note.content.intro3=O URL neste item contém um resumo dos dados coletados por OpenEye.
+
+openeye.note.title.intro4=Dados locais
+openeye.note.content.intro4=OpenEye armazena todas as informações enviadas e recebidas na pasta "reports" na pasta raiz do MineCraft. Clique em "Abrir URL" para abrir essa pasta.
+
+openeye.note.title.intro5=Código fonte
+openeye.note.content.intro5=OpenEye é um mod de código aberto. Código fonte disponível no GitHub.
+
+openeye.note.title.intro6=Desativação e configuração
+openeye.note.content.intro6=OpenEye usa a configuração de vanilla snooper. Se você não estiver satisfeito, também pode remover com segurança este mod.
+
+openeye.note.title.old_java=Versão Java antiga
+
+openeye.note.content.old_java_recoverable=Seu Java é muito antigo para lidar com a conexão segura com o servidor da OpenEye. Felizmente, o cliente conseguiu fornecer dados ausentes. Por favor, considere atualizar para a versão mais recente.
+openeye.note.content.old_java_total_failure=Seu Java é muito antigo para lidar com a conexão segura com o servidor da OpenEye. Por favor atualize-o!
+
+openeye.note.title.suspended=Comunicação com o servidor suspensa
+openeye.note.content.suspended_no_reason=Servidor solicitado a suspender a comunicação até %s
+openeye.note.content.suspended=Servidor solicitado a suspender a comunicação até %s, razão: "%s"
+
+openeye.chat.note=Nota %s, tipo: %s
+openeye.chat.store_failed=Falha ao armazenar notas!
+openeye.chat.dumped=Notas despejadas no arquivo %s
+
+openeye.category.critical=Crítico
+openeye.category.alert=Alerta
+openeye.category.warning=Cuidado
+openeye.category.info=Informação
+openeye.category.system_info=Informação do Sistema
+openeye.category.remove_file=Remover arquivo
+openeye.level.reported_crash=Falha Reportada
+openeye.level.resolved_crash=Falha Resolvida
