@@ -5,10 +5,10 @@ openeye.main_screen.intro=NÃO ENTRE EM PÂNICO! Clique no botão piscando para 
 
 openeye.notes.goto_page=Abrir URL
 
-openeye.notes.title.resolved_crash=Resolução para falha recente disponível no site
+openeye.notes.title.resolved_crash=Resolução de falha recent disponível no site
 openeye.notes.title.reported_crash=Relatório de falha enviado ao servidor
 openeye.notes.title.note=Nota para o arquivo %s
-openeye.notes.title.remove_file=Solicite novamente o arquivo: %s
+openeye.notes.title.remove_file=Recuperar solicitação de arquivo: %s
 
 openeye.notes.content.remove_file=OpenEye sugere remover o arquivo %s, pois pode ser inválido ou conter conteúdo suspeito. Abra o site para obter detalhes.
 
@@ -25,10 +25,10 @@ openeye.note.title.intro4=Dados locais
 openeye.note.content.intro4=OpenEye armazena todas as informações enviadas e recebidas na pasta "reports" na pasta raiz do MineCraft. Clique em "Abrir URL" para abrir essa pasta.
 
 openeye.note.title.intro5=Código fonte
-openeye.note.content.intro5=OpenEye é um mod de código aberto. Código fonte disponível em GitHub.
+openeye.note.content.intro5=OpenEye é um mod de código aberto. Código fonte disponível no GitHub.
 
 openeye.note.title.intro6=Desativação e configuração
-openeye.note.content.intro6=OpenEye usa configuração de vanilla snooper. Se você não estiver satisfeito, também pode remover com segurança este mod.
+openeye.note.content.intro6=OpenEye usa a configuração de vanilla snooper. Se você não estiver satisfeito, também pode remover com segurança este mod.
 
 openeye.note.title.old_java=Versão Java antiga
 
@@ -49,5 +49,5 @@ openeye.category.warning=Cuidado
 openeye.category.info=Informação
 openeye.category.system_info=Informação do Sistema
 openeye.category.remove_file=Remover arquivo
-openeye.level.reported_crash=Crash Reportado
-openeye.level.resolved_crash=Crash Resolvido
+openeye.level.reported_crash=Falha Reportada
+openeye.level.resolved_crash=Falha Resolvida
